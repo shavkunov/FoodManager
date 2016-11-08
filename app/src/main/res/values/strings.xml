@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FoodManager</string>
+    <string name="cookbook">Книга Рецептов</string>
+    <string name="menu">Меню на неделю</string>
+    <string name="shoppinglist">Список покупок</string>
+    <string name="settings">Настройки всего и вся</string>
+</resources>
