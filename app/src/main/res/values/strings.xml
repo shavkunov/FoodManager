@@ -4,4 +4,11 @@
     <string name="menu">Меню на неделю</string>
     <string name="shoppinglist">Список покупок</string>
     <string name="settings">Настройки всего и вся</string>
+    <string name="recipe_body_description_str">Описание:</string>
+    <string name="recipe_body_ingredients_str">Вам нужны следующие продукты:</string>
+    <string name="recipe_body_instruments_str">А также:</string>
+    <string name="recipe_body_steps_shortcut_str">Краткое описание шагов:</string>
+    <string name="recipe_goto_stepbystep_str">Приготовить</string>
+    <string name="recipe_like_str">Like</string>
+    <string name="recipe_add_to_favorites_str">В избранное</string>
 </resources>

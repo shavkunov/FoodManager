@@ -16,7 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".CookBookActivity" />
-        <activity android:name=".CookBookCategoryActivity"></activity>
+        <activity android:name=".CookBookCategoryActivity" />
+        <activity android:name=".RecipeViewActivity"></activity>
     </application>
 
 </manifest>
