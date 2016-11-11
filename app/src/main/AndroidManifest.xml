@@ -18,7 +18,8 @@
         <activity android:name=".CookBookActivity" />
         <activity android:name=".CookBookCategoryActivity" />
         <activity android:name=".RecipeViewActivity" />
-        <activity android:name=".ShoppingListActivity"></activity>
+        <activity android:name=".ShoppingListActivity" />
+        <activity android:name=".MenuViewActivity"></activity>
     </application>
 
 </manifest>
