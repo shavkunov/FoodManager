@@ -3,9 +3,14 @@ package ru.spbau.mit.foodmanager.model;
 import android.media.Image;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
-enum Property {Spicy, Vegeterian, Sweet, Salty, Greasy}
+enum Tag {firstDish, secondDish, salad, appetizer, baking, beverage, soup, pancake,
+          dessert, barbeque, porridge,
+          dinner, lunch, breakfast,
+          European, American, Italian, Uzbek, Georgian, Indian, Caucasian, Russian, Asian}
+          // and others tags
 
 public class Recipe {
     /**
@@ -31,7 +36,7 @@ public class Recipe {
     /**
      * Какими свойствами обладает блюдо.
      */
-    private LinkedList<Property> property; // наверное, лучше заменить на Map, для более быстрого доступа.
+    private ArrayList<Tag> property;
 
     /**
      * Информация, которую нужно отобразить пользователю для каждого шага.
@@ -42,6 +47,29 @@ public class Recipe {
      * Все картинки в рецепте, которые нужно отобразить.
      */
     private ArrayList<Image> allImages;
+
+    /**
+     * Ингредиенты! Пока каждый ингредиент будет измеряться в граммах.
+     */
+    private ArrayList<Ingredient> ingredients;
+
+    public class Ingredient {
+        private String name;
+        private int quantity;
+
+        Ingredient(String s, int i) {
+            name = s;
+            quantity = i;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+    }
 
     Recipe() {
         /*

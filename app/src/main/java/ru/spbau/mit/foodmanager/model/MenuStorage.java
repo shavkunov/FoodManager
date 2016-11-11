@@ -16,7 +16,7 @@ public class MenuStorage {
 
     MenuStorage() {
         listDishes = new ArrayList<>();
-        // TODO load from DataBase
+        // TODO load from File
     }
 
     /**
@@ -40,19 +40,19 @@ public class MenuStorage {
             }
         }
 
-        Recipe breakfast = Category.chooseRandomBreakfast();
+        Recipe breakfast = CookBookStorage.chooseRandomBreakfast();
         while (m.get(breakfast) != null) {
-            breakfast = Category.chooseRandomBreakfast();
+            breakfast = CookBookStorage.chooseRandomBreakfast();
         }
 
-        Recipe lunch = Category.chooseRandomLunch();
+        Recipe lunch = CookBookStorage.chooseRandomLunch();
         while (m.get(breakfast) != null) {
-            lunch = Category.chooseRandomLunch();
+            lunch = CookBookStorage.chooseRandomLunch();
         }
 
-        Recipe dinner = Category.chooseRandomDinner();
+        Recipe dinner = CookBookStorage.chooseRandomDinner();
         while (m.get(breakfast) != null) {
-            dinner = Category.chooseRandomDinner();
+            dinner = CookBookStorage.chooseRandomDinner();
         }
 
         ArrayList<Recipe> dayMenu = new ArrayList<>();
