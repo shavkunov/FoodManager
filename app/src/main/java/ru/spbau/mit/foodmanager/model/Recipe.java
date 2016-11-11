@@ -6,12 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-enum Tag {firstDish, secondDish, salad, appetizer, baking, beverage, soup, pancake,
-          dessert, barbeque, porridge,
-          dinner, lunch, breakfast,
-          European, American, Italian, Uzbek, Georgian, Indian, Caucasian, Russian, Asian}
-          // and others tags
-
 public class Recipe {
     /**
      * Название рецепта.
@@ -34,9 +28,9 @@ public class Recipe {
     private long ID;
 
     /**
-     * Какими свойствами обладает блюдо.
+     * Содержит идентификаторы категорий, к которым принадлежит блюдо.
      */
-    private ArrayList<Tag> property;
+    private ArrayList<Integer> categoryID;
 
     /**
      * Информация, которую нужно отобразить пользователю для каждого шага.
@@ -114,29 +108,35 @@ public class Recipe {
             // TODO load moveDescription
             // TODO load moveAmount
             // TODO load moveImages
-            numberOfStep = 1;
+            numberOfStep = 0;
             numberOfMove = 1;
         }
 
         /**
          * Step information знает все, что нужно отобразить на каждом экране.
-         * @return возвращает список шагов, которые нужно отобразить на текущем экране.
+         * @return возвращает список, где каждый элемент -- то что нужно отобразить на каждом экране.
          */
-        public LinkedList<Move> getNextStep() {
-            LinkedList<Move> res = new LinkedList<>();
+        public ArrayList<LinkedList<Move>> getStepS() {
+            ArrayList<LinkedList<Move>> res = new ArrayList<>();
 
-            for (; numberOfMove <= moveAmount.get(numberOfStep); numberOfMove++) {
-                Move newMove = new Move(moveDescription.get(numberOfStep), numberOfMove);
+            for (int i = 0; i < moveAmount.size(); i++) {
 
-                for (int imageID : moveImages.get(numberOfStep)) {
-                    Image im = Recipe.this.allImages.get(imageID);
-                    newMove.addImage(im);
+                LinkedList<Move> curMove = new LinkedList<>();
+
+                for (; numberOfMove <= moveAmount.get(numberOfStep); numberOfMove++) {
+                    Move newMove = new Move(moveDescription.get(numberOfStep), numberOfMove);
+
+                    for (int imageID : moveImages.get(numberOfStep)) {
+                        Image im = Recipe.this.allImages.get(imageID);
+                        newMove.addImage(im);
+                    }
+
+                    curMove.add(newMove);
                 }
 
-                res.add(newMove);
+                res.add(curMove);
             }
 
-            numberOfStep++;
             return res;
         }
 
