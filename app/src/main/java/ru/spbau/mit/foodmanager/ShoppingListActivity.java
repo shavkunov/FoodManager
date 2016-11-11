@@ -5,20 +5,18 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class CookBookActivity extends AppCompatActivity {
+public class ShoppingListActivity extends AppCompatActivity {
 
-    final static String[] categoryNames = {"Test Category 1", "Test Category 2",
-                                           "Test Category 3", "Test Category 4"};
+    static String[] productNames = {"name1", "name2", "name3"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.cook_book);
-
+        setContentView(R.layout.shopping_list);
         //Init List
-        ListView listView = (ListView) findViewById(R.id.cook_book_list);
+        ListView listView = (ListView) findViewById(R.id.shopping_list_view);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                R.layout.cookbook_list_element, categoryNames);
+                R.layout.shopping_list_element, productNames);
         listView.setAdapter(adapter);
     }
 }

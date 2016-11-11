@@ -11,4 +11,6 @@
     <string name="recipe_goto_stepbystep_str">Приготовить</string>
     <string name="recipe_like_str">Like</string>
     <string name="recipe_add_to_favorites_str">В избранное</string>
+    <string name="shopping_list_element_border">:</string>
+    <string name="shopping_list_add_str">Добавить</string>
 </resources>
