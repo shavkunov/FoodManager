@@ -14,4 +14,9 @@
     <string name="shopping_list_element_border">:</string>
     <string name="shopping_list_add_str">Добавить</string>
     <string name="menu_view_generate_str">Сгенерировать</string>
+    <string name="step_view_previous_str">Назад</string>
+    <string name="step_view_recipe_str">Описание рецепта</string>
+    <string name="step_view_next_str">Вперед</string>
+    <string name="step_view_count1_str">Шаг\ </string>
+    <string name="step_view_count2_str">\ из\ </string>
 </resources>
