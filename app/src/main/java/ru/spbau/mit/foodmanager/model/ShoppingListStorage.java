@@ -1,7 +1,7 @@
 package ru.spbau.mit.foodmanager.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 /**
  * Список покупок.
