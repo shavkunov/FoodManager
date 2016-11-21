@@ -55,22 +55,22 @@
                 android:id="@+id/recipe_body_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <TextView
+            <!--<TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/recipe_body_instruments_str"/>
+                android:text="@string/recipe_body_instruments_str"/>-->
             <TextView
                 android:id="@+id/recipe_body_instruments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <TextView
+            <!--<TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/recipe_body_steps_shortcut_str"/>
             <TextView
                 android:id="@+id/recipe_body_steps_shortcut"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content" />-->
         </LinearLayout>
         <!-- Recipe "Legs" -->
         <LinearLayout

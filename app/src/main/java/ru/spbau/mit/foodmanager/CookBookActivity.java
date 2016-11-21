@@ -1,14 +1,19 @@
 package ru.spbau.mit.foodmanager;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 public class CookBookActivity extends AppCompatActivity {
 
-    final static String[] categoryNames = {"Test Category 1", "Test Category 2",
-                                           "Test Category 3", "Test Category 4"};
+    ArrayList<Category> categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,9 +21,25 @@ public class CookBookActivity extends AppCompatActivity {
         setContentView(R.layout.cook_book);
 
         //Init List
-        ListView listView = (ListView) findViewById(R.id.cook_book_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                R.layout.cookbook_list_element, categoryNames);
+        categories = new ArrayList<>();
+        categories.addAll(CookBookStorage.getRecipiesTypeOfDish());
+
+        ArrayList<String> names = new ArrayList<>();
+        for (Category c : categories) {
+            names.add(c.categoryDescription());
+        }
+
+        ListView listView = (ListView) findViewById(R.id.cook_book_category_list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                R.layout.cookbook_list_element, names);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
+                intent.putExtra("Recipe", categories.get(i));
+                startActivity(intent);
+            }
+        });
     }
 }
