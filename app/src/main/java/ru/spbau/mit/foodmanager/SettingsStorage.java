@@ -1,4 +1,4 @@
-package ru.spbau.mit.foodmanager.model;
+package ru.spbau.mit.foodmanager;
 
 import android.app.Activity;
 import android.content.SharedPreferences;

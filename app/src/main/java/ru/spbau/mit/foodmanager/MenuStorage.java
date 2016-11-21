@@ -1,9 +1,7 @@
-package ru.spbau.mit.foodmanager.model;
+package ru.spbau.mit.foodmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-enum Day {Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday}
 
 /**
  * Реализация хранилища меню.

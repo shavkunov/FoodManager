@@ -1,4 +1,4 @@
-package ru.spbau.mit.foodmanager.model;
+package ru.spbau.mit.foodmanager;
 
 import android.media.Image;
 
@@ -13,7 +13,7 @@ public class Category {
     public Category(int ID) {
         this.ID = ID;
         recipes = CookBookStorage.getRecipesOfCategory(ID);
-        description = null; // Загрузка из файла, который будет называться ID
+        description = null; // query to CookBook
         categoryImage = null;
     }
 

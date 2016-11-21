@@ -1,4 +1,4 @@
-package ru.spbau.mit.foodmanager.model;
+package ru.spbau.mit.foodmanager;
 
 import java.util.ArrayList;
 
