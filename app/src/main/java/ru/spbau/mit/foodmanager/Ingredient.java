@@ -15,6 +15,10 @@ public class Ingredient {
         return name;
     }
 
+    public Measure getType() {
+        return type;
+    }
+
     public double getQuantity() {
         return quantity;
     }

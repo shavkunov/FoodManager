@@ -39,6 +39,9 @@ public class CookBookStorage {
     public Recipe getRecipe(int ID) {
         Recipe res = new Recipe();
 
+        /**
+         * Получение имени и описание рецепты из таблицы Recipe.
+         */
         Cursor mainData = db.query("Recipe", new String[] {"name", "description"},
                 "ID = ?", new String[] { String.valueOf(ID) }, null, null, null);
 
@@ -57,6 +60,9 @@ public class CookBookStorage {
 
         mainData.close();
 
+        /**
+         * Получение категорий, к которым принадлежит рецепт.
+         */
         Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"}, "ID = ?",
                                      new String[] { String.valueOf(ID) }, null, null, null);
 
@@ -79,6 +85,9 @@ public class CookBookStorage {
 
         categories.close();
 
+        /**
+         * Получение инструкции для готовки из двух таблиц -- Step и Image.
+         */
         // replace this crap with inner join
         Cursor steps = db.query("Step", new String[] {"ID", "description"}, "recipe_ID = ?",
                                 new String[] { String.valueOf(ID) }, null, null, null);
@@ -123,6 +132,9 @@ public class CookBookStorage {
         steps.close();
         res.setStepByStep(recipeSteps);
 
+        /**
+         * Получение ингредиентов из двух таблиц: Ingredient_to_recipe и Ingredient
+         */
         // я не уверен...
         String table = "Ingredient_to_recipe as itr inner join Ingredient as ing" +
                        "on itr.ingredient_ID = ing.ID";
