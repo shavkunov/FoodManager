@@ -10,7 +10,7 @@ public class ShoppingListStorage {
     /**
      * Список ингредиентов.
      */
-    private ArrayList<Recipe.Ingredient> ingredients;
+    private ArrayList<Ingredient> ingredients;
 
     /**
      * "Галочки". Если купили уже что-то в магазине -- отмечаем это.
@@ -35,7 +35,7 @@ public class ShoppingListStorage {
      * Группировка ингредиентов по типу. Овощи, Фрукты и тд.
      * @return списки групп.
      */
-    public ArrayList<ArrayList<Recipe.Ingredient>> groupByType() {
+    public ArrayList<ArrayList<Ingredient>> groupByType() {
         return null;
     }
 

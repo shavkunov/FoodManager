@@ -9,5 +9,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        CookBookStorage cookbook = new CookBookStorage(this);
+        Recipe r = cookbook.getRecipe(1);
     }
 }

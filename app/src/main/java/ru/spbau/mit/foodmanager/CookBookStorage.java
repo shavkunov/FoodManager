@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.Random;
  * Хранилище всех рецептов.
  */
 public class CookBookStorage {
+    final String LOG_TAG = "myLogs";
+
     private DataBaseHelper helper;
     private SQLiteDatabase db;
 
@@ -23,14 +26,20 @@ public class CookBookStorage {
      */
     public CookBookStorage(Context context) {
         helper = new DataBaseHelper(context);
-        try {
-            helper.createDataBase();
-        } catch (IOException e) {
-            throw new Error("Unable to create database");
-        }
 
-        helper.openDataBase();
-        db = helper.getReadableDatabase();
+        db = helper.openDatabase();
+
+        Log.d(LOG_TAG, db.getPath());
+        Log.d(LOG_TAG, context.getAssets().toString());
+
+        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+
+        if (c.moveToFirst()) {
+            while ( !c.isAfterLast() ) {
+                Log.d(LOG_TAG, "Table Name=> " +c.getString(0));
+                c.moveToNext();
+            }
+        }
     }
 
     /**
@@ -49,12 +58,19 @@ public class CookBookStorage {
             if (mainData.moveToFirst()) {
                 String recipeName = mainData.getString(mainData.getColumnIndex("name"));
                 String recipeDescription = mainData.getString(mainData.getColumnIndex("description"));
+                Log.d(LOG_TAG, "recipeName = " + recipeName);
+                Log.d(LOG_TAG, "recipeDescription = " + recipeDescription);
+
                 res.setName(recipeName);
                 res.setDescription(recipeDescription);
             } else {
+
+                Log.d(LOG_TAG, "mainData.moveToFirst() = null");
                 return null;
             }
         } else {
+
+            Log.d(LOG_TAG, "mainData = null");
             return null;
         }
 
@@ -63,7 +79,7 @@ public class CookBookStorage {
         /**
          * Получение категорий, к которым принадлежит рецепт.
          */
-        Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"}, "ID = ?",
+        /*Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"}, "ID = ?",
                                      new String[] { String.valueOf(ID) }, null, null, null);
 
         if (categories != null) {
@@ -83,12 +99,12 @@ public class CookBookStorage {
             return null;
         }
 
-        categories.close();
+        categories.close();*/
 
         /**
          * Получение инструкции для готовки из двух таблиц -- Step и Image.
          */
-        // replace this crap with inner join
+        /* // replace this crap with inner join
         Cursor steps = db.query("Step", new String[] {"ID", "description"}, "recipe_ID = ?",
                                 new String[] { String.valueOf(ID) }, null, null, null);
 
@@ -130,13 +146,13 @@ public class CookBookStorage {
         }
 
         steps.close();
-        res.setStepByStep(recipeSteps);
+        res.setStepByStep(recipeSteps);*/
 
         /**
          * Получение ингредиентов из двух таблиц: Ingredient_to_recipe и Ingredient
          */
         // я не уверен...
-        String table = "Ingredient_to_recipe as itr inner join Ingredient as ing" +
+        /*String table = "Ingredient_to_recipe as itr inner join Ingredient as ing" +
                        "on itr.ingredient_ID = ing.ID";
         String columns[] = {"ing.name as Name", "itr.measure as Measure", "itr.quantity as Quantity"};
         String where = "itr.recipe_ID = ?";
@@ -161,7 +177,7 @@ public class CookBookStorage {
             return null;
         }
 
-        res.setIngredients(recipeIngredients);
+        res.setIngredients(recipeIngredients);*/
 
         return res;
     }
