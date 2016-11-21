@@ -1,7 +1,9 @@
 package ru.spbau.mit.foodmanager;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -9,8 +11,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+    }
 
-        CookBookStorage cookbook = new CookBookStorage(this);
-        Recipe r = cookbook.getRecipe(1);
+    public void onOpenCookBookClick(View view) {
+        Intent intent = new Intent(this, CookBookActivity.class);
+        startActivity(intent);
+    }
+
+    public void onWeekMenuClick(View view) {
+        Intent intent = new  Intent(this, RecipeViewActivity.class);
+        intent.putExtra("Recipe", 1);
+        startActivity(intent);
     }
 }

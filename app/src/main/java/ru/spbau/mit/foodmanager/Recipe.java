@@ -1,8 +1,9 @@
 package ru.spbau.mit.foodmanager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Serializable {
     /**
      * Название рецепта.
      */
@@ -29,10 +30,14 @@ public class Recipe {
     private ArrayList<Ingredient> ingredients;
 
     /**
-     * @return возвращает пошаговую инструкцию готовки блюда.
+     * Возвращает пошаговую инструкцию готовки блюда.
      */
     public ArrayList<Step> getStepByStep() {
         return steps;
+    }
+    //TODO: Заимплименть плиз, я поставил заглушку, чтобы работало
+    public int getID() {
+        return 1;
     }
 
     public void setStepByStep(ArrayList<Step> steps) {
