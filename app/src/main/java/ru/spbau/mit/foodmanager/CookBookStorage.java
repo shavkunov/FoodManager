@@ -95,38 +95,22 @@ public class CookBookStorage {
         /**
          * Получение инструкции для готовки из двух таблиц -- Step и Image.
          */
-        // replace this crap with inner join
-        Cursor steps = db.query("Step", new String[] {"ID", "description"}, "recipe_ID = ?",
-                                new String[] { String.valueOf(ID) }, null, null, null);
+        String stepsQuery = "SELECT * FROM Step INNER JOIN Image ON " +
+                            "Step.recipe_ID = Image.entity_ID " +
+                            "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
+        Cursor steps = db.rawQuery(stepsQuery, new String[] {String.valueOf(ID)});
 
         ArrayList<Step> recipeSteps = new ArrayList<>();
         if (steps != null) {
             if (steps.moveToFirst()) {
                 do {
-                    int id = steps.getInt(steps.getColumnIndex("ID"));
+
                     String description = steps.getString(steps.getColumnIndex("description"));
-
-                    Cursor image = db.query("Image", new String[] {"source"},
-                                            "entity_type = ? AND entity_ID = ?",
-                                            new String[] {"0", String.valueOf(id)},
-                                            null, null, null);
-
-                    if (image != null) {
-                        if (image.moveToFirst()) {
-                            byte[] bytes = image.getBlob(image.getColumnIndex("source"));
-                            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            Step newStep = new Step(description, bm);
-                            recipeSteps.add(newStep);
-                            Log.d(LOG_TAG, "step description = " + description);
-
-                        } else {
-                            return null;
-                        }
-                    } else {
-                        return null;
-                    }
-
-                    image.close();
+                    byte[] bytes = steps.getBlob(steps.getColumnIndex("source"));
+                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Step newStep = new Step(description, bm);
+                    recipeSteps.add(newStep);
+                    Log.d(LOG_TAG, "step description = " + description);
 
                 } while (steps.moveToNext());
 
