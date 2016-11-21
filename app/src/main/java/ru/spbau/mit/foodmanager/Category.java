@@ -2,9 +2,10 @@ package ru.spbau.mit.foodmanager;
 
 import android.media.Image;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Category {
+public class Category implements Serializable {
     private String description;
     private int ID;
     private ArrayList<Recipe> recipes;

@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_DIVIDER = " - ";
-    private static final String INGRIDIENT_LIST_COUNT_DIVIDER = " = ";
+    private static final String INGRIDIENT_LIST_COUNT_DIVIDER = "        ";
     private static final String INGRIGIENT_LIST_COUNT_METRIC = " гр.";
     private static Recipe recipe;
 
@@ -17,7 +17,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_view);
         Intent intent = getIntent();
-        recipe = (Recipe) intent.getSerializableExtra("Recipe");
+        recipe = new CookBookStorage(this).getRecipe(intent.getIntExtra("Recipe", -1));
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         TextView descriptionView = (TextView)findViewById(R.id.recipe_body_description);

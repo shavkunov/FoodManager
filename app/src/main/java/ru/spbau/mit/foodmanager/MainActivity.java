@@ -13,8 +13,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
     }
 
-    protected void onOpenCookBookClick(View v) {
+    public void onOpenCookBookClick(View view) {
         Intent intent = new Intent(this, CookBookActivity.class);
+        startActivity(intent);
+    }
+
+    public void onWeekMenuClick(View view) {
+        Intent intent = new  Intent(this, RecipeViewActivity.class);
+        intent.putExtra("Recipe", 1);
         startActivity(intent);
     }
 }

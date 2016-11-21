@@ -22,7 +22,8 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu"/>
+            android:text="@string/menu"
+            android:onClick="onWeekMenuClick"/>
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

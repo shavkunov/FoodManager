@@ -2,7 +2,9 @@ package ru.spbau.mit.foodmanager;
 
 import android.graphics.Bitmap;
 
-public class Step {
+import java.io.Serializable;
+
+public class Step implements Serializable {
     /**
      * Шаг инструкции.
      */

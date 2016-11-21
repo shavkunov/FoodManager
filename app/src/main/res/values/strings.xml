@@ -4,7 +4,6 @@
     <string name="menu">Меню на неделю</string>
     <string name="shoppinglist">Список покупок</string>
     <string name="settings">Настройки всего и вся</string>
-<<<<<<< HEAD
     <string name="recipe_body_description_str">Описание:</string>
     <string name="recipe_body_ingredients_str">Вам нужны следующие продукты:</string>
     <string name="recipe_body_instruments_str">А также:</string>
@@ -20,6 +19,4 @@
     <string name="step_view_next_str">Вперед</string>
     <string name="step_view_count1_str">Шаг\ </string>
     <string name="step_view_count2_str">\ из\ </string>
-=======
->>>>>>> origin/Model-skeleton
 </resources>
