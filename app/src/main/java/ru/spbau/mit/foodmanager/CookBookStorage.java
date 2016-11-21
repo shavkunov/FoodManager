@@ -193,10 +193,10 @@ public class CookBookStorage {
      * Выбор случайного блюда категории.
      */
     public Recipe chooseRandomDishFromCategory(CategoryName category) {
-        ArrayList<Recipe> dinners = getRecipesOfCategory(category.ordinal());
+        ArrayList<Recipe> dishes = getRecipesOfCategory(category.ordinal());
         Random r = new Random();
 
-        return dinners.get(r.nextInt() % dinners.size());
+        return dishes.get(r.nextInt() % dishes.size());
     }
 
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
