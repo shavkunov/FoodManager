@@ -4,15 +4,18 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.SyncFailedException;
 
 public class DataBaseHelper {
     private static final String DB_NAME = "content.db";
+    final String LOG_TAG = "myLogs";
 
     private Context context;
 
@@ -23,12 +26,10 @@ public class DataBaseHelper {
     public SQLiteDatabase openDatabase() {
         File dbFile = context.getDatabasePath(DB_NAME);
 
-        if (!dbFile.exists()) {
-            try {
-                copyDatabase(dbFile);
-            } catch (IOException e) {
-                throw new RuntimeException("Error creating source database", e);
-            }
+        try {
+            copyDatabase(dbFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating source database", e);
         }
 
         return SQLiteDatabase.openDatabase(dbFile.getPath(), null, SQLiteDatabase.OPEN_READONLY);

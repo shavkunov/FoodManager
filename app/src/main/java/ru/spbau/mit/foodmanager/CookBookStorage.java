@@ -28,18 +28,6 @@ public class CookBookStorage {
         helper = new DataBaseHelper(context);
 
         db = helper.openDatabase();
-
-        Log.d(LOG_TAG, db.getPath());
-        Log.d(LOG_TAG, context.getAssets().toString());
-
-        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-
-        if (c.moveToFirst()) {
-            while ( !c.isAfterLast() ) {
-                Log.d(LOG_TAG, "Table Name=> " +c.getString(0));
-                c.moveToNext();
-            }
-        }
     }
 
     /**
@@ -79,8 +67,9 @@ public class CookBookStorage {
         /**
          * Получение категорий, к которым принадлежит рецепт.
          */
-        /*Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"}, "ID = ?",
-                                     new String[] { String.valueOf(ID) }, null, null, null);
+        Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"},
+                                     "recipe_ID = ?", new String[] { String.valueOf(ID) },
+                                      null, null, null);
 
         if (categories != null) {
             if (categories.moveToFirst()) {
@@ -89,6 +78,8 @@ public class CookBookStorage {
                 do {
                     int categoryID = categories.getInt(categories.getColumnIndex("category_ID"));
                     ids.add(categoryID);
+                    Log.d(LOG_TAG, "categoryID = " + categoryID);
+
                 } while (categories.moveToNext());
 
                 res.setCategoryID(ids);
@@ -99,12 +90,12 @@ public class CookBookStorage {
             return null;
         }
 
-        categories.close();*/
+        categories.close();
 
         /**
          * Получение инструкции для готовки из двух таблиц -- Step и Image.
          */
-        /* // replace this crap with inner join
+        // replace this crap with inner join
         Cursor steps = db.query("Step", new String[] {"ID", "description"}, "recipe_ID = ?",
                                 new String[] { String.valueOf(ID) }, null, null, null);
 
@@ -126,6 +117,7 @@ public class CookBookStorage {
                             Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             Step newStep = new Step(description, bm);
                             recipeSteps.add(newStep);
+                            Log.d(LOG_TAG, "step description = " + description);
 
                         } else {
                             return null;
@@ -146,29 +138,34 @@ public class CookBookStorage {
         }
 
         steps.close();
-        res.setStepByStep(recipeSteps);*/
+        res.setStepByStep(recipeSteps);
 
         /**
          * Получение ингредиентов из двух таблиц: Ingredient_to_recipe и Ingredient
          */
-        // я не уверен...
-        /*String table = "Ingredient_to_recipe as itr inner join Ingredient as ing" +
-                       "on itr.ingredient_ID = ing.ID";
-        String columns[] = {"ing.name as Name", "itr.measure as Measure", "itr.quantity as Quantity"};
-        String where = "itr.recipe_ID = ?";
-        String whereArgs[] = {String.valueOf(ID)};
-        Cursor ingredients = db.query(table, columns, where, whereArgs, null, null, null);
+        String ingredientsQuery = "SELECT * FROM Ingredient_to_recipe itr " +
+                                  "INNER JOIN Ingredient ing ON " +
+                                  "itr.ingredient_ID = ing.ID " +
+                                  "WHERE itr.recipe_ID = ?";
+        Cursor ingredients = db.rawQuery(ingredientsQuery, new String[] {String.valueOf(ID)});
 
         ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
         if (ingredients != null) {
             if (ingredients.moveToFirst()) {
-                String name = ingredients.getString(ingredients.getColumnIndex("Name"));
-                Measure measure = Measure.values()[
-                                  ingredients.getInt(ingredients.getColumnIndex("Measure"))];
-                double quantity = ingredients.getDouble(ingredients.getColumnIndex("Quantity"));
 
-                Ingredient ingredient = new Ingredient(name, measure, quantity);
-                recipeIngredients.add(ingredient);
+                do {
+                    String name = ingredients.getString(ingredients.getColumnIndex("name"));
+                    Measure measure = Measure.values()[
+                            ingredients.getInt(ingredients.getColumnIndex("measure"))];
+                    double quantity = ingredients.getDouble(ingredients.getColumnIndex("quantity"));
+
+                    Log.d(LOG_TAG, "Ingredient name = " + name);
+                    Log.d(LOG_TAG, "Ingredient measure = " + measure.name());
+                    Log.d(LOG_TAG, "Ingredient quantity = " + quantity);
+
+                    Ingredient ingredient = new Ingredient(name, measure, quantity);
+                    recipeIngredients.add(ingredient);
+                } while (ingredients.moveToNext());
 
             } else {
                 return null;
@@ -177,7 +174,7 @@ public class CookBookStorage {
             return null;
         }
 
-        res.setIngredients(recipeIngredients);*/
+        res.setIngredients(recipeIngredients);
 
         return res;
     }
