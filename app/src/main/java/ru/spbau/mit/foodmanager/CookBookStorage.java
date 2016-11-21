@@ -3,16 +3,13 @@ package ru.spbau.mit.foodmanager;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
-
-import static ru.spbau.mit.foodmanager.Recipe.*;
 
 /**
  * Хранилище всех рецептов.
@@ -26,9 +23,14 @@ public class CookBookStorage {
      */
     public CookBookStorage(Context context) {
         helper = new DataBaseHelper(context);
-        db = helper.getReadableDatabase();
+        try {
+            helper.createDataBase();
+        } catch (IOException e) {
+            throw new Error("Unable to create database");
+        }
 
-        // FIXME: 20.11.16
+        helper.openDataBase();
+        db = helper.getReadableDatabase();
     }
 
     /**

@@ -1,10 +1,6 @@
 package ru.spbau.mit.foodmanager;
 
-import android.graphics.Bitmap;
-import android.media.Image;
-
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Recipe {
     /**
