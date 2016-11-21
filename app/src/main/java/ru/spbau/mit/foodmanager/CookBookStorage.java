@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -16,18 +15,20 @@ import java.util.Random;
  * Хранилище всех рецептов.
  */
 public class CookBookStorage {
-    final String LOG_TAG = "myLogs";
-
-    private DataBaseHelper helper;
+    private final String LOG_TAG = "myLogs";
     private SQLiteDatabase db;
 
     /**
      * Загрузка базы данных.
      */
     public CookBookStorage(Context context) {
-        helper = new DataBaseHelper(context);
+        DataBaseHelper helper = new DataBaseHelper(context);
 
         db = helper.openDatabase();
+    }
+
+    public void close() {
+        db.close();
     }
 
     /**
@@ -167,64 +168,76 @@ public class CookBookStorage {
      * Получение списка рецептов по фильтру, т.е. по префиксу.
      */
     public ArrayList<Recipe> getRecipiesByFilter(String filter) {
-        // query to data base
-        return null;
-    }
+        String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
+        Cursor recipes = db.rawQuery(filterQuery, null);
 
-    /**
-     * Выбор случайного ужина из базы данных.
-     */
-    public static Recipe chooseRandomDinner() {
-        Random r = new Random();
-        // запрос на r-ую строку по тегу dinner, т.е. r-ый рецепт, в базе данных.
+        ArrayList<Recipe> res = new ArrayList<>();
+        if (recipes != null) {
+            if (recipes.moveToFirst()) {
+                do {
+                    int recipeID = recipes.getInt(recipes.getColumnIndex("ID"));
+                    res.add(getRecipe(recipeID));
+                } while (recipes.moveToNext());
 
-        Recipe res = null;
-        return null;
-    }
-
-    /**
-     * Выбор случайного обеда из базы данных.
-     */
-    public static Recipe chooseRandomLunch() {
-        Random r = new Random();
-        // запрос на r-ую строку по тегу Lunch, т.е. r-ый рецепт, в базе данных.
-
-        Recipe res = null;
-        return null;
-    }
-
-    /**
-     * Выбор случайного завтрака из базы данных.
-     */
-    public static Recipe chooseRandomBreakfast() {
-        Random r = new Random();
-        // запрос на r-ую строку по тегу Breakfast, т.е. r-ый рецепт, в базе данных.
-
-        Recipe res = null;
-        return null;
-    }
-
-    public static ArrayList<Recipe> getRecipesOfCategory(int ID) {
-        ArrayList<Recipe> res = null;
-        // запрос в базу данных для блюд у которых есть ID
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
 
         return res;
     }
 
-    public static LinkedList<Category> getRecipiesTypeOfDish() {
+    /**
+     * Выбор случайного блюда категории.
+     */
+    public Recipe chooseRandomDishFromCategory(CategoryName category) {
+        ArrayList<Recipe> dinners = getRecipesOfCategory(category.ordinal());
+        Random r = new Random();
+
+        return dinners.get(r.nextInt() % dinners.size());
+    }
+
+    public ArrayList<Recipe> getRecipesOfCategory(int ID) {
+        ArrayList<Recipe> res = new ArrayList<>();
+
+        String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
+        Cursor cursor = db.rawQuery(categoryQuery, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    int recipeID = cursor.getInt(cursor.getColumnIndex("recipe_ID"));
+                    res.add(getRecipe(recipeID));
+                } while (cursor.moveToNext());
+
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        return res;
+    }
+
+    public LinkedList<Category> getRecipiesTypeOfDish() {
         LinkedList<Category> categories = new LinkedList<>();
 
-        for (int order = CategoryName.firstDish.ordinal(); order < CategoryName.dinner.ordinal(); order++) {
+        for (int order = CategoryName.firstDish.ordinal();
+             order < CategoryName.dinner.ordinal(); order++) {
             categories.add(new Category(order));
         }
 
         return categories;
     }
 
-    public static LinkedList<Category> getRecipiesNationalKitchen() {
+    public LinkedList<Category> getRecipiesNationalKitchen() {
         LinkedList<Category> categories = new LinkedList<>();
 
-        for (int order = CategoryName.European.ordinal(); order < CategoryName.values().length; order++) {
+        for (int order = CategoryName.European.ordinal();
+             order < CategoryName.values().length; order++) {
             categories.add(new Category(order));
         }
 
