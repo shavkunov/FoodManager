@@ -232,9 +232,6 @@ public class CookBookStorage {
 
         Category c = new Category();
 
-        c.setID(ID);
-        c.setRecipes(getRecipesOfCategory(ID));
-
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
         Cursor categoryCursor = db.rawQuery(categoryQuery, null);
 
@@ -242,6 +239,8 @@ public class CookBookStorage {
             if (categoryCursor.moveToFirst()) {
                 String description = categoryCursor.getString(
                                      categoryCursor.getColumnIndex("name"));
+
+                Log.d(LOG_TAG, description);
                 c.setDescription(description);
             } else {
                 return null;
@@ -249,8 +248,10 @@ public class CookBookStorage {
         } else {
             return null;
         }
+        categoryCursor.close();
 
-
+        c.setID(ID);
+        c.setRecipes(getRecipesOfCategory(ID));
         c.setCategoryImage(null); // пока картинок у нас никаких нет
         return c;
     }
@@ -261,6 +262,7 @@ public class CookBookStorage {
         for (int order = CategoryName.firstDish.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
             categories.add(getCategoryByID(order));
+            Log.d(LOG_TAG, "Order: " + order);
         }
 
         return categories;
