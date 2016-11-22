@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class CookBookActivity extends AppCompatActivity {
@@ -32,17 +33,15 @@ public class CookBookActivity extends AppCompatActivity {
         for (Category c : categories) {
             names.add(c.getDescription());
         }
-        Log.d("CookBookActivityLogs", "Get Names");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, names);
-        Log.d("CookBookActivityLogs", "Created Adapter");
         listView.setAdapter(adapter);
-        Log.d("CookBookActivityLogs", "Created List");
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("CookBookActivityLogs", ((Integer)i).toString());
                 Intent intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
-                intent.putExtra("Recipe", categories.get(i));
+                intent.putExtra("Category", categories.get(i).getID());
                 startActivity(intent);
             }
         });

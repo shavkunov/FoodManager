@@ -228,7 +228,6 @@ public class CookBookStorage {
     }
 
     public Category getCategoryByID(int ID) {
-        ID++;// в таблице записи начинаются с 1, в то время как у enum с 0.
 
         Category c = new Category();
 
@@ -261,7 +260,7 @@ public class CookBookStorage {
 
         for (int order = CategoryName.entree.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
-            categories.add(getCategoryByID(order));
+            categories.add(getCategoryByID(order + 1)); //enum - [0..], ID - [1..]
             Log.d(LOG_TAG, "Order: " + order);
         }
 
