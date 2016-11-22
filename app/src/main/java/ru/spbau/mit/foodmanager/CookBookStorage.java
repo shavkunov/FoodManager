@@ -15,7 +15,7 @@ import java.util.Random;
  * Хранилище всех рецептов.
  */
 public class CookBookStorage {
-    private final String LOG_TAG = "myLogs";
+    private final String LOG_TAG = "CookBookStorageLogs";
     private SQLiteDatabase db;
 
     /**
@@ -29,6 +29,10 @@ public class CookBookStorage {
 
     public void close() {
         db.close();
+    }
+
+    public SQLiteDatabase getDatabase() {
+        return db;
     }
 
     /**
@@ -52,6 +56,7 @@ public class CookBookStorage {
 
                 res.setName(recipeName);
                 res.setDescription(recipeDescription);
+                res.setID(ID);
             } else {
 
                 Log.d(LOG_TAG, "mainData.moveToFirst() = null");
@@ -222,12 +227,40 @@ public class CookBookStorage {
         return res;
     }
 
+    public Category getCategoryByID(int ID) {
+        ID++;// в таблице записи начинаются с 1, в то время как у enum с 0.
+
+        Category c = new Category();
+
+        c.setID(ID);
+        c.setRecipes(getRecipesOfCategory(ID));
+
+        String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
+        Cursor categoryCursor = db.rawQuery(categoryQuery, null);
+
+        if (categoryCursor != null) {
+            if (categoryCursor.moveToFirst()) {
+                String description = categoryCursor.getString(
+                                     categoryCursor.getColumnIndex("name"));
+                c.setDescription(description);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+
+        c.setCategoryImage(null); // пока картинок у нас никаких нет
+        return c;
+    }
+
     public LinkedList<Category> getRecipiesTypeOfDish() {
         LinkedList<Category> categories = new LinkedList<>();
 
         for (int order = CategoryName.firstDish.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
-            categories.add(new Category(order));
+            categories.add(getCategoryByID(order));
         }
 
         return categories;
@@ -238,7 +271,7 @@ public class CookBookStorage {
 
         for (int order = CategoryName.European.ordinal();
              order < CategoryName.values().length; order++) {
-            categories.add(new Category(order));
+            categories.add(getCategoryByID(order));
         }
 
         return categories;

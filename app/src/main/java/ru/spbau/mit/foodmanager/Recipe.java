@@ -25,6 +25,11 @@ public class Recipe implements Serializable {
     private ArrayList<Step> steps;
 
     /**
+     * ID рецепта.
+     */
+    private int ID;
+
+    /**
      * Ингредиенты необходимые для приготовления блюда.
      */
     private ArrayList<Ingredient> ingredients;
@@ -35,9 +40,13 @@ public class Recipe implements Serializable {
     public ArrayList<Step> getStepByStep() {
         return steps;
     }
-    //TODO: Заимплименть плиз, я поставил заглушку, чтобы работало
+
     public int getID() {
-        return 1;
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public void setStepByStep(ArrayList<Step> steps) {

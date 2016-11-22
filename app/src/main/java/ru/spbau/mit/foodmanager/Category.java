@@ -1,6 +1,6 @@
 package ru.spbau.mit.foodmanager;
 
-import android.media.Image;
+import android.graphics.Bitmap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,24 +9,39 @@ public class Category implements Serializable {
     private String description;
     private int ID;
     private ArrayList<Recipe> recipes;
-    private Image categoryImage;
+    private Bitmap image;
 
-    public Category(int ID) {
-        this.ID = ID;
-        recipes = CookBookStorage.getRecipesOfCategory(ID);
-        description = null; // query to CookBook
-        categoryImage = null;
+    public Category() {}
+
+    public int getID() {
+        return ID;
     }
 
-    public String categoryDescription() {
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public ArrayList<Recipe> getRecipes() {
         return recipes;
     }
 
-    public Image getCategoryImage() {
-        return categoryImage;
+    public void setRecipes(ArrayList<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public Bitmap getCategoryImage() {
+        return image;
+    }
+
+    public void setCategoryImage(Bitmap image) {
+        this.image = image;
     }
 }

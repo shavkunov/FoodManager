@@ -1,5 +1,7 @@
 package ru.spbau.mit.foodmanager;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,10 +13,11 @@ public class MenuStorage {
      * Список рецептов на неделю.
      */
     private ArrayList<ArrayList<Recipe>> listDishes;
+    private CookBookStorage cookbook;
 
-    MenuStorage() {
+    MenuStorage(CookBookStorage cookbook) {
         listDishes = new ArrayList<>();
-        // TODO load from File
+        this.cookbook = cookbook;
     }
 
     /**
@@ -38,19 +41,19 @@ public class MenuStorage {
             }
         }
 
-        Recipe breakfast = CookBookStorage.chooseRandomBreakfast();
+        Recipe breakfast = cookbook.chooseRandomDishFromCategory(CategoryName.breakfast);
         while (m.get(breakfast) != null) {
-            breakfast = CookBookStorage.chooseRandomBreakfast();
+            breakfast = cookbook.chooseRandomDishFromCategory(CategoryName.breakfast);
         }
 
-        Recipe lunch = CookBookStorage.chooseRandomLunch();
+        Recipe lunch = cookbook.chooseRandomDishFromCategory(CategoryName.lunch);
         while (m.get(breakfast) != null) {
-            lunch = CookBookStorage.chooseRandomLunch();
+            lunch = cookbook.chooseRandomDishFromCategory(CategoryName.lunch);
         }
 
-        Recipe dinner = CookBookStorage.chooseRandomDinner();
+        Recipe dinner = cookbook.chooseRandomDishFromCategory(CategoryName.dinner);
         while (m.get(breakfast) != null) {
-            dinner = CookBookStorage.chooseRandomDinner();
+            dinner = cookbook.chooseRandomDishFromCategory(CategoryName.dinner);
         }
 
         ArrayList<Recipe> dayMenu = new ArrayList<>();
