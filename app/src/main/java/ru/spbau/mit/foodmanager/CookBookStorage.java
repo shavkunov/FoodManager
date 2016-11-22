@@ -259,7 +259,7 @@ public class CookBookStorage {
     public LinkedList<Category> getRecipiesTypeOfDish() {
         LinkedList<Category> categories = new LinkedList<>();
 
-        for (int order = CategoryName.firstDish.ordinal();
+        for (int order = CategoryName.entree.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
             categories.add(getCategoryByID(order));
             Log.d(LOG_TAG, "Order: " + order);
