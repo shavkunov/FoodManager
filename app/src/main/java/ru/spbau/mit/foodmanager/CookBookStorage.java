@@ -228,7 +228,6 @@ public class CookBookStorage {
     }
 
     public Category getCategoryByID(int ID) {
-
         Category c = new Category();
 
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
@@ -260,7 +259,7 @@ public class CookBookStorage {
 
         for (int order = CategoryName.entree.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
-            categories.add(getCategoryByID(order + 1)); //enum - [0..], ID - [1..]
+            categories.add(getCategoryByID(order));
             Log.d(LOG_TAG, "Order: " + order);
         }
 
