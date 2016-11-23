@@ -42,7 +42,8 @@
                     android:id="@+id/step_view_previous"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/step_view_previous_str"/>
+                    android:text="@string/step_view_previous_str"
+                    android:onClick="onPrevBtnClick"/>
                 <!--<Button
                     android:id="@+id/step_view_recipe"
                     android:layout_width="wrap_content"
@@ -52,35 +53,62 @@
                     android:id="@+id/step_view_next"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/step_view_next_str"/>
+                    android:text="@string/step_view_next_str"
+                    android:onClick="onNextBtnClick"/>
             </LinearLayout>
             <!-- Step counter -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:paddingLeft="16dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/step_view_count1_str"/>
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
                 <TextView
                     android:id="@+id/step_view_position"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/step_view_count2_str"/>
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
                 <TextView
-                    android:id="@+id/step_view_count"
+                    android:id="@+id/step_view_step_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
-        <!-- Micro-steps -->
-        <TextView
+        <!-- Step description -->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/step_view_step_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/step_view_step_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"/>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </RelativeLayout>

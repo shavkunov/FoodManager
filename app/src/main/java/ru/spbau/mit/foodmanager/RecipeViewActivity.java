@@ -3,8 +3,11 @@ package ru.spbau.mit.foodmanager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_DIVIDER = " - ";
@@ -32,6 +35,13 @@ public class RecipeViewActivity extends AppCompatActivity {
                     INGRIGIENT_LIST_COUNT_METRIC + "\n");
         }
         ingridientsView.setText(ingridientList);
-        //photoView.setImageBitmap();
+        ArrayList<Step> steps = recipe.getStepByStep();
+        photoView.setImageBitmap(steps.get(steps.size()-1).getImage());
+    }
+
+    public void onCookClick(View v) {
+        Intent intent = new Intent(this, StepViewActivity.class);
+        intent.putExtra("Recipe", recipe.getID());
+        startActivity(intent);
     }
 }
