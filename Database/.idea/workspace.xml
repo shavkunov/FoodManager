@@ -46,11 +46,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="11" column="75" selection-start-line="11" selection-start-column="75" selection-end-line="11" selection-end-column="75" />
+            <state relative-caret-position="300">
+              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -58,39 +58,39 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DatabaseCreator.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DatabaseCreator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="25">
-              <caret line="187" column="25" selection-start-line="187" selection-start-column="25" selection-end-line="187" selection-end-column="25" />
+            <state relative-caret-position="161">
+              <caret line="122" column="33" selection-start-line="122" selection-start-column="33" selection-end-line="122" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <marker date="1479856226000" expanded="true" signature="526:693" ph="CREATE TABLE... Category" />
-                <marker date="1479856226000" expanded="true" signature="1042:1112" ph="INSERT INTO Category... " />
-                <marker date="1479856226000" expanded="true" signature="1224:1371" ph="CREATE TABLE... Recipe_to_week_menu" />
-                <marker date="1479856226000" expanded="true" signature="1475:1659" ph="CREATE TABLE... Recipe" />
-                <marker date="1479856226000" expanded="true" signature="1749:1935" ph="CREATE TABLE... Step" />
-                <marker date="1479856226000" expanded="true" signature="2035:2167" ph="CREATE TABLE... Recipe_to_category" />
-                <marker date="1479856226000" expanded="true" signature="2268:2288" ph="CREATE TABLE... Image" />
-                <marker date="1479856226000" expanded="true" signature="2268:2307" ph="CREATE TABLE... Recipe_to_category" />
-                <marker date="1479856226000" expanded="true" signature="2268:2484" ph="CREATE TABLE... Image" />
-                <marker date="1479856226000" expanded="true" signature="2589:2969" ph="CREATE TABLE... Ingredient_to_recipe" />
-                <marker date="1479856226000" expanded="true" signature="2595:2969" ph="CREATE TABLE... Recipe_to_category" />
-                <marker date="1479856226000" expanded="true" signature="3081:3254" ph="CREATE TABLE... Category" />
-                <marker date="1479856226000" expanded="true" signature="3846:3992" ph="INSERT INTO Recipe... " />
-                <marker date="1479856226000" expanded="true" signature="4445:4540" ph="INSERT INTO Step... " />
-                <marker date="1479856226000" expanded="true" signature="4445:4561" ph="INSERT INTO Step... " />
-                <marker date="1479856226000" expanded="true" signature="4445:4565" ph="INSERT INTO Step... " />
-                <marker date="1479856226000" expanded="true" signature="4445:4582" ph="INSERT INTO Step... " />
-                <marker date="1479856226000" expanded="true" signature="4445:4598" ph="INSERT INTO Category... " />
-                <marker date="1479856226000" expanded="true" signature="4870:4907" ph="INSERT INTO Image... " />
-                <marker date="1479856226000" expanded="true" signature="5798:5834" ph="SELECT * FRO... Category" />
-                <marker date="1479856226000" expanded="true" signature="5798:5835" ph="SELECT * FRO... Category" />
-                <marker date="1479856226000" expanded="true" signature="5798:5858" ph="SELECT * FRO... Category" />
-                <marker date="1479856226000" expanded="true" signature="6038:6143" ph="INSERT INTO Recipe_to_category... " />
-                <marker date="1479856226000" expanded="true" signature="6038:6180" ph="INSERT INTO Recipe_to_category... " />
-                <marker date="1479856226000" expanded="true" signature="7226:7372" ph="INSERT INTO Ingredient... " />
-                <marker date="1479856226000" expanded="true" signature="9204:9535" ph="INSERT INTO Ingredient_to_recipe... " />
+                <marker date="1479862606000" expanded="true" signature="526:693" ph="CREATE TABLE... Category" />
+                <marker date="1479862606000" expanded="true" signature="1042:1112" ph="INSERT INTO Category... " />
+                <marker date="1479862606000" expanded="true" signature="1224:1371" ph="CREATE TABLE... Recipe_to_week_menu" />
+                <marker date="1479862606000" expanded="true" signature="1475:1659" ph="CREATE TABLE... Recipe" />
+                <marker date="1479862606000" expanded="true" signature="1749:1935" ph="CREATE TABLE... Step" />
+                <marker date="1479862606000" expanded="true" signature="2035:2167" ph="CREATE TABLE... Recipe_to_category" />
+                <marker date="1479862606000" expanded="true" signature="2268:2288" ph="CREATE TABLE... Image" />
+                <marker date="1479862606000" expanded="true" signature="2268:2307" ph="CREATE TABLE... Recipe_to_category" />
+                <marker date="1479862606000" expanded="true" signature="2268:2484" ph="CREATE TABLE... Image" />
+                <marker date="1479862606000" expanded="true" signature="2589:2969" ph="CREATE TABLE... Ingredient_to_recipe" />
+                <marker date="1479862606000" expanded="true" signature="2595:2969" ph="CREATE TABLE... Recipe_to_category" />
+                <marker date="1479862606000" expanded="true" signature="3081:3254" ph="CREATE TABLE... Category" />
+                <marker date="1479862606000" expanded="true" signature="3846:3992" ph="INSERT INTO Recipe... " />
+                <marker date="1479862606000" expanded="true" signature="4445:4540" ph="INSERT INTO Step... " />
+                <marker date="1479862606000" expanded="true" signature="4445:4561" ph="INSERT INTO Step... " />
+                <marker date="1479862606000" expanded="true" signature="4445:4565" ph="INSERT INTO Step... " />
+                <marker date="1479862606000" expanded="true" signature="4445:4582" ph="INSERT INTO Step... " />
+                <marker date="1479862606000" expanded="true" signature="4445:4598" ph="INSERT INTO Category... " />
+                <marker date="1479862606000" expanded="true" signature="4870:4907" ph="INSERT INTO Image... " />
+                <marker date="1479862606000" expanded="true" signature="5798:5834" ph="SELECT * FRO... Category" />
+                <marker date="1479862606000" expanded="true" signature="5798:5835" ph="SELECT * FRO... Category" />
+                <marker date="1479862606000" expanded="true" signature="5798:5858" ph="SELECT * FRO... Category" />
+                <marker date="1479862606000" expanded="true" signature="6069:6174" ph="INSERT INTO Recipe_to_category... " />
+                <marker date="1479862606000" expanded="true" signature="6069:6211" ph="INSERT INTO Recipe_to_category... " />
+                <marker date="1479862606000" expanded="true" signature="7257:7403" ph="INSERT INTO Ingredient... " />
+                <marker date="1479862606000" expanded="true" signature="9235:9566" ph="INSERT INTO Ingredient_to_recipe... " />
               </folding>
             </state>
           </provider>
@@ -436,8 +436,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/src/main/java/DatabaseCreator.java" />
         <option value="$PROJECT_DIR$/src/main/java/Main.java" />
+        <option value="$PROJECT_DIR$/src/main/java/DatabaseCreator.java" />
       </list>
     </option>
   </component>
@@ -567,54 +567,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="source" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Creating-Database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="source" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="recipes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Крабовый салат" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Creating-Database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="source" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="recipes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Крабовый салат" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="stepbystep" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1073,12 +1025,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1479837149869</updated>
-      <workItem from="1479837153347" duration="14635000" />
+      <workItem from="1479837153347" duration="16589000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14635000" />
+    <option name="totallyTimeSpent" value="16589000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -1148,48 +1100,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="25">
-          <caret line="187" column="25" selection-start-line="187" selection-start-column="25" selection-end-line="187" selection-end-column="25" />
+        <state relative-caret-position="300">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <marker date="1479856226000" expanded="true" signature="526:693" ph="CREATE TABLE... Category" />
-            <marker date="1479856226000" expanded="true" signature="1042:1112" ph="INSERT INTO Category... " />
-            <marker date="1479856226000" expanded="true" signature="1224:1371" ph="CREATE TABLE... Recipe_to_week_menu" />
-            <marker date="1479856226000" expanded="true" signature="1475:1659" ph="CREATE TABLE... Recipe" />
-            <marker date="1479856226000" expanded="true" signature="1749:1935" ph="CREATE TABLE... Step" />
-            <marker date="1479856226000" expanded="true" signature="2035:2167" ph="CREATE TABLE... Recipe_to_category" />
-            <marker date="1479856226000" expanded="true" signature="2268:2288" ph="CREATE TABLE... Image" />
-            <marker date="1479856226000" expanded="true" signature="2268:2307" ph="CREATE TABLE... Recipe_to_category" />
-            <marker date="1479856226000" expanded="true" signature="2268:2484" ph="CREATE TABLE... Image" />
-            <marker date="1479856226000" expanded="true" signature="2589:2969" ph="CREATE TABLE... Ingredient_to_recipe" />
-            <marker date="1479856226000" expanded="true" signature="2595:2969" ph="CREATE TABLE... Recipe_to_category" />
-            <marker date="1479856226000" expanded="true" signature="3081:3254" ph="CREATE TABLE... Category" />
-            <marker date="1479856226000" expanded="true" signature="3846:3992" ph="INSERT INTO Recipe... " />
-            <marker date="1479856226000" expanded="true" signature="4445:4540" ph="INSERT INTO Step... " />
-            <marker date="1479856226000" expanded="true" signature="4445:4561" ph="INSERT INTO Step... " />
-            <marker date="1479856226000" expanded="true" signature="4445:4565" ph="INSERT INTO Step... " />
-            <marker date="1479856226000" expanded="true" signature="4445:4582" ph="INSERT INTO Step... " />
-            <marker date="1479856226000" expanded="true" signature="4445:4598" ph="INSERT INTO Category... " />
-            <marker date="1479856226000" expanded="true" signature="4870:4907" ph="INSERT INTO Image... " />
-            <marker date="1479856226000" expanded="true" signature="5798:5834" ph="SELECT * FRO... Category" />
-            <marker date="1479856226000" expanded="true" signature="5798:5835" ph="SELECT * FRO... Category" />
-            <marker date="1479856226000" expanded="true" signature="5798:5858" ph="SELECT * FRO... Category" />
-            <marker date="1479856226000" expanded="true" signature="6038:6143" ph="INSERT INTO Recipe_to_category... " />
-            <marker date="1479856226000" expanded="true" signature="6038:6180" ph="INSERT INTO Recipe_to_category... " />
-            <marker date="1479856226000" expanded="true" signature="7226:7372" ph="INSERT INTO Ingredient... " />
-            <marker date="1479856226000" expanded="true" signature="9204:9535" ph="INSERT INTO Ingredient_to_recipe... " />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="75" selection-start-line="11" selection-start-column="75" selection-end-line="11" selection-end-column="75" />
+        <state relative-caret-position="161">
+          <caret line="122" column="33" selection-start-line="122" selection-start-column="33" selection-end-line="122" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
+            <marker date="1479862606000" expanded="true" signature="526:693" ph="CREATE TABLE... Category" />
+            <marker date="1479862606000" expanded="true" signature="1042:1112" ph="INSERT INTO Category... " />
+            <marker date="1479862606000" expanded="true" signature="1224:1371" ph="CREATE TABLE... Recipe_to_week_menu" />
+            <marker date="1479862606000" expanded="true" signature="1475:1659" ph="CREATE TABLE... Recipe" />
+            <marker date="1479862606000" expanded="true" signature="1749:1935" ph="CREATE TABLE... Step" />
+            <marker date="1479862606000" expanded="true" signature="2035:2167" ph="CREATE TABLE... Recipe_to_category" />
+            <marker date="1479862606000" expanded="true" signature="2268:2288" ph="CREATE TABLE... Image" />
+            <marker date="1479862606000" expanded="true" signature="2268:2307" ph="CREATE TABLE... Recipe_to_category" />
+            <marker date="1479862606000" expanded="true" signature="2268:2484" ph="CREATE TABLE... Image" />
+            <marker date="1479862606000" expanded="true" signature="2589:2969" ph="CREATE TABLE... Ingredient_to_recipe" />
+            <marker date="1479862606000" expanded="true" signature="2595:2969" ph="CREATE TABLE... Recipe_to_category" />
+            <marker date="1479862606000" expanded="true" signature="3081:3254" ph="CREATE TABLE... Category" />
+            <marker date="1479862606000" expanded="true" signature="3846:3992" ph="INSERT INTO Recipe... " />
+            <marker date="1479862606000" expanded="true" signature="4445:4540" ph="INSERT INTO Step... " />
+            <marker date="1479862606000" expanded="true" signature="4445:4561" ph="INSERT INTO Step... " />
+            <marker date="1479862606000" expanded="true" signature="4445:4565" ph="INSERT INTO Step... " />
+            <marker date="1479862606000" expanded="true" signature="4445:4582" ph="INSERT INTO Step... " />
+            <marker date="1479862606000" expanded="true" signature="4445:4598" ph="INSERT INTO Category... " />
+            <marker date="1479862606000" expanded="true" signature="4870:4907" ph="INSERT INTO Image... " />
+            <marker date="1479862606000" expanded="true" signature="5798:5834" ph="SELECT * FRO... Category" />
+            <marker date="1479862606000" expanded="true" signature="5798:5835" ph="SELECT * FRO... Category" />
+            <marker date="1479862606000" expanded="true" signature="5798:5858" ph="SELECT * FRO... Category" />
+            <marker date="1479862606000" expanded="true" signature="6069:6174" ph="INSERT INTO Recipe_to_category... " />
+            <marker date="1479862606000" expanded="true" signature="6069:6211" ph="INSERT INTO Recipe_to_category... " />
+            <marker date="1479862606000" expanded="true" signature="7257:7403" ph="INSERT INTO Ingredient... " />
+            <marker date="1479862606000" expanded="true" signature="9235:9566" ph="INSERT INTO Ingredient_to_recipe... " />
           </folding>
         </state>
       </provider>

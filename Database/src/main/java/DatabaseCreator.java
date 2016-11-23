@@ -124,6 +124,7 @@ public class DatabaseCreator {
                 String queryFindCategoryID = "SELECT * FROM Category WHERE name = '" + recipeCategory + "'";
                 ResultSet entry = stmt.executeQuery(queryFindCategoryID);
                 int categoryID = entry.getInt("ID");
+                entry.close();
 
                 String insertRecipeToCategory = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) VALUES " +
                                     "(" + recipeID + ", " + categoryID + ")";
