@@ -30,6 +30,15 @@ public class Ingredient implements Serializable {
 
             case 3:
                 return "ч.л.";
+
+            case 4:
+                return "ст.л.";
+
+            case 5:
+                return "щепотка";
+
+            case 6:
+                return "по вкусу";
         }
         return null;
     }
