@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_DIVIDER = " - ";
     private static final String INGRIDIENT_LIST_COUNT_DIVIDER = "        ";
-    private static final String INGRIGIENT_LIST_COUNT_METRIC = " гр.";
     private static Recipe recipe;
 
     @Override
@@ -31,8 +30,8 @@ public class RecipeViewActivity extends AppCompatActivity {
         StringBuilder ingridientList = new StringBuilder();
         for (Ingredient i : recipe.getIngredients()) {
             ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
-                    INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() +
-                    INGRIGIENT_LIST_COUNT_METRIC + "\n");
+                    INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() + " " +
+                    i.getTypeName() + "\n");
         }
         ingridientsView.setText(ingridientList);
         ArrayList<Step> steps = recipe.getStepByStep();
