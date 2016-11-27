@@ -22,4 +22,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new  Intent(this, MenuViewActivity.class);
         startActivity(intent);
     }
+
+    public void onShoppingListClick(View view) {
+        Intent intent = new  Intent(this, ShoppingListActivity.class);
+        startActivity(intent);
+    }
 }

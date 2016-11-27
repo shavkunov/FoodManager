@@ -21,6 +21,7 @@ public class MenuViewActivity extends AppCompatActivity {
             "Суббота",
             "Воскресенье"};
     private ArrayList<ArrayList<Recipe>> allDayMenu;
+    private ArrayList<Recipe> recipes;
     private MenuStorage menu;
 
     @Override
@@ -34,18 +35,23 @@ public class MenuViewActivity extends AppCompatActivity {
             //TODO:Generate menu
         }
         //TODO: Сделать древовидный список.
+        recipes = new ArrayList<>();
+        for (ArrayList<Recipe> rc : allDayMenu) {
+            recipes.addAll(rc);
+        }
+        ArrayList<String> recipeNames = new ArrayList<>();
+        for (Recipe r : recipes) {
+            recipeNames.add(r.getName());
+        }
         ListView listView = (ListView) findViewById(R.id.menu_view_list_view);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, DAY_NAMES);
+                android.R.layout.simple_list_item_1, recipeNames);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MenuViewActivity.this, CookBookCategoryActivity.class);
-                intent.putExtra("RecipeCount", allDayMenu.get(i).size());
-                for (int j = 0; j < allDayMenu.get(j).size(); j++) {
-                    intent.putExtra("Recipe" + j, allDayMenu.get(i).get(j));
-                }
+                Intent intent = new Intent(MenuViewActivity.this, RecipeViewActivity.class);
+                intent.putExtra("Recipe", recipes.get(i).getID());
                 startActivity(intent);
             }
         });
