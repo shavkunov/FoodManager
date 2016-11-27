@@ -17,8 +17,21 @@ public class Ingredient implements Serializable {
         return name;
     }
 
-    public Measure getType() {
-        return type;
+    public String getTypeName() {
+        switch (type.ordinal()) {
+            case 0:
+                return "гр.";
+
+            case 1:
+                return "мл.";
+
+            case 2:
+                return "шт.";
+
+            case 3:
+                return "ч.л.";
+        }
+        return null;
     }
 
     public double getQuantity() {
