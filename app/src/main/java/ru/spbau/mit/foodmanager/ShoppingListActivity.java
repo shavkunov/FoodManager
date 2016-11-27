@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -51,15 +52,13 @@ public class ShoppingListActivity extends AppCompatActivity {
             productNames.add(name);
         }
         ListView listView = (ListView) findViewById(R.id.shopping_list_view);
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, productNames);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CheckedTextView checkView = (CheckedTextView)view;
-                checkView.setChecked(!checkView.isChecked());
-            }
-        });
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {}
+        }); */
     }
 }
