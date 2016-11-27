@@ -19,8 +19,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onWeekMenuClick(View view) {
-        Intent intent = new  Intent(this, RecipeViewActivity.class);
-        intent.putExtra("Recipe", 1);
+        Intent intent = new  Intent(this, MenuViewActivity.class);
+        startActivity(intent);
+    }
+
+    public void onShoppingListClick(View view) {
+        Intent intent = new  Intent(this, ShoppingListActivity.class);
         startActivity(intent);
     }
 }

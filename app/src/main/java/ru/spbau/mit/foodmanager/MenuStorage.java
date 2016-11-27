@@ -17,7 +17,7 @@ public class MenuStorage {
     private CookBookStorage cookbook;
 
     MenuStorage(CookBookStorage cookbook) {
-        listDishes = new ArrayList<>();
+        listDishes = new ArrayList<>(7);
         this.cookbook = cookbook;
     }
 
@@ -62,7 +62,7 @@ public class MenuStorage {
         dayMenu.add(lunch);
         dayMenu.add(dinner);
 
-        listDishes.set(day.ordinal(), dayMenu);
+        listDishes.add(dayMenu);
     }
 
     /**

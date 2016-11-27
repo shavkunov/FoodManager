@@ -4,16 +4,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 public class CookBookActivity extends AppCompatActivity {
 
@@ -33,6 +29,7 @@ public class CookBookActivity extends AppCompatActivity {
         for (Category c : categories) {
             names.add(c.getDescription());
         }
+        //TODO: сделать собственные адаптеры для CookBook и Category
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, names);
         listView.setAdapter(adapter);

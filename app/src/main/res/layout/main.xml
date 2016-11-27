@@ -27,7 +27,8 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/shoppinglist"/>
+            android:text="@string/shoppinglist"
+            android:onClick="onShoppingListClick"/>
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

@@ -201,7 +201,7 @@ public class CookBookStorage {
         ArrayList<Recipe> dishes = getRecipesOfCategory(category.ordinal());
         Random r = new Random();
 
-        return dishes.get(r.nextInt() % dishes.size());
+        return dishes.get(Math.abs(r.nextInt()) % dishes.size());
     }
 
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
