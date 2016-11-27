@@ -48,8 +48,8 @@ public class DatabaseCreator {
         stmt.executeUpdate(queryCreationStep);
 
         String queryCreationRecipeToCategory = "CREATE TABLE Recipe_to_category (" +
-                "recipe_ID INTEGER NOT NULL, " +
-                "category_ID INTEGER NOT NULL)";
+                                               "recipe_ID INTEGER NOT NULL, " +
+                                               "category_ID INTEGER NOT NULL)";
 
         stmt.executeUpdate(queryCreationRecipeToCategory);
 
@@ -84,7 +84,9 @@ public class DatabaseCreator {
             String description = new String(Files.readAllBytes(Paths.get(
                                             "source/recipes/" + recipe.getName() + "/description")));
 
-            String name = recipe.getName();
+            File fileWithName = new File("source/recipes/" + recipe.getName() + "/name");
+            BufferedReader readerRecipeName = new BufferedReader(new FileReader(fileWithName));
+            String name = readerRecipeName.readLine();
 
             String insertRecipe = "INSERT INTO Recipe (ID, name, description) VALUES " +
                                   "(" + recipeID + ", '" + name + "', '" + description + "')";
