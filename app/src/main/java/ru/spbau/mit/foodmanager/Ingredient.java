@@ -39,6 +39,9 @@ public class Ingredient implements Serializable {
 
             case 6:
                 return "по вкусу";
+
+            case 7:
+                return "зуб.";
         }
         return null;
     }
