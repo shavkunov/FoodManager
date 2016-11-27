@@ -31,8 +31,8 @@ public class MenuViewActivity extends AppCompatActivity {
         menu = new MenuStorage(new CookBookStorage(this));
         allDayMenu = menu.getMenu();
         if (allDayMenu == null) {
-            allDayMenu = new ArrayList<>();
-            //TODO:Generate menu
+            menu.setNewWeekMenu();
+            allDayMenu = menu.getMenu();
         }
         //TODO: Сделать древовидный список.
         recipes = new ArrayList<>();
