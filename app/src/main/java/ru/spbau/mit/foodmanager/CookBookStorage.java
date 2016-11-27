@@ -51,20 +51,20 @@ public class CookBookStorage {
             if (mainData.moveToFirst()) {
                 String recipeName = mainData.getString(mainData.getColumnIndex("name"));
                 String recipeDescription = mainData.getString(mainData.getColumnIndex("description"));
-                Log.d(LOG_TAG, "recipeName = " + recipeName);
-                Log.d(LOG_TAG, "recipeDescription = " + recipeDescription);
+                //Log.d(LOG_TAG, "recipeName = " + recipeName);
+                //Log.d(LOG_TAG, "recipeDescription = " + recipeDescription);
 
                 res.setName(recipeName);
                 res.setDescription(recipeDescription);
                 res.setID(ID);
             } else {
 
-                Log.d(LOG_TAG, "mainData.moveToFirst() = null");
+                //Log.d(LOG_TAG, "mainData.moveToFirst() = null");
                 return null;
             }
         } else {
 
-            Log.d(LOG_TAG, "mainData = null");
+            //Log.d(LOG_TAG, "mainData = null");
             return null;
         }
 
@@ -84,7 +84,7 @@ public class CookBookStorage {
                 do {
                     int categoryID = categories.getInt(categories.getColumnIndex("category_ID"));
                     ids.add(categoryID);
-                    Log.d(LOG_TAG, "categoryID = " + categoryID);
+                    //Log.d(LOG_TAG, "categoryID = " + categoryID);
 
                 } while (categories.moveToNext());
 
@@ -116,7 +116,7 @@ public class CookBookStorage {
                     Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     Step newStep = new Step(description, bm);
                     recipeSteps.add(newStep);
-                    Log.d(LOG_TAG, "step description = " + description);
+                    //Log.d(LOG_TAG, "step description = " + description);
 
                 } while (steps.moveToNext());
 
@@ -149,9 +149,9 @@ public class CookBookStorage {
                             ingredients.getInt(ingredients.getColumnIndex("measure"))];
                     double quantity = ingredients.getDouble(ingredients.getColumnIndex("quantity"));
 
-                    Log.d(LOG_TAG, "Ingredient name = " + name);
-                    Log.d(LOG_TAG, "Ingredient measure = " + measure.name());
-                    Log.d(LOG_TAG, "Ingredient quantity = " + quantity);
+                    //Log.d(LOG_TAG, "Ingredient name = " + name);
+                    //Log.d(LOG_TAG, "Ingredient measure = " + measure.name());
+                    //Log.d(LOG_TAG, "Ingredient quantity = " + quantity);
 
                     Ingredient ingredient = new Ingredient(name, measure, quantity);
                     recipeIngredients.add(ingredient);
@@ -238,7 +238,7 @@ public class CookBookStorage {
                 String description = categoryCursor.getString(
                                      categoryCursor.getColumnIndex("name"));
 
-                Log.d(LOG_TAG, description);
+                //Log.d(LOG_TAG, description);
                 c.setDescription(description);
             } else {
                 return null;
@@ -260,7 +260,7 @@ public class CookBookStorage {
         for (int order = CategoryName.entree.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
             categories.add(getCategoryByID(order));
-            Log.d(LOG_TAG, "Order: " + order);
+            //Log.d(LOG_TAG, "Order: " + order);
         }
 
         return categories;

@@ -59,8 +59,8 @@
       <file leaf-file-name="DatabaseCreator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="202" column="6" selection-start-line="202" selection-start-column="6" selection-end-line="202" selection-end-column="6" />
+            <state relative-caret-position="310">
+              <caret line="148" column="21" selection-start-line="186" selection-start-column="16" selection-end-line="186" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <marker date="1480265370000" expanded="true" signature="526:693" ph="CREATE TABLE... Category" />
@@ -1039,12 +1039,12 @@
       <updated>1479837149869</updated>
       <workItem from="1479837153347" duration="16750000" />
       <workItem from="1479881778444" duration="2037000" />
-      <workItem from="1480265202434" duration="1238000" />
+      <workItem from="1480265202434" duration="1440000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="20025000" />
+    <option name="totallyTimeSpent" value="20227000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -1174,8 +1174,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="202" column="6" selection-start-line="202" selection-start-column="6" selection-end-line="202" selection-end-column="6" />
+        <state relative-caret-position="310">
+          <caret line="148" column="21" selection-start-line="186" selection-start-column="16" selection-end-line="186" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
             <marker date="1480265370000" expanded="true" signature="526:693" ph="CREATE TABLE... Category" />
