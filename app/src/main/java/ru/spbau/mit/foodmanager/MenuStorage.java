@@ -17,7 +17,7 @@ public class MenuStorage {
     private CookBookStorage cookbook;
 
     MenuStorage(CookBookStorage cookbook) {
-        listDishes = new ArrayList<>(7);
+        listDishes = null;
         this.cookbook = cookbook;
     }
 
@@ -71,7 +71,6 @@ public class MenuStorage {
      * Сделано это для того, чтобы мы могли создавать меню, например, только на один день.
      */
     public ArrayList<ArrayList<Recipe>> getMenu() {
-        setNewWeekMenu();
         return listDishes;
     }
 

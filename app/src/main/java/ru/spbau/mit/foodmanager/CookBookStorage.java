@@ -102,7 +102,7 @@ public class CookBookStorage {
          * Получение инструкции для готовки из двух таблиц -- Step и Image.
          */
         String stepsQuery = "SELECT * FROM Step INNER JOIN Image ON " +
-                            "Step.recipe_ID = Image.entity_ID " +
+                            "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
         Cursor steps = db.rawQuery(stepsQuery, new String[] {String.valueOf(ID)});
 
