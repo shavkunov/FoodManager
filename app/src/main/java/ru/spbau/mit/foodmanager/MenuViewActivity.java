@@ -22,13 +22,12 @@ public class MenuViewActivity extends AppCompatActivity {
             "Воскресенье"};
     private ArrayList<ArrayList<Recipe>> allDayMenu;
     private ArrayList<Recipe> recipes;
-    private MenuStorage menu;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_view);
-        menu = new MenuStorage(new CookBookStorage(this));
+        CookBookStorage cookbook = new CookBookStorage(this);
+        MenuStorage menu = new MenuStorage(cookbook);
         allDayMenu = menu.getMenu();
         if (allDayMenu == null) {
             menu.setNewWeekMenu();
@@ -45,6 +44,7 @@ public class MenuViewActivity extends AppCompatActivity {
                 recipeNames.add(r.getName());
             }
         }
+        cookbook.close();
         ListView listView = (ListView) findViewById(R.id.menu_view_list_view);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, recipeNames);

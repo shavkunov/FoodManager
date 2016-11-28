@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Category implements Serializable {
+public class Category {
     private String description;
     private int ID;
     private ArrayList<Recipe> recipes;

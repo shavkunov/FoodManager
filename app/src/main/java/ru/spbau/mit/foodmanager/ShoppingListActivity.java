@@ -28,11 +28,13 @@ public class ShoppingListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list);
         //Init List
-        MenuStorage menu = new MenuStorage(new CookBookStorage(this));
+        CookBookStorage cookbook = new CookBookStorage(this);
+        MenuStorage menu = new MenuStorage(cookbook);
         ArrayList<ArrayList<Recipe>> menuRecipes = menu.getMenu();
         if (menuRecipes == null) {
             menuRecipes = new ArrayList<>();
         }
+        cookbook.close();
         recipes = new ArrayList<>();
         for(ArrayList<Recipe> rs : menuRecipes) {
             recipes.addAll(rs);
@@ -56,9 +58,5 @@ public class ShoppingListActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, productNames);
         listView.setAdapter(adapter);
-      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {}
-        }); */
     }
 }

@@ -3,7 +3,7 @@ package ru.spbau.mit.foodmanager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe implements Serializable {
+public class Recipe {
     /**
      * Название рецепта.
      */

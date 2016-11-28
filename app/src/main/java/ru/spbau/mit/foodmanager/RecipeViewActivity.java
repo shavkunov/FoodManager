@@ -19,7 +19,8 @@ public class RecipeViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_view);
         Intent intent = getIntent();
-        recipe = new CookBookStorage(this).getRecipe(intent.getIntExtra("Recipe", -1));
+        CookBookStorage cookbook = new CookBookStorage(this);
+        recipe = cookbook.getRecipe(intent.getIntExtra("Recipe", -1));
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         TextView descriptionView = (TextView)findViewById(R.id.recipe_body_description);
@@ -29,9 +30,15 @@ public class RecipeViewActivity extends AppCompatActivity {
         descriptionView.setText(recipe.getDescription());
         StringBuilder ingridientList = new StringBuilder();
         for (Ingredient i : recipe.getIngredients()) {
-            ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
-                    INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() + " " +
-                    i.getTypeName() + "\n");
+            if (i.getQuantity() >= 0.0) {
+                ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
+                        INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() + " " +
+                        i.getTypeName() + "\n");
+            } else {
+                ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
+                        INGRIDIENT_LIST_COUNT_DIVIDER +
+                        i.getTypeName() + "\n");
+            }
         }
         ingridientsView.setText(ingridientList);
         ArrayList<Step> steps = recipe.getStepByStep();

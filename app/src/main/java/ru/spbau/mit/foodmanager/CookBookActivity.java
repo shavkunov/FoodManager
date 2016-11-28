@@ -29,6 +29,7 @@ public class CookBookActivity extends AppCompatActivity {
         for (Category c : categories) {
             names.add(c.getDescription());
         }
+        cookbook.close();
         //TODO: сделать собственные адаптеры для CookBook и Category
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, names);
