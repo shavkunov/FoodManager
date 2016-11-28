@@ -71,6 +71,7 @@ public class MenuStorage {
      * Сделано это для того, чтобы мы могли создавать меню, например, только на один день.
      */
     public ArrayList<ArrayList<Recipe>> getMenu() {
+        setNewWeekMenu();
         return listDishes;
     }
 
@@ -83,11 +84,32 @@ public class MenuStorage {
     }
 
     /**
-     * Создание меню на неделю.
+     * Создание меню на неделю. Обеды будут по пн, ср, сб. Ужины по пн и чт.
+     * В дальнейшем, у рецепта будет поле количество порций и тогда уже можно будет понимать,
+     * сколько дней можно кушать это блюдо.
      */
     public void setNewWeekMenu() {
-        for (Day day : Day.values()) {
-            generateDayMenu(day);
+        listDishes = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++) {
+            ArrayList<Recipe> forDay = new ArrayList<>();
+
+            Recipe breakfast = cookbook.chooseRandomDishFromCategory(CategoryName.breakfast);
+            Recipe lunch = null;
+            Recipe dinner = null;
+
+            if (i == 0 || i == 2 || i == 5) {
+                lunch = cookbook.chooseRandomDishFromCategory(CategoryName.lunch);
+            }
+
+            if (i == 0 || i == 3) {
+                dinner = cookbook.chooseRandomDishFromCategory(CategoryName.dinner);
+            }
+
+            forDay.add(breakfast);
+            forDay.add(lunch);
+            forDay.add(dinner);
+            listDishes.add(forDay);
         }
     }
 

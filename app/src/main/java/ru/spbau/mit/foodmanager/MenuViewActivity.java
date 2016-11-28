@@ -41,7 +41,9 @@ public class MenuViewActivity extends AppCompatActivity {
         }
         ArrayList<String> recipeNames = new ArrayList<>();
         for (Recipe r : recipes) {
-            recipeNames.add(r.getName());
+            if (r != null) {
+                recipeNames.add(r.getName());
+            }
         }
         ListView listView = (ListView) findViewById(R.id.menu_view_list_view);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
