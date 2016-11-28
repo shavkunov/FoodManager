@@ -41,13 +41,15 @@ public class ShoppingListActivity extends AppCompatActivity {
         }
         productCount = new HashMap<>();
         for(Recipe r : recipes) {
-            for(Ingredient i : r.getIngredients()) {
-                if (productCount.get(i.getName()) == null) {
-                    productCount.put(i.getName(), 0.0);
-                }
-                productCount.put(i.getName(),
-                        i.getQuantity() + productCount.get(i.getName()));
-            }
+            if(r != null) {
+				for(Ingredient i : r.getIngredients()) {
+					if (productCount.get(i.getName()) == null) {
+						productCount.put(i.getName(), 0.0);
+					}
+					productCount.put(i.getName(),
+							i.getQuantity() + productCount.get(i.getName()));
+				}
+			}
         }
         productNames = new ArrayList<>();
         for (String name : productCount.keySet()) {
