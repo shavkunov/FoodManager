@@ -17,14 +17,15 @@ import java.util.Random;
 public class CookBookStorage {
     private final String LOG_TAG = "CookBookStorageLogs";
     private SQLiteDatabase db;
+    private Random r;
 
     /**
      * Загрузка базы данных.
      */
     public CookBookStorage(Context context) {
         DataBaseHelper helper = new DataBaseHelper(context);
-
         db = helper.openDatabase();
+        r = new Random();
     }
 
     public void close() {
@@ -199,7 +200,6 @@ public class CookBookStorage {
      */
     public Recipe chooseRandomDishFromCategory(CategoryName category) {
         ArrayList<Recipe> dishes = getRecipesOfCategory(category.ordinal());
-        Random r = new Random();
 
         return dishes.get(Math.abs(r.nextInt()) % dishes.size());
     }
