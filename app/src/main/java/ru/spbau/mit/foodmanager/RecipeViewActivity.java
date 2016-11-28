@@ -1,10 +1,13 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,8 +24,20 @@ public class RecipeViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         CookBookStorage cookbook = new CookBookStorage(this);
         recipe = cookbook.getRecipe(intent.getIntExtra("Recipe", -1));
+        //Header
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
+        LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
+        for (Integer id : recipe.getCategoryID()) {
+            Button categoryNameView = new Button(this);
+            //TextView categoryNameView = new TextView(this);
+            categoryNameView.setBackgroundColor(0x00_00_00_00);
+            categoryNameView.setTextAppearance(this, R.style.RecipeView_CategoryShowStyle);
+            categoryNameView.setText(cookbook.getCategoryByID(id).getDescription());
+            categoryList.addView(categoryNameView);
+        }
+
+        //Body
         TextView descriptionView = (TextView)findViewById(R.id.recipe_body_description);
         TextView ingridientsView = (TextView)findViewById(R.id.recipe_body_ingredients);
 

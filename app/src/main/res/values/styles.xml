@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="RecipeView_CategoryShowStyle">
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>

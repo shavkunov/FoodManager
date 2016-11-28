@@ -41,7 +41,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         }
         productCount = new HashMap<>();
         for(Recipe r : recipes) {
-            if(r != null) {
+            if (r != null) {
 				for(Ingredient i : r.getIngredients()) {
 					if (productCount.get(i.getName()) == null) {
 						productCount.put(i.getName(), 0.0);
