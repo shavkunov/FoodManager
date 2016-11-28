@@ -137,19 +137,20 @@ public class DatabaseCreator {
             BufferedReader readerRecipeIngredients = new BufferedReader(new FileReader(recipeIngredients));
             String ingredientLine;
             while ((ingredientLine = readerRecipeIngredients.readLine()) != null) {
-                String[] ingredientWords = ingredientLine.split(" ");
-                String ingredientName = ingredientWords[0];
-
-                for (int j = 1; j < ingredientWords.length; j++) {
-                    char symbol = ingredientWords[j].charAt(0);
-                    if (!Character.isLetter((int) symbol)) {
+                //System.out.println(recipe.getName());
+                //System.out.println(ingredientLine);
+                String ingredientName = null;
+                String quantityWithKind = null;
+                for (int index = 0; index < ingredientLine.length(); index++) {
+                    //System.out.println(ingredientLine.charAt(index));
+                    String two = ingredientLine.substring(index, index + 3);
+                    if (two.equals(" — ") || two.equals(" - ")) {
+                        ingredientName = ingredientLine.substring(0, index);
+                        quantityWithKind = ingredientLine.substring(index + 3);
+                        //System.out.println(ingredientName + " $ " + quantityWithKind);
                         break;
-                    } else {
-                        ingredientName = ingredientName + " " + ingredientWords[j];
                     }
                 }
-
-                String quantityWithKind = ingredientWords[ingredientWords.length - 1];
 
                 String insertIngredient = "INSERT INTO Ingredient (ID, name) VALUES " +
                                           "(" + numberOfAllIngredients + ", '" + ingredientName + "')";
@@ -157,48 +158,48 @@ public class DatabaseCreator {
                 stmt.executeUpdate(insertIngredient);
 
                 int measure = -1;
+                if (quantityWithKind.endsWith("зуб")) {
+                    measure = 7;
+                }
 
-                if (quantityWithKind.endsWith("ч.л.") ||
-                    quantityWithKind.endsWith("ч.л") ||
-                    quantityWithKind.endsWith("чл") ||
-                    quantityWithKind.endsWith("чл")) {
+                if (quantityWithKind.endsWith("ст.л.")) {
+                    measure = 4;
+                }
+
+                if (quantityWithKind.endsWith("ч.л.")) {
                     measure = 3;
                 }
 
-                if (quantityWithKind.endsWith("шт") ||
-                    quantityWithKind.endsWith("шт.")) {
+                if (quantityWithKind.endsWith("шт")) {
                     measure = 2;
                 }
 
-                if (quantityWithKind.endsWith("ml") ||
-                    quantityWithKind.endsWith("ml.") ||
-                    quantityWithKind.endsWith("мл.") ||
-                    quantityWithKind.endsWith("мл")) {
+                if (quantityWithKind.endsWith("мл")) {
                     measure = 1;
                 }
 
-                if (quantityWithKind.endsWith("gr") ||
-                    quantityWithKind.endsWith("gr.") ||
-                    quantityWithKind.endsWith("г.") ||
-                    quantityWithKind.endsWith("г")) {
+                if (quantityWithKind.endsWith("г")) {
                     measure = 0;
                 }
 
-                // велосипеды...
-                int firstIndexOfLetter = -1;
-                for (int index = 0; index < quantityWithKind.length(); index++) {
-                    char symbol = quantityWithKind.charAt(index);
-                    if (!Character.isLetter((int) symbol)) {
-                        continue;
-                    } else {
-                        firstIndexOfLetter = index;
-                        break;
-                    }
+                if (quantityWithKind.endsWith("по вкусу")) {
+                    measure = 6;
                 }
 
-                String quantityString = quantityWithKind.substring(0, firstIndexOfLetter);
-                quantityString = quantityString.replace(',', '.');
-                double quantity = Double.parseDouble(quantityString);
+                if (quantityWithKind.endsWith("щепотка")) {
+                    measure = 5;
+                }
+
+                String quantityString = null;
+                if (measure != 6 && measure != 5) {
+                    quantityString = quantityWithKind.substring(0, quantityWithKind.indexOf(' '));
+                }
+
+                double quantity = -1;
+                if (quantityString != null) {
+                    quantityString = quantityString.replace(',', '.');
+                    quantity = Double.parseDouble(quantityString);
+                }
 
                 String insertIngredientToRecipe = "INSERT INTO Ingredient_to_recipe " +
                                                   "(ingredient_ID, recipe_ID, measure, quantity) VALUES " +
