@@ -49,6 +49,7 @@ public class MenuViewActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         cookbook.close();
     }
 

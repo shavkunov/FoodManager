@@ -19,4 +19,5 @@
     <string name="step_view_next_str">Вперед</string>
     <string name="step_view_count1_str">Шаг\ </string>
     <string name="step_view_count2_str">\ из\ </string>
+    <string name="cook_book_group_by_text">Сгруппировать по:</string>
 </resources>
