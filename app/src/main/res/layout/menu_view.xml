@@ -22,6 +22,7 @@
                 android:id="@+id/menu_view_generate_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="onGenerateBtnClick"
                 android:text="@string/menu_view_generate_str"/>
         </LinearLayout>
         <!-- Current menu view -->

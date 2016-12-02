@@ -22,19 +22,21 @@ public class MenuViewActivity extends AppCompatActivity {
             "Воскресенье"};
     private ArrayList<ArrayList<Recipe>> allDayMenu;
     private ArrayList<Recipe> recipes;
+    private CookBookStorage cookbook;
+    private MenuStorage menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_view);
-        CookBookStorage cookbook = new CookBookStorage(this);
-        MenuStorage menu = new MenuStorage(cookbook);
+        recipes = new ArrayList<>();
+        cookbook = new CookBookStorage(this);
+        menu = new MenuStorage(cookbook);
         allDayMenu = menu.getMenu();
         if (allDayMenu == null) {
             menu.setNewWeekMenu();
             allDayMenu = menu.getMenu();
         }
         //TODO: Сделать древовидный список.
-        recipes = new ArrayList<>();
         for (ArrayList<Recipe> rc : allDayMenu) {
             for (Recipe r : rc) {
                 if (r != null) {
@@ -42,11 +44,33 @@ public class MenuViewActivity extends AppCompatActivity {
                 }
             }
         }
+        showRecipes();
+    }
+
+    @Override
+    public void onDestroy(){
+        cookbook.close();
+    }
+
+    public void onGenerateBtnClick(View v) {
+        recipes = new ArrayList<>(); //Copy and paste but who cares?
+        menu.setNewWeekMenu();
+        allDayMenu = menu.getMenu();
+        for (ArrayList<Recipe> rc : allDayMenu) {
+            for (Recipe r : rc) {
+                if (r != null) {
+                    recipes.add(r);
+                }
+            }
+        }
+        showRecipes();
+    }
+
+    private void showRecipes() {
         ArrayList<String> recipeNames = new ArrayList<>();
         for (Recipe r : recipes) {
             recipeNames.add(r.getName());
         }
-        cookbook.close();
         ListView listView = (ListView) findViewById(R.id.menu_view_list_view);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, recipeNames);
