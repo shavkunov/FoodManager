@@ -35,7 +35,6 @@
                     android:gravity="center_horizontal"
                     android:textSize="17sp"
                     android:textStyle="bold"/>
-                <!-- TODO: Here must be list of categories recipe belongs to -->
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -124,6 +123,19 @@
                     android:id="@+id/recipe_body_steps_shortcut"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />-->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:id="@+id/recipe_body_images"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
