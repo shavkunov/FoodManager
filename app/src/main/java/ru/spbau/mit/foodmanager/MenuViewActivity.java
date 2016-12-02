@@ -36,13 +36,15 @@ public class MenuViewActivity extends AppCompatActivity {
         //TODO: Сделать древовидный список.
         recipes = new ArrayList<>();
         for (ArrayList<Recipe> rc : allDayMenu) {
-            recipes.addAll(rc);
+            for (Recipe r : rc) {
+                if (r != null) {
+                    recipes.add(r);
+                }
+            }
         }
         ArrayList<String> recipeNames = new ArrayList<>();
         for (Recipe r : recipes) {
-            if (r != null) {
-                recipeNames.add(r.getName());
-            }
+            recipeNames.add(r.getName());
         }
         cookbook.close();
         ListView listView = (ListView) findViewById(R.id.menu_view_list_view);
