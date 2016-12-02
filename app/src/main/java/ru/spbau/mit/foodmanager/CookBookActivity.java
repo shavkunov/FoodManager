@@ -37,7 +37,6 @@ public class CookBookActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("CookBookActivityLogs", ((Integer)i).toString());
                 Intent intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
                 intent.putExtra("Category", categories.get(i).getID());
                 startActivity(intent);

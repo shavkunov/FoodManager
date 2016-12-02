@@ -28,12 +28,20 @@ public class RecipeViewActivity extends AppCompatActivity {
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
-        for (Integer id : recipe.getCategoryID()) {
+        for (final Integer id : recipe.getCategoryID()) {
             Button categoryNameView = new Button(this);
             //TextView categoryNameView = new TextView(this);
             categoryNameView.setBackgroundColor(0x00_00_00_00);
-            categoryNameView.setTextAppearance(this, R.style.RecipeView_CategoryShowStyle);
+            categoryNameView.setTextAppearance(this, R.style.RecipeView_CategoryShowStyle); //I can't found another method
             categoryNameView.setText(cookbook.getCategoryByID(id).getDescription());
+            categoryNameView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(RecipeViewActivity.this, CookBookCategoryActivity.class);
+                    intent.putExtra("Category", id);
+                    startActivity(intent);
+                }
+            });
             categoryList.addView(categoryNameView);
         }
 
