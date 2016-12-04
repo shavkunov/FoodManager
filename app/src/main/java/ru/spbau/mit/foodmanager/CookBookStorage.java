@@ -75,7 +75,6 @@ public class CookBookStorage {
         ArrayList<Step> recipeSteps = new ArrayList<>();
         if (steps != null && steps.moveToFirst()) {
             do {
-
                 String description = steps.getString(steps.getColumnIndex("description"));
                 byte[] bytes = steps.getBlob(steps.getColumnIndex("source"));
                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -129,9 +128,6 @@ public class CookBookStorage {
     public Recipe getRecipe(int ID) {
         Recipe res = null;
 
-        /**
-         * Получение имени и описание рецепта из таблицы Recipe.
-         */
         Cursor mainData = db.query("Recipe", new String[] {"name", "description"},
                 "ID = ?", new String[] { String.valueOf(ID) }, null, null, null);
 
@@ -150,6 +146,7 @@ public class CookBookStorage {
 
     /**
      * Получение списка рецептов по фильтру, т.е. по префиксу.
+     * TODO : оптимизировать.
      */
     public ArrayList<Recipe> getRecipiesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
@@ -211,7 +208,7 @@ public class CookBookStorage {
         } else {
             return null;
         }
-        
+
         categoryCursor.close();
         return c;
     }
@@ -222,7 +219,6 @@ public class CookBookStorage {
         for (int order = CategoryName.entree.ordinal();
              order < CategoryName.dinner.ordinal(); order++) {
             categories.add(getCategoryByID(order));
-            //Log.d(LOG_TAG, "Order: " + order);
         }
 
         return categories;
