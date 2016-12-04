@@ -8,40 +8,29 @@ import java.util.ArrayList;
 public class Category implements Serializable {
     private String description;
     private int ID;
-    private ArrayList<Recipe> recipes;
+    private CookBookStorage cookbook;
     private Bitmap image;
 
-    public Category() {}
+    public Category(int ID, String description, CookBookStorage cookbook, Bitmap image) {
+        this.ID = ID;
+        this.description = description;
+        this.cookbook = cookbook;
+        this.image = image;
+    }
 
     public int getID() {
         return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public ArrayList<Recipe> getRecipes() {
-        return recipes;
+        return cookbook.getRecipesOfCategory(this.ID);
     }
 
-    public void setRecipes(ArrayList<Recipe> recipes) {
-        this.recipes = recipes;
-    }
-
-    public Bitmap getCategoryImage() {
+    public Bitmap getImage() {
         return image;
-    }
-
-    public void setCategoryImage(Bitmap image) {
-        this.image = image;
     }
 }
