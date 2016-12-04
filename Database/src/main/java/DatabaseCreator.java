@@ -146,17 +146,13 @@ public class DatabaseCreator {
             BufferedReader readerRecipeIngredients = new BufferedReader(new FileReader(recipeIngredients));
             String ingredientLine;
             while ((ingredientLine = readerRecipeIngredients.readLine()) != null) {
-                //System.out.println(recipe.getName());
-                //System.out.println(ingredientLine);
                 String ingredientName = null;
                 String quantityWithKind = null;
                 for (int index = 0; index < ingredientLine.length(); index++) {
-                    //System.out.println(ingredientLine.charAt(index));
                     String two = ingredientLine.substring(index, index + 3);
                     if (two.equals(" — ") || two.equals(" - ")) {
                         ingredientName = ingredientLine.substring(0, index);
                         quantityWithKind = ingredientLine.substring(index + 3);
-                        //System.out.println(ingredientName + " $ " + quantityWithKind);
                         break;
                     }
                 }
