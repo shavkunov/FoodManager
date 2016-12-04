@@ -1,5 +1,7 @@
 package ru.spbau.mit.foodmanager;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -37,25 +39,25 @@ public class Recipe implements Serializable {
     /**
      * Возвращает пошаговую инструкцию готовки блюда.
      */
-    public ArrayList<Step> getStepByStep() {
+    public ArrayList<Step> getSteps() {
         return steps;
+    }
+
+    public Bitmap getRecipeImage() {
+        return steps.get(steps.size() - 1).getImage();
     }
 
     public int getID() {
         return ID;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
     public void setStepByStep(ArrayList<Step> steps) {
         this.steps = steps;
     }
 
-    Recipe() {}
-
-    public void setName(String name) {
+    Recipe(int ID, String description, String name) {
+        this.ID = ID;
+        this.description = description;
         this.name = name;
     }
 
@@ -65,10 +67,6 @@ public class Recipe implements Serializable {
 
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public ArrayList<Integer> getCategoryID() {

@@ -65,7 +65,7 @@
       <file leaf-file-name="DatabaseCreator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="771">
+            <state relative-caret-position="2031">
               <caret line="147" column="83" selection-start-line="147" selection-start-column="83" selection-end-line="147" selection-end-column="83" />
               <folding>
                 <marker date="1480855633000" expanded="true" signature="526:548" ph="CREATE TABLE... Category" />
@@ -1071,12 +1071,12 @@
       <workItem from="1479881778444" duration="2037000" />
       <workItem from="1480265202434" duration="2261000" />
       <workItem from="1480291296752" duration="6319000" />
-      <workItem from="1480870793688" duration="12000" />
+      <workItem from="1480870793688" duration="241000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32020000" />
+    <option name="totallyTimeSpent" value="32249000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -1559,7 +1559,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="771">
+        <state relative-caret-position="2031">
           <caret line="147" column="83" selection-start-line="147" selection-start-column="83" selection-end-line="147" selection-end-column="83" />
           <folding>
             <marker date="1480855633000" expanded="true" signature="526:548" ph="CREATE TABLE... Category" />

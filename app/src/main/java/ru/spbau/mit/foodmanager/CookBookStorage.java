@@ -15,6 +15,7 @@ import java.util.Random;
  * Хранилище всех рецептов.
  */
 public class CookBookStorage {
+    private static CookBookStorage instance;
     private final String LOG_TAG = "CookBookStorageLogs";
     private SQLiteDatabase db;
     private Random r;
@@ -22,25 +23,25 @@ public class CookBookStorage {
     /**
      * Загрузка базы данных.
      */
-    public CookBookStorage(Context context) {
+    private CookBookStorage(Context context) {
         DataBaseHelper helper = new DataBaseHelper(context);
         db = helper.openDatabase();
         r = new Random();
     }
 
-    public void close() {
-        db.close();
-    }
+    public CookBookStorage getInstance(Context context) {
+        if (instance == null) {
+            instance = new CookBookStorage(context);
+        }
 
-    public SQLiteDatabase getDatabase() {
-        return db;
+        return instance;
     }
 
     /**
      * Получение рецепта по его уникальному идентификатору.
      */
     public Recipe getRecipe(int ID) {
-        Recipe res = new Recipe();
+        Recipe res = null;
 
         /**
          * Получение имени и описание рецепты из таблицы Recipe.
@@ -55,9 +56,7 @@ public class CookBookStorage {
                 //Log.d(LOG_TAG, "recipeName = " + recipeName);
                 //Log.d(LOG_TAG, "recipeDescription = " + recipeDescription);
 
-                res.setName(recipeName);
-                res.setDescription(recipeDescription);
-                res.setID(ID);
+                res = new Recipe(ID, recipeDescription, recipeName);
             } else {
 
                 //Log.d(LOG_TAG, "mainData.moveToFirst() = null");
