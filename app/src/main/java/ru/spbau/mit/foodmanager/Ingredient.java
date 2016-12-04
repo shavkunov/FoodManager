@@ -18,29 +18,29 @@ public class Ingredient implements Serializable {
     }
 
     public String getTypeName() {
-        switch (type.ordinal()) {
-            case 0:
+        switch (type) {
+            case gr:
                 return "гр.";
 
-            case 1:
+            case ml:
                 return "мл.";
 
-            case 2:
+            case apiece:
                 return "шт.";
 
-            case 3:
+            case teaspoon:
                 return "ч.л.";
 
-            case 4:
+            case tablespoon:
                 return "ст.л.";
 
-            case 5:
+            case pinch:
                 return "щепотка";
 
-            case 6:
+            case byTaste:
                 return "по вкусу";
 
-            case 7:
+            case cloves:
                 return "зуб.";
         }
         return null;

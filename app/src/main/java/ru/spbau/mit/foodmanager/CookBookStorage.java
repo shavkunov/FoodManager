@@ -114,7 +114,6 @@ public class CookBookStorage {
         ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
         if (ingredients != null) {
             if (ingredients.moveToFirst()) {
-
                 do {
                     String name = ingredients.getString(ingredients.getColumnIndex("name"));
                     Measure measure = Measure.values()[
