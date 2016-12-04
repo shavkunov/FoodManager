@@ -22,7 +22,7 @@ public class StepViewActivity extends AppCompatActivity {
         setContentView(R.layout.step_view);
         Intent i = getIntent();
         recipe = new CookBookStorage(this).getRecipe(i.getIntExtra("Recipe", -1));
-        steps = recipe.getStepByStep();
+        steps = recipe.getSteps();
         TextView recipeName = (TextView)findViewById(R.id.step_view_recipe_name);
         recipeName.setText(recipe.getName());
         //Log.d("STEP_BY_STEPLOGGER", ((Integer)steps.size()).toString());

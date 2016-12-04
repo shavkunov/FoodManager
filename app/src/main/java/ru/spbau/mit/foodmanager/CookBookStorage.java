@@ -38,57 +38,23 @@ public class CookBookStorage {
     }
 
     /**
-     * Получение рецепта по его уникальному идентификатору.
+     * Получение категорий, к которым принадлежит рецепт.
+     * @param ID ID рецепта.
      */
-    public Recipe getRecipe(int ID) {
-        Recipe res = null;
-
-        /**
-         * Получение имени и описание рецепты из таблицы Recipe.
-         */
-        Cursor mainData = db.query("Recipe", new String[] {"name", "description"},
-                "ID = ?", new String[] { String.valueOf(ID) }, null, null, null);
-
-        if (mainData != null) {
-            if (mainData.moveToFirst()) {
-                String recipeName = mainData.getString(mainData.getColumnIndex("name"));
-                String recipeDescription = mainData.getString(mainData.getColumnIndex("description"));
-                //Log.d(LOG_TAG, "recipeName = " + recipeName);
-                //Log.d(LOG_TAG, "recipeDescription = " + recipeDescription);
-
-                res = new Recipe(ID, recipeDescription, recipeName);
-            } else {
-
-                //Log.d(LOG_TAG, "mainData.moveToFirst() = null");
-                return null;
-            }
-        } else {
-
-            //Log.d(LOG_TAG, "mainData = null");
-            return null;
-        }
-
-        mainData.close();
-
-        /**
-         * Получение категорий, к которым принадлежит рецепт.
-         */
+    public ArrayList<Integer> getRecipeCategories(int ID) {
         Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"},
                                      "recipe_ID = ?", new String[] { String.valueOf(ID) },
-                                      null, null, null);
+                                     null, null, null);
 
+        ArrayList<Integer> ids = new ArrayList<>();
         if (categories != null) {
             if (categories.moveToFirst()) {
-                ArrayList<Integer> ids = new ArrayList<>();
-
                 do {
                     int categoryID = categories.getInt(categories.getColumnIndex("category_ID"));
                     ids.add(categoryID);
-                    //Log.d(LOG_TAG, "categoryID = " + categoryID);
 
                 } while (categories.moveToNext());
 
-                res.setCategoryID(ids);
             } else {
                 return null;
             }
@@ -97,13 +63,17 @@ public class CookBookStorage {
         }
 
         categories.close();
+        return ids;
+    }
 
-        /**
-         * Получение инструкции для готовки из двух таблиц -- Step и Image.
-         */
+    /**
+     * Получение инструкции для готовки из двух таблиц -- Step и Image.
+     * @param ID ID рецепта.
+     */
+    public ArrayList<Step> getRecipeSteps(int ID) {
         String stepsQuery = "SELECT * FROM Step INNER JOIN Image ON " +
-                            "Step.ID = Image.entity_ID " +
-                            "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
+                "Step.ID = Image.entity_ID " +
+                "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
         Cursor steps = db.rawQuery(stepsQuery, new String[] {String.valueOf(ID)});
 
         ArrayList<Step> recipeSteps = new ArrayList<>();
@@ -116,7 +86,6 @@ public class CookBookStorage {
                     Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     Step newStep = new Step(description, bm);
                     recipeSteps.add(newStep);
-                    //Log.d(LOG_TAG, "step description = " + description);
 
                 } while (steps.moveToNext());
 
@@ -128,11 +97,14 @@ public class CookBookStorage {
         }
 
         steps.close();
-        res.setStepByStep(recipeSteps);
+        return recipeSteps;
+    }
 
-        /**
-         * Получение ингредиентов из двух таблиц: Ingredient_to_recipe и Ingredient
-         */
+    /**
+     * Получение ингредиентов из двух таблиц: Ingredient_to_recipe и Ingredient
+     * @param ID ID рецепта.
+     */
+    public ArrayList<Ingredient> getRecipeIngredients(int ID) {
         String ingredientsQuery = "SELECT * FROM Ingredient_to_recipe itr " +
                                   "INNER JOIN Ingredient ing ON " +
                                   "itr.ingredient_ID = ing.ID " +
@@ -149,10 +121,6 @@ public class CookBookStorage {
                             ingredients.getInt(ingredients.getColumnIndex("measure"))];
                     double quantity = ingredients.getDouble(ingredients.getColumnIndex("quantity"));
 
-                    //Log.d(LOG_TAG, "Ingredient name = " + name);
-                    //Log.d(LOG_TAG, "Ingredient measure = " + measure.name());
-                    //Log.d(LOG_TAG, "Ingredient quantity = " + quantity);
-
                     Ingredient ingredient = new Ingredient(name, measure, quantity);
                     recipeIngredients.add(ingredient);
                 } while (ingredients.moveToNext());
@@ -164,8 +132,36 @@ public class CookBookStorage {
             return null;
         }
 
-        res.setIngredients(recipeIngredients);
+        ingredients.close();
+        return recipeIngredients;
+    }
 
+    /**
+     * Получение рецепта по его уникальному идентификатору.
+     */
+    public Recipe getRecipe(int ID) {
+        Recipe res = null;
+
+        /**
+         * Получение имени и описание рецепта из таблицы Recipe.
+         */
+        Cursor mainData = db.query("Recipe", new String[] {"name", "description"},
+                "ID = ?", new String[] { String.valueOf(ID) }, null, null, null);
+
+        if (mainData != null) {
+            if (mainData.moveToFirst()) {
+                String recipeName = mainData.getString(mainData.getColumnIndex("name"));
+                String recipeDescription = mainData.getString(mainData.getColumnIndex("description"));
+
+                res = new Recipe(ID, recipeDescription, recipeName);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        mainData.close();
         return res;
     }
 
