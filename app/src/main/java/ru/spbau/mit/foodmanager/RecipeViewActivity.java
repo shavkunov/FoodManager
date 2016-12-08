@@ -19,7 +19,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_view);
         Intent intent = getIntent();
-        recipe = new CookBookStorage(this).getRecipe(intent.getIntExtra("Recipe", -1));
+        recipe = CookBookStorage.getInstance(this).getRecipe(intent.getIntExtra("Recipe", -1));
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         TextView descriptionView = (TextView)findViewById(R.id.recipe_body_description);
@@ -34,7 +34,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     i.getTypeName() + "\n");
         }
         ingridientsView.setText(ingridientList);
-        ArrayList<Step> steps = recipe.getStepByStep();
+        ArrayList<Step> steps = recipe.getSteps();
         photoView.setImageBitmap(steps.get(steps.size()-1).getImage());
     }
 

@@ -28,7 +28,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list);
         //Init List
-        MenuStorage menu = new MenuStorage(new CookBookStorage(this));
+        MenuStorage menu = new MenuStorage(CookBookStorage.getInstance(this));
         ArrayList<ArrayList<Recipe>> menuRecipes = menu.getMenu();
         if (menuRecipes == null) {
             menuRecipes = new ArrayList<>();

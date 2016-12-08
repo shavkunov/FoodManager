@@ -168,8 +168,8 @@ public class CookBookStorage {
     /**
      * Выбор случайного блюда категории.
      */
-    public Recipe chooseRandomDishFromCategory(CategoryName category) {
-        ArrayList<Recipe> dishes = getRecipesOfCategory(category.ordinal());
+    public Recipe chooseRandomDishFromCategory(int categoryID) {
+        ArrayList<Recipe> dishes = getRecipesOfCategory(categoryID);
 
         return dishes.get(Math.abs(r.nextInt()) % dishes.size());
     }
@@ -212,25 +212,28 @@ public class CookBookStorage {
         return c;
     }
 
-    public LinkedList<Category> getRecipiesTypeOfDish() {
+    private LinkedList<Category> getCategoryFromQuery(String categoryQuery) {
         LinkedList<Category> categories = new LinkedList<>();
 
-        for (int order = CategoryName.entree.ordinal();
-             order < CategoryName.dinner.ordinal(); order++) {
-            categories.add(getCategoryByID(order));
+        Cursor cursor = db.rawQuery(categoryQuery, null);
+
+        while (cursor.moveToNext()) {
+            int categoryID = cursor.getInt(cursor.getColumnIndex("ID"));
+            categories.add(getCategoryByID(categoryID));
         }
 
         return categories;
     }
 
+    public LinkedList<Category> getRecipiesTypeOfDish() {
+        String categoryQuery = "SELECT ID FROM Category WHERE is_category_dish = 1";
+
+        return getCategoryFromQuery(categoryQuery);
+    }
+
     public LinkedList<Category> getRecipiesNationalKitchen() {
-        LinkedList<Category> categories = new LinkedList<>();
+        String categoryQuery = "SELECT ID FROM Category WHERE is_national_kitchen = 1";
 
-        for (int order = CategoryName.European.ordinal();
-             order < CategoryName.values().length; order++) {
-            categories.add(getCategoryByID(order));
-        }
-
-        return categories;
+        return getCategoryFromQuery(categoryQuery);
     }
 }
