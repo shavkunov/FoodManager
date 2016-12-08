@@ -17,7 +17,10 @@ public class DatabaseCreator {
 
         String queryCreationOfCategory = "CREATE TABLE Category (" +
                                          "ID INTEGER PRIMARY KEY NOT NULL, " +
-                                         "name TEXT NOT NULL)";
+                                         "name TEXT NOT NULL, " +
+                                         "is_national_kitchen INTEGER, " + // группировка по национальной кухне
+                                         "is_category_dish INTEGER, " + // по категории блюда: салаты, закуски и тд.
+                                         "is_meal INTEGER)"; // обед, завтрак, ужин
 
         stmt.executeUpdate(queryCreationOfCategory);
 
@@ -25,8 +28,24 @@ public class DatabaseCreator {
         BufferedReader readerCategories = new BufferedReader(new FileReader(categories));
 
         String category;
+
         for (int i = 0; (category = readerCategories.readLine()) != null; i++) {
-            String insertCategory = "INSERT INTO Category (ID, name) VALUES (" + i + ", '" + category + "')";
+            int is_national_kitchen = 0;
+            int is_category_dish = 0;
+            int is_meal = 0;
+
+            // set category type
+            if (category.contains("кухня")) {
+                is_national_kitchen = 1;
+            } else if (category.equals("Обеды") || category.equals("Ужины") || category.equals("Завтраки")) {
+                is_meal = 1;
+            } else {
+                is_category_dish = 1;
+            }
+
+            String insertCategory = "INSERT INTO Category (ID, name, is_national_kitchen, is_category_dish, is_meal) " +
+                                    "VALUES (" + i + ", '" + category + "', " +
+                                    is_national_kitchen + ", " + is_category_dish + ", " + is_meal + ")";
             stmt.executeUpdate(insertCategory);
         }
 

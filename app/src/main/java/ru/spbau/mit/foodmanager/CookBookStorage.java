@@ -29,7 +29,7 @@ public class CookBookStorage {
         r = new Random();
     }
 
-    public CookBookStorage getInstance(Context context) {
+    public static CookBookStorage getInstance(Context context) {
         if (instance == null) {
             instance = new CookBookStorage(context);
         }
@@ -146,7 +146,6 @@ public class CookBookStorage {
 
     /**
      * Получение списка рецептов по фильтру, т.е. по префиксу.
-     * TODO : оптимизировать.
      */
     public ArrayList<Recipe> getRecipiesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
