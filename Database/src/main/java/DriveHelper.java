@@ -14,11 +14,13 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DriveHelper {
@@ -40,6 +42,12 @@ public class DriveHelper {
     /** Global instance of the HTTP transport. */
     static HttpTransport HTTP_TRANSPORT;
 
+    static Drive service;
+
+    static String folderID;
+
+    static String FOLDER_NAME = "FoodManagerContent";
+
     /** Global instance of the scopes required by this quickstart.
      *
      * If modifying these scopes, delete your previously saved credentials
@@ -52,10 +60,13 @@ public class DriveHelper {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+
+            service = getDriveService();
         } catch (Throwable t) {
             t.printStackTrace();
             System.exit(1);
         }
+
     }
 
     /**
@@ -107,15 +118,43 @@ public class DriveHelper {
                         .build();
     }
 
+    public static void createFolder() throws IOException {
+        File fileMetadata = new File();
+        fileMetadata.setName(FOLDER_NAME);
+        fileMetadata.setMimeType("application/vnd.google-apps.folder");
+
+        File file = service.files().create(fileMetadata).setFields("id").execute();
+        folderID = file.getId();
+    }
+
+    public static void deleteFile(String fileID) {
+        try {
+            service.files().delete(fileID).execute();
+        } catch (IOException e) {
+            System.out.println("An error occurred: " + e);
+        }
+    }
+
+    public static void setUp() throws Exception {
+        FileList result = service.files().list()
+                .setQ("mimeType = 'application/vnd.google-apps.folder' and title = '" + FOLDER_NAME + "'")
+                .execute();
+        if (result.getFiles().size() != 0) {
+            deleteFile(result.getFiles().get(0).getId());
+        }
+
+        createFolder();
+    }
+
     public static String uploadFile(String filename, String path) throws IOException {
         // Build a new authorized API client service.
-        Drive service = getDriveService();
 
         File uploadFile = new File();
         uploadFile.setName(filename);
+        uploadFile.setParents(Collections.singletonList(folderID));
         java.io.File filePath = new java.io.File(path);
         FileContent mediaContent = new FileContent("image/jpeg", filePath);
-        File file = service.files().create(uploadFile, mediaContent).setFields("id").execute();
+        File file = service.files().create(uploadFile, mediaContent).setFields("id, parents").execute();
 
         return file.getId();
     }

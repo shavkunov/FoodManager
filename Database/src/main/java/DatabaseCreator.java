@@ -5,7 +5,7 @@ import java.sql.*;
 
 //везде нумерация с нуля.
 public class DatabaseCreator {
-    public static void createBase() throws SQLException, IOException {
+    public static void createBase() throws Exception {
         final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
         final String user = "foodmanagertest";
         final String password = "Wc22_0f_0TA2";
@@ -127,7 +127,7 @@ public class DatabaseCreator {
         int numberOfAllStep = 0;
         int numberOfAllIngredients = 0;
         File recipesDir = new File("source/recipes");
-        //DriveHelper.setUp();
+        DriveHelper.setUp();
         for (int recipeID = 0; recipeID < recipesDir.listFiles().length; recipeID++) {
             File recipe = recipesDir.listFiles()[recipeID];
 
