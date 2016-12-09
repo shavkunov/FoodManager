@@ -6,14 +6,35 @@ import java.sql.*;
 //везде нумерация с нуля.
 public class DatabaseCreator {
     public static void createBase() throws SQLException, IOException {
-        File db = new File("content.db");
-        if (db.exists()) {
-            db.delete();
-        }
+        final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
+        final String user = "foodmanagertest";
+        final String password = "Wc22_0f_0TA2";
 
-        Connection c = DriverManager.getConnection("jdbc:sqlite:content.db");
+        Connection c = DriverManager.getConnection(url, user, password);
         c.setAutoCommit(false);
         Statement stmt = c.createStatement();
+
+        // only for MySQL!
+        String queryDisableForeignChecks = "SET FOREIGN_KEY_CHECKS = 0";
+        String queryDeleteCategory = "DROP TABLE IF EXISTS Category";
+        String queryDeleteRecipe = "DROP TABLE IF EXISTS Recipe";
+        String queryDeleteRecipeToWeekMenu = "DROP TABLE IF EXISTS Recipe_to_week_menu";
+        String queryDeleteStep = "DROP TABLE IF EXISTS Step";
+        String queryDeleteRecipeToCategory = "DROP TABLE IF EXISTS Recipe_to_category";
+        String queryDeleteImage = "DROP TABLE IF EXISTS Image";
+        String queryDeleteIngredient = "DROP TABLE IF EXISTS Ingredient";
+        String queryDeleteIngredientToRecipe = "DROP TABLE IF EXISTS Ingredient_to_recipe";
+        String queryEnableForeignChecks = "SET FOREIGN_KEY_CHECKS = 1";
+        stmt.executeUpdate(queryDisableForeignChecks);
+        stmt.executeUpdate(queryDeleteCategory);
+        stmt.executeUpdate(queryDeleteRecipe);
+        stmt.executeUpdate(queryDeleteRecipeToCategory);
+        stmt.executeUpdate(queryDeleteRecipeToWeekMenu);
+        stmt.executeUpdate(queryDeleteStep);
+        stmt.executeUpdate(queryDeleteImage);
+        stmt.executeUpdate(queryDeleteIngredientToRecipe);
+        stmt.executeUpdate(queryDeleteIngredient);
+        stmt.executeQuery(queryEnableForeignChecks);
 
         String queryCreationOfCategory = "CREATE TABLE Category (" +
                                          "ID INTEGER PRIMARY KEY NOT NULL, " +
@@ -83,7 +104,7 @@ public class DatabaseCreator {
                                     "ID INTEGER PRIMARY KEY NOT NULL, " +
                                     "entity_type INTEGER NOT NULL, " +
                                     "entity_ID INTEGER NOT NULL, " +
-                                    "source BLOB NOT NULL)";
+                                    "drive_ID TEXT NOT NULL)";
 
         stmt.executeUpdate(queryCreationImage);
 
@@ -106,6 +127,7 @@ public class DatabaseCreator {
         int numberOfAllStep = 0;
         int numberOfAllIngredients = 0;
         File recipesDir = new File("source/recipes");
+        //DriveHelper.setUp();
         for (int recipeID = 0; recipeID < recipesDir.listFiles().length; recipeID++) {
             File recipe = recipesDir.listFiles()[recipeID];
 
@@ -132,28 +154,33 @@ public class DatabaseCreator {
 
                 stmt.executeUpdate(insertStep);
 
-                File stepImage = new File("source/recipes/" + recipe.getName() + "/stepbystep/" + i + ".jpg");
-                FileInputStream fis = new FileInputStream(stepImage);
+                String stepImagePath = "source/recipes/" + recipe.getName() + "/stepbystep/" + i + ".jpg";
+                String filename = recipe.getName() + "StepNumber" + i + ".jpg";
+
+                String driveID = DriveHelper.uploadFile(filename, stepImagePath);
+                //System.out.println(driveID);
+
                 String insertImage = "INSERT INTO Image VALUES (?, ?, ?, ?)";
                 PreparedStatement preparedStatament = c.prepareStatement(insertImage);
-
                 preparedStatament.setInt(1, numberOfAllStep); // картинок столько же сколько и шагов
                 preparedStatament.setInt(2, 0);
                 preparedStatament.setInt(3, numberOfAllStep); // ID шага
-                preparedStatament.setBinaryStream(4, fis, (int) stepImage.length());
+                preparedStatament.setString(4, driveID);
                 preparedStatament.execute();
 
-                fis.close();
                 numberOfAllStep++;
             }
+
 
             File recipeCategories = new File("source/recipes/" + recipe.getName() + "/category");
             BufferedReader readerRecipeCategories = new BufferedReader(new FileReader(recipeCategories));
             String recipeCategory;
             while ((recipeCategory = readerRecipeCategories.readLine()) != null) {
-                String queryFindCategoryID = "SELECT * FROM Category WHERE name = '" + recipeCategory + "'";
+                String queryFindCategoryID = "SELECT ID FROM Category WHERE name = '" + recipeCategory + "'";
                 ResultSet entry = stmt.executeQuery(queryFindCategoryID);
-                int categoryID = entry.getInt("ID");
+                int categoryID = -1;
+                if (entry.next())
+                    categoryID = entry.getInt("ID");
                 entry.close();
 
                 String insertRecipeToCategory = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) VALUES " +
