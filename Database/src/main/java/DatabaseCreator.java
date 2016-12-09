@@ -171,7 +171,6 @@ public class DatabaseCreator {
                 numberOfAllStep++;
             }
 
-
             File recipeCategories = new File("source/recipes/" + recipe.getName() + "/category");
             BufferedReader readerRecipeCategories = new BufferedReader(new FileReader(recipeCategories));
             String recipeCategory;

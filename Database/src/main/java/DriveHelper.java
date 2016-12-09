@@ -42,10 +42,13 @@ public class DriveHelper {
     /** Global instance of the HTTP transport. */
     static HttpTransport HTTP_TRANSPORT;
 
+    /** Инстанс для работы с Google Drive. */
     static Drive service;
 
+    /** ID папки, в которую загружаются файлы */
     static String folderID;
 
+    /** Название папки, куда загружаются файлы */
     static String FOLDER_NAME = "FoodManagerContent";
 
     /** Global instance of the scopes required by this quickstart.
@@ -95,6 +98,9 @@ public class DriveHelper {
         return credential;
     }
 
+    /**
+     * Чтобы не было проблем с загрузкой файлов, выставлены большие таймауты.
+     */
     private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
         return new HttpRequestInitializer() {
             @Override
@@ -118,6 +124,7 @@ public class DriveHelper {
                         .build();
     }
 
+    /** Создание папки в Google Drive */
     public static void createFolder() throws IOException {
         File fileMetadata = new File();
         fileMetadata.setName(FOLDER_NAME);
@@ -127,6 +134,7 @@ public class DriveHelper {
         folderID = file.getId();
     }
 
+    /** Удаление файла по его ID(в том числе и папки) */
     public static void deleteFile(String fileID) {
         try {
             service.files().delete(fileID).execute();
@@ -135,9 +143,14 @@ public class DriveHelper {
         }
     }
 
+    /** инициализация перед загрузкой */
     public static void setUp() throws Exception {
+        String pageToken = null;
         FileList result = service.files().list()
-                .setQ("mimeType = 'application/vnd.google-apps.folder' and title = '" + FOLDER_NAME + "'")
+                .setQ("mimeType = 'application/vnd.google-apps.folder' and name = '" + FOLDER_NAME + "'")
+                .setSpaces("drive")
+                .setFields("nextPageToken, files(id, name)")
+                .setPageToken(pageToken)
                 .execute();
         if (result.getFiles().size() != 0) {
             deleteFile(result.getFiles().get(0).getId());
@@ -146,6 +159,12 @@ public class DriveHelper {
         createFolder();
     }
 
+    /**
+     * Загрузка файла на Google Drive
+     * @param filename имя файла
+     * @param path путь к файлу
+     * @return ID файла
+     */
     public static String uploadFile(String filename, String path) throws IOException {
         // Build a new authorized API client service.
 
