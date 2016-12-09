@@ -1,6 +1,7 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,15 +27,16 @@ public class RecipeViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_view);
         Intent intent = getIntent();
-        CookBookStorage cookbook = new CookBookStorage(this);
+        CookBookStorage cookbook = CookBookStorage.getInstance(this);
         recipe = cookbook.getRecipe(intent.getIntExtra("Recipe", -1));
-        ArrayList<Step> steps = recipe.getStepByStep();
+        ArrayList<Step> steps = cookbook.getRecipeSteps(recipe.getID());
+        ArrayList<Integer> categories = cookbook.getRecipeCategories(recipe.getID());
         //Header
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
         photoView.setImageBitmap(steps.get(steps.size()-1).getImage());
-        for (final Integer id : recipe.getCategoryID()) {
+        for (final Integer id : categories) {
             Button categoryNameView = new Button(this);
             //TextView categoryNameView = new TextView(this);
             categoryNameView.setBackgroundColor(0x00_00_00_00);
@@ -68,7 +70,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         nameView.setText(recipe.getName());
         descriptionView.setText(recipe.getDescription());
         StringBuilder ingridientList = new StringBuilder();
-        for (Ingredient i : recipe.getIngredients()) {
+        for (Ingredient i : cookbook.getRecipeIngredients(recipe.getID())) {
             if (i.getQuantity() >= 0.0) {
                 ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
                         INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() + " " +
@@ -79,9 +81,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                         i.getTypeName() + "\n");
             }
         }
-        ingridientsView.setText(ingridientList);
-
-    }
+   }
 
     public void onCookClick(View v) {
         Intent intent = new Intent(this, StepViewActivity.class);

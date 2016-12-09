@@ -22,7 +22,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cook_book_category);
         Intent task = getIntent();
-        category = new CookBookStorage(this).getCategoryByID(task.getIntExtra("Category", -1));
+        category = CookBookStorage.getInstance(this).getCategoryByID(task.getIntExtra("Category", -1));
         if (category != null) {
             recipes = category.getRecipes();
         }

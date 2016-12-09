@@ -15,9 +15,12 @@ public class DatabaseCreator {
         c.setAutoCommit(false);
         Statement stmt = c.createStatement();
 
-        String queryCreationOfCategory = "CREATE TABLE Category " +
-                                         "(ID INTEGER PRIMARY KEY NOT NULL, " +
-                                         "name TEXT NOT NULL)";
+        String queryCreationOfCategory = "CREATE TABLE Category (" +
+                                         "ID INTEGER PRIMARY KEY NOT NULL, " +
+                                         "name TEXT NOT NULL, " +
+                                         "is_national_kitchen INTEGER, " + // группировка по национальной кухне
+                                         "is_category_dish INTEGER, " + // по категории блюда: салаты, закуски и тд.
+                                         "is_meal INTEGER)"; // обед, завтрак, ужин
 
         stmt.executeUpdate(queryCreationOfCategory);
 
@@ -25,55 +28,80 @@ public class DatabaseCreator {
         BufferedReader readerCategories = new BufferedReader(new FileReader(categories));
 
         String category;
+
         for (int i = 0; (category = readerCategories.readLine()) != null; i++) {
-            String insertCategory = "INSERT INTO Category (ID, name) VALUES (" + i + ", '" + category + "')";
+            int is_national_kitchen = 0;
+            int is_category_dish = 0;
+            int is_meal = 0;
+
+            // set category type
+            if (category.contains("кухня")) {
+                is_national_kitchen = 1;
+            } else if (category.equals("Обеды") || category.equals("Ужины") || category.equals("Завтраки")) {
+                is_meal = 1;
+            } else {
+                is_category_dish = 1;
+            }
+
+            String insertCategory = "INSERT INTO Category (ID, name, is_national_kitchen, is_category_dish, is_meal) " +
+                                    "VALUES (" + i + ", '" + category + "', " +
+                                    is_national_kitchen + ", " + is_category_dish + ", " + is_meal + ")";
             stmt.executeUpdate(insertCategory);
         }
 
-        String queryCreationOfRecipeToWeekMenu = "CREATE TABLE Recipe_to_week_menu " +
-                                                 "(recipe_ID INTEGER PRIMARY KEY NOT NULL, date TEXT NOT NULL)";
-
-        stmt.executeUpdate(queryCreationOfRecipeToWeekMenu);
-
-        String queryCreationRecipe = "CREATE TABLE Recipe (ID INTEGER PRIMARY KEY NOT NULL, " +
+        String queryCreationRecipe = "CREATE TABLE Recipe (" +
+                                     "ID INTEGER PRIMARY KEY NOT NULL, " +
                                      "name TEXT NOT NULL, " +
                                      "description TEXT NOT NULL)";
 
         stmt.executeUpdate(queryCreationRecipe);
 
-        String queryCreationStep = "CREATE TABLE Step (ID INTEGER PRIMARY KEY NOT NULL, " +
+        String queryCreationOfRecipeToWeekMenu = "CREATE TABLE Recipe_to_week_menu (" +
+                                                 "recipe_ID INTEGER PRIMARY KEY NOT NULL," +
+                                                 "date TEXT NOT NULL, " +
+                                                 "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID))";
+
+        stmt.executeUpdate(queryCreationOfRecipeToWeekMenu);
+
+        String queryCreationStep = "CREATE TABLE Step (" +
+                                   "ID INTEGER PRIMARY KEY NOT NULL, " +
                                    "recipe_ID INTEGER NOT NULL, " +
-                                   "description TEXT NOT NULL)";
+                                   "description TEXT NOT NULL, " +
+                                   "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID))";
 
         stmt.executeUpdate(queryCreationStep);
 
         String queryCreationRecipeToCategory = "CREATE TABLE Recipe_to_category (" +
                                                "recipe_ID INTEGER NOT NULL, " +
-                                               "category_ID INTEGER NOT NULL)";
+                                               "category_ID INTEGER NOT NULL, " +
+                                               "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID), " +
+                                               "FOREIGN KEY (category_ID) REFERENCES Category(ID))";
 
         stmt.executeUpdate(queryCreationRecipeToCategory);
 
         String queryCreationImage = "CREATE TABLE Image (" +
-                "ID INTEGER PRIMARY KEY NOT NULL, " +
-                "entity_type INTEGER NOT NULL, " +
-                "entity_ID INTEGER NOT NULL, " +
-                "source BLOB NOT NULL)";
+                                    "ID INTEGER PRIMARY KEY NOT NULL, " +
+                                    "entity_type INTEGER NOT NULL, " +
+                                    "entity_ID INTEGER NOT NULL, " +
+                                    "source BLOB NOT NULL)";
 
         stmt.executeUpdate(queryCreationImage);
-
-        String queryCreationOfIngredientToRecipe = "CREATE TABLE Ingredient_to_recipe (" +
-                                                   "Ingredient_ID INTEGER PRIMARY KEY NOT NULL, " +
-                                                   "recipe_ID INTEGER NOT NULL, " +
-                                                   "measure INTEGER NOT NULL, " +
-                                                   "quantity REAL NOT NULL)";
-
-        stmt.executeUpdate(queryCreationOfIngredientToRecipe);
 
         String queryCreationOfIngredient = "CREATE TABLE Ingredient " +
                                            "(ID INTEGER PRIMARY KEY NOT NULL, " +
                                            "name TEXT NOT NULL)";
 
         stmt.executeUpdate(queryCreationOfIngredient);
+
+        String queryCreationOfIngredientToRecipe = "CREATE TABLE Ingredient_to_recipe (" +
+                                                   "Ingredient_ID INTEGER NOT NULL, " +
+                                                   "recipe_ID INTEGER NOT NULL, " +
+                                                   "measure INTEGER NOT NULL, " +
+                                                   "quantity REAL NOT NULL, " +
+                                                   "FOREIGN KEY (Ingredient_ID) REFERENCES Ingredient(ID), " +
+                                                   "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID))";
+
+        stmt.executeUpdate(queryCreationOfIngredientToRecipe);
 
         int numberOfAllStep = 0;
         int numberOfAllIngredients = 0;
@@ -137,17 +165,13 @@ public class DatabaseCreator {
             BufferedReader readerRecipeIngredients = new BufferedReader(new FileReader(recipeIngredients));
             String ingredientLine;
             while ((ingredientLine = readerRecipeIngredients.readLine()) != null) {
-                //System.out.println(recipe.getName());
-                //System.out.println(ingredientLine);
                 String ingredientName = null;
                 String quantityWithKind = null;
                 for (int index = 0; index < ingredientLine.length(); index++) {
-                    //System.out.println(ingredientLine.charAt(index));
                     String two = ingredientLine.substring(index, index + 3);
                     if (two.equals(" — ") || two.equals(" - ")) {
                         ingredientName = ingredientLine.substring(0, index);
                         quantityWithKind = ingredientLine.substring(index + 3);
-                        //System.out.println(ingredientName + " $ " + quantityWithKind);
                         break;
                     }
                 }
@@ -157,41 +181,41 @@ public class DatabaseCreator {
 
                 stmt.executeUpdate(insertIngredient);
 
-                int measure = -1;
+                Measure measure = null;
                 if (quantityWithKind.endsWith("зуб")) {
-                    measure = 7;
+                    measure = Measure.cloves;
                 }
 
                 if (quantityWithKind.endsWith("ст.л.")) {
-                    measure = 4;
+                    measure = Measure.tablespoon;
                 }
 
                 if (quantityWithKind.endsWith("ч.л.")) {
-                    measure = 3;
+                    measure = Measure.teaspoon;
                 }
 
                 if (quantityWithKind.endsWith("шт")) {
-                    measure = 2;
+                    measure = Measure.apiece;
                 }
 
                 if (quantityWithKind.endsWith("мл")) {
-                    measure = 1;
+                    measure = Measure.ml;
                 }
 
                 if (quantityWithKind.endsWith("г")) {
-                    measure = 0;
+                    measure = Measure.gr;
                 }
 
                 if (quantityWithKind.endsWith("по вкусу")) {
-                    measure = 6;
+                    measure = Measure.byTaste;
                 }
 
                 if (quantityWithKind.endsWith("щепотка")) {
-                    measure = 5;
+                    measure = Measure.pinch;
                 }
 
                 String quantityString = null;
-                if (measure != 6 && measure != 5) {
+                if (measure != Measure.pinch && measure != Measure.byTaste) {
                     quantityString = quantityWithKind.substring(0, quantityWithKind.indexOf(' '));
                 }
 
@@ -201,10 +225,10 @@ public class DatabaseCreator {
                     quantity = Double.parseDouble(quantityString);
                 }
 
-                String insertIngredientToRecipe = "INSERT INTO Ingredient_to_recipe " +
-                                                  "(ingredient_ID, recipe_ID, measure, quantity) VALUES " +
-                                                  "(" + numberOfAllIngredients + ", " + recipeID + ", " + measure +
-                                                  ", " + quantity + ")";
+                String insertIngredientToRecipe = "INSERT INTO Ingredient_to_recipe (" +
+                                                  "ingredient_ID, recipe_ID, measure, quantity) VALUES " +
+                                                  "(" + numberOfAllIngredients + ", " + recipeID + ", " +
+                                                   measure.ordinal() + ", " + quantity + ")";
 
                 stmt.executeUpdate(insertIngredientToRecipe);
                 numberOfAllIngredients++;

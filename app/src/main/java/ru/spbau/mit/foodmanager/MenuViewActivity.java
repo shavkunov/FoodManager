@@ -29,7 +29,7 @@ public class MenuViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_view);
         recipes = new ArrayList<>();
-        cookbook = new CookBookStorage(this);
+        cookbook = CookBookStorage.getInstance(this);
         menu = new MenuStorage(cookbook);
         allDayMenu = menu.getMenu();
         if (allDayMenu == null) {
@@ -50,7 +50,6 @@ public class MenuViewActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        cookbook.close();
     }
 
     public void onGenerateBtnClick(View v) {

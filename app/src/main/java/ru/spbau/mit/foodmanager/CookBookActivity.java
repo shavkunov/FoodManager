@@ -26,7 +26,7 @@ public class CookBookActivity extends AppCompatActivity {
         setContentView(R.layout.cook_book);
         //Init List
         categories = new ArrayList<>();
-        cookbook = new CookBookStorage(this);
+        cookbook =  CookBookStorage.getInstance(this);
         categories.addAll(cookbook.getRecipiesTypeOfDish());
         //Group by init
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -80,6 +80,5 @@ public class CookBookActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        cookbook.close();
     }
 }

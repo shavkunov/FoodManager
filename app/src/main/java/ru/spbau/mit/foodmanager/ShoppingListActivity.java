@@ -19,6 +19,7 @@ import java.util.List;
 
 public class ShoppingListActivity extends AppCompatActivity {
 
+    private CookBookStorage cookbook;
     private HashMap<String, Double> productCount;
     private ArrayList<String> productNames;
     private ArrayList<Recipe> recipes;
@@ -28,13 +29,12 @@ public class ShoppingListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list);
         //Init List
-        CookBookStorage cookbook = new CookBookStorage(this);
+        cookbook = CookBookStorage.getInstance(this);
         MenuStorage menu = new MenuStorage(cookbook);
         ArrayList<ArrayList<Recipe>> menuRecipes = menu.getMenu();
         if (menuRecipes == null) {
             menuRecipes = new ArrayList<>();
         }
-        cookbook.close();
         recipes = new ArrayList<>();
         for(ArrayList<Recipe> rs : menuRecipes) {
             recipes.addAll(rs);
@@ -42,7 +42,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         productCount = new HashMap<>();
         for(Recipe r : recipes) {
             if (r != null) {
-				for(Ingredient i : r.getIngredients()) {
+				for(Ingredient i : cookbook.getRecipeIngredients(r.getID())) {
 					if (productCount.get(i.getName()) == null) {
 						productCount.put(i.getName(), 0.0);
 					}
