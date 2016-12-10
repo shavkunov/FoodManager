@@ -13,17 +13,19 @@ public class DaySettings {
         presets = new ArrayList<>();
         {
             ArrayList<Integer> categories = new ArrayList<>();
-            categories.add(0);
+            categories.add(10);
             presets.add(new MealtimeSettings("Завтрак", categories));
         }
         {
             ArrayList<Integer> categories = new ArrayList<>();
-            categories.add(1);
+            categories.add(9);
+            //categories.add(1);
+            //categories.add(0);
             presets.add(new MealtimeSettings("Обед", categories));
         }
         {
             ArrayList<Integer> categories = new ArrayList<>();
-            categories.add(2);
+            categories.add(8);
             presets.add(new MealtimeSettings("Ужин", categories));
         }
         //TODO: Загружать настройки приемов пищи из БД
