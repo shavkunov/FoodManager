@@ -1,12 +1,13 @@
 package ru.spbau.mit.foodmanager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Настройки меню определенного дня
  */
 
-public class DaySettings {
+public class DaySettings implements Serializable {
     private ArrayList<MealtimeSettings> mealtimeSettings = new ArrayList<>();
     static private ArrayList<MealtimeSettings> presets;
     static {
@@ -50,7 +51,7 @@ public class DaySettings {
         return result;
     }
 
-    public static class MealtimeSettings {
+    public static class MealtimeSettings implements Serializable {
         private String name;
         //TODO: Использовать объединение ID категорий
         private ArrayList<Integer> categories;
@@ -58,6 +59,11 @@ public class DaySettings {
         public MealtimeSettings(String name, ArrayList<Integer> settings) {
             this.name = name;
             this.categories = new ArrayList<>(settings);
+        }
+
+        public void clone(MealtimeSettings settings) {
+            this.name = settings.name;
+            this.categories = settings.categories;
         }
 
         public String getName() {
