@@ -7,16 +7,22 @@
         android:id="@+id/menu_settings_day_mealtime_delete"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="center"
+        android:src="@drawable/delete"
+        android:background="@color/colorTransparent"
+        android:scaleType="centerInside"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
     <ImageButton
         android:id="@+id/menu_settings_day_mealtime_edit"
+        android:src="@drawable/edit"
+        android:background="@color/colorTransparent"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="center"
+        android:scaleType="centerInside"
         android:layout_toLeftOf="@id/menu_settings_day_mealtime_delete"
-        android:layout_toStartOf="@id/menu_settings_day_mealtime_delete"/>
+        android:layout_toStartOf="@id/menu_settings_day_mealtime_delete"
+        android:layout_centerVertical="true"/>
     <!-- Mealtime name -->
     <TextView
         android:id="@+id/menu_settings_day_mealtime_name"
@@ -24,5 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/menu_settings_day_mealtime_edit"
         android:layout_toStartOf="@id/menu_settings_day_mealtime_edit"
-        android:textSize="15sp"/>
+        android:layout_centerVertical="true"
+        android:textSize="17sp"/>
 </RelativeLayout>
