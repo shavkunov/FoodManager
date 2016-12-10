@@ -93,23 +93,17 @@ public class MenuStorage {
         }
         //Получаем рецепты для каждого дня готовки
         for (Day cookingDay : cookForDays.keySet()) {
-            Log.d("CookingDay:", cookingDay.toString());
             //TODO Использовать множество категорий
             //Создаем меню на каждый день
             HashMap<Integer, Integer> categoryRecipes = new HashMap<>();
             for (Day day : cookForDays.get(cookingDay)) {
-                Log.d("Day:", cookingDay.toString());
                 DaySettings daySettings = settings.getDaySettings(day);
                 dayMenus.put(day, null);
                 if (daySettings != null) {
                     DayMenu dayMenu = generateDayMenu(daySettings, categoryRecipes);
-                    Log.d("DayMenu:", dayMenu.toString());
                     dayMenus.put(day, dayMenu);
                 }
             }
-        }
-        for (Day day : Day.values()) {
-            Log.d("Generate result:", day.toString() + " " + dayMenus.get(day));
         }
     }
 }
