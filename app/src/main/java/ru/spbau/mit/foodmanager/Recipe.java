@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Serializable {
     /**
      * Название рецепта.
      */
@@ -20,6 +20,12 @@ public class Recipe {
      * ID рецепта.
      */
     private int ID;
+
+    public Recipe(int ID, String description, String name) {
+        this.ID = ID;
+        this.description = description;
+        this.name = name;
+    }
 
     public int getID() {
         return ID;

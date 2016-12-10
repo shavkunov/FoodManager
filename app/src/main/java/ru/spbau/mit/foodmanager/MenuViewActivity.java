@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MenuViewActivity extends AppCompatActivity {
     static private String[] DAY_NAMES = {
@@ -20,7 +21,7 @@ public class MenuViewActivity extends AppCompatActivity {
             "Пятница",
             "Суббота",
             "Воскресенье"};
-    private ArrayList<ArrayList<Recipe>> allDayMenu;
+    private HashMap<Day, DayMenu> allDayMenu;
     private ArrayList<Recipe> recipes;
     private CookBookStorage cookbook;
     private MenuStorage menu;
@@ -32,16 +33,10 @@ public class MenuViewActivity extends AppCompatActivity {
         cookbook = CookBookStorage.getInstance(this);
         menu = new MenuStorage(cookbook);
         allDayMenu = menu.getMenu();
-        if (allDayMenu == null) {
-            menu.setNewWeekMenu();
-            allDayMenu = menu.getMenu();
-        }
-        //TODO: Сделать древовидный список.
-        for (ArrayList<Recipe> rc : allDayMenu) {
-            for (Recipe r : rc) {
-                if (r != null) {
-                    recipes.add(r);
-                }
+        //TODO: Группировка по приемам пищи
+        for (DayMenu rc : allDayMenu.values()) {
+            for (Integer r : rc.getDishes()) {
+                recipes.add(cookbook.getRecipe(r));
             }
         }
         showRecipes();
@@ -54,13 +49,11 @@ public class MenuViewActivity extends AppCompatActivity {
 
     public void onGenerateBtnClick(View v) {
         recipes = new ArrayList<>(); //Copy and paste but who cares?
-        menu.setNewWeekMenu();
+        menu.generateWeekMenu();
         allDayMenu = menu.getMenu();
-        for (ArrayList<Recipe> rc : allDayMenu) {
-            for (Recipe r : rc) {
-                if (r != null) {
-                    recipes.add(r);
-                }
+        for (DayMenu rc : allDayMenu.values()) {
+            for (Integer r : rc.getDishes()) {
+                recipes.add(cookbook.getRecipe(r));
             }
         }
         showRecipes();

@@ -31,13 +31,12 @@ public class ShoppingListActivity extends AppCompatActivity {
         //Init List
         cookbook = CookBookStorage.getInstance(this);
         MenuStorage menu = new MenuStorage(cookbook);
-        ArrayList<ArrayList<Recipe>> menuRecipes = menu.getMenu();
-        if (menuRecipes == null) {
-            menuRecipes = new ArrayList<>();
-        }
+        HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
         recipes = new ArrayList<>();
-        for(ArrayList<Recipe> rs : menuRecipes) {
-            recipes.addAll(rs);
+        for(DayMenu rs : menuRecipes.values()) {
+            for (Integer id : rs.getDishes()) {
+                recipes.add(cookbook.getRecipe(id));
+            }
         }
         productCount = new HashMap<>();
         for(Recipe r : recipes) {
@@ -57,7 +56,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         }
         ListView listView = (ListView) findViewById(R.id.shopping_list_view);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_multiple_choice, productNames);
         listView.setAdapter(adapter);
     }
