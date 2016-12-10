@@ -20,7 +20,11 @@
         <activity android:name=".RecipeViewActivity" />
         <activity android:name=".ShoppingListActivity" />
         <activity android:name=".MenuViewActivity" />
-        <activity android:name=".StepViewActivity"></activity>
+        <activity android:name=".StepViewActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".MenuSettingsActivity" />
+        <activity android:name=".ChooseMealtimePresetActivity" />
+        <activity android:name=".MealtimeSettingsActivity"></activity>
     </application>
 
 </manifest>

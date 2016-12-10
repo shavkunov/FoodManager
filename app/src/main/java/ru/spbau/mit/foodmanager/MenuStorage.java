@@ -14,10 +14,22 @@ public class MenuStorage {
     private HashMap<Day, DayMenu> dayMenus;
     private CookBookStorage cookbook;
     static private MenuStorage instance;
+    static final private String[] DAY_NAMES = {
+            "Понедельник",
+            "Вторник",
+            "Среда",
+            "Четверг",
+            "Пятница",
+            "Суббота",
+            "Воскресенье"};
 
     private MenuStorage(CookBookStorage cookbook) {
         dayMenus = new HashMap<>();
         this.cookbook = cookbook;
+    }
+
+    static public String[] getDayNames() {
+        return DAY_NAMES;
     }
 
     static public MenuStorage getInstance(Context context) {

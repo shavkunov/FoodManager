@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <CheckBox
+            android:id="@+id/menu_settings_day_is_cookingday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_settings_day_is_cookingday"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+        <ImageButton
+            android:id="@+id/menu_settings_day_mealtime_add"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="center"
+            android:layout_toLeftOf="@id/menu_settings_day_is_cookingday"
+            android:layout_toStartOf="@id/menu_settings_day_is_cookingday"/>
+        <TextView
+            android:id="@+id/menu_settings_day_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_toLeftOf="@id/menu_settings_day_mealtime_add"
+            android:layout_toStartOf="@id/menu_settings_day_mealtime_add"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/menu_settings_day_mealtimes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="32dp">
+
+    </LinearLayout>
+</LinearLayout>

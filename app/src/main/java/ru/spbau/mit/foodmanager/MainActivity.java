@@ -27,4 +27,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new  Intent(this, ShoppingListActivity.class);
         startActivity(intent);
     }
+
+    public void onSettingsClick(View view) {
+        Intent intent = new  Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 }

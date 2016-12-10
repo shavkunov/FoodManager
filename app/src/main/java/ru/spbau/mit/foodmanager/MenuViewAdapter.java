@@ -25,14 +25,6 @@ public class MenuViewAdapter extends BaseAdapter {
     private CookBookStorage cookbook;
     private LayoutInflater inflater;
     private ArrayList<Pair<Day, DayMenu>> menus;
-    static private String[] DAY_NAMES = {
-            "Понедельник",
-            "Вторник",
-            "Среда",
-            "Четверг",
-            "Пятница",
-            "Суббота",
-            "Воскресенье"};
 
     public MenuViewAdapter(Context context, HashMap<Day, DayMenu> menusByDays) {
         this.context = context;
@@ -67,7 +59,7 @@ public class MenuViewAdapter extends BaseAdapter {
         Pair<Day, DayMenu> menu = menus.get(i);
         TextView dayName = (TextView) view.findViewById(R.id.menu_day_name);
         LinearLayout dayMealtimes = (LinearLayout) view.findViewById(R.id.menu_day_mealtimes);
-        dayName.setText(DAY_NAMES[menu.first.ordinal()]);
+        dayName.setText(MenuStorage.getDayNames()[menu.first.ordinal()]);
         for (DayMenu.Mealtime mealtime : menu.second.getMealtimes()) {
             LinearLayout mealtimeElement = (LinearLayout) inflater.inflate(
                     R.layout.menu_view_day_menu_list_element, null);
