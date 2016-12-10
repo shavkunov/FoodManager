@@ -31,7 +31,7 @@ public class MenuViewActivity extends AppCompatActivity {
         setContentView(R.layout.menu_view);
         recipes = new ArrayList<>();
         cookbook = CookBookStorage.getInstance(this);
-        menu = new MenuStorage(cookbook);
+        menu = MenuStorage.getInstance(this);
         allDayMenu = menu.getMenu();
         //TODO: Группировка по приемам пищи
         for (DayMenu rc : allDayMenu.values()) {
@@ -51,9 +51,11 @@ public class MenuViewActivity extends AppCompatActivity {
         recipes = new ArrayList<>(); //Copy and paste but who cares?
         menu.generateWeekMenu();
         allDayMenu = menu.getMenu();
-        for (DayMenu rc : allDayMenu.values()) {
-            for (Integer r : rc.getDishes()) {
-                recipes.add(cookbook.getRecipe(r));
+        for (DayMenu dayMenu : allDayMenu.values()) {
+            if (dayMenu != null) {
+                for (Integer r : dayMenu.getDishes()) {
+                    recipes.add(cookbook.getRecipe(r));
+                }
             }
         }
         showRecipes();

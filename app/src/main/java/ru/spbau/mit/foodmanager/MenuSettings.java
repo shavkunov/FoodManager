@@ -1,6 +1,7 @@
 package ru.spbau.mit.foodmanager;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MenuSettings {
@@ -14,6 +15,14 @@ public class MenuSettings {
         isCookingDay = new HashMap<>();
         for (Day d : Day.values()) {
             isCookingDay.put(d, true);
+            //DEBUG ONLY
+            ArrayList<DaySettings.MealtimeSettings> mealtieSettings = new ArrayList<>();
+            mealtieSettings.add(DaySettings.getMealtimePresets().get(0));
+            mealtieSettings.add(DaySettings.getMealtimePresets().get(1));
+            mealtieSettings.add(DaySettings.getMealtimePresets().get(2));
+            DaySettings settings = new DaySettings(mealtieSettings);
+            settingsByDay.put(d, settings);
+            //DEBUG ONLY
         }
     }
 
@@ -27,6 +36,14 @@ public class MenuSettings {
 
     public HashMap<Day, DaySettings> getSettingsForAllDays() {
         return settingsByDay;
+    }
+
+    public Boolean isCookingDay(Day day) {
+        return isCookingDay.get(day);
+    }
+
+    public void setCookingDay(Day day, Boolean isCookingDay) {
+        this.isCookingDay.put(day, isCookingDay);
     }
 
     public void setDaySettings(Day d, DaySettings settings) {

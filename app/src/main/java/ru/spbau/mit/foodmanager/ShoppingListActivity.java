@@ -30,7 +30,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         setContentView(R.layout.shopping_list);
         //Init List
         cookbook = CookBookStorage.getInstance(this);
-        MenuStorage menu = new MenuStorage(cookbook);
+        MenuStorage menu = MenuStorage.getInstance(this);
         HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
         recipes = new ArrayList<>();
         for(DayMenu rs : menuRecipes.values()) {
