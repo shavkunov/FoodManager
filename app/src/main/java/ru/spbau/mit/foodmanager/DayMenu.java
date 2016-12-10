@@ -15,7 +15,7 @@ public class DayMenu {
      * Просто сохраняет список Mealtime
      */
     public DayMenu(ArrayList<Mealtime> dishes) {
-
+        mealtimes = dishes;
     }
 
     /**
@@ -39,7 +39,7 @@ public class DayMenu {
     /**
      * Описывает один прием пищи
      */
-    public class Mealtime {
+    public static class Mealtime {
         private ArrayList<Integer> recipeIDs;
         private String name;
         //Нужно ли время?
