@@ -141,28 +141,34 @@ public class CookBookStorage {
      * Получение рецепта по его уникальному идентификатору.
      */
     public Recipe getRecipe(int ID) {
-        Recipe res = null;
+        String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
-        Cursor mainData = db.query("Recipe", new String[] {"name", "description"},
-                "ID = ?", new String[] { String.valueOf(ID) }, null, null, null);
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet mainData = stmt.executeQuery(recipeQuery);
 
-        if (mainData != null && mainData.moveToFirst()) {
-            String recipeName = mainData.getString(mainData.getColumnIndex("name"));
-            String recipeDescription = mainData.getString(mainData.getColumnIndex("description"));
+            String recipeName = null;
+            String recipeDescription = null;
+            if (mainData.next()) {
+                recipeName = mainData.getString("name");
+                recipeDescription = mainData.getString("description");
+            }
 
-            res = new Recipe(ID, recipeDescription, recipeName);
-        } else {
+            stmt.close();
+            return new Recipe(ID, recipeDescription, recipeName);
+
+        } catch (SQLException e) {
+            System.out.println("Unable to get recipe main information");
+            e.printStackTrace();
+
             return null;
         }
-
-        mainData.close();
-        return res;
     }
 
     /**
      * Получение списка рецептов по фильтру, т.е. по префиксу.
      */
-    public ArrayList<Recipe> getRecipiesByFilter(String filter) {
+    public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         Cursor recipes = db.rawQuery(filterQuery, null);
 
