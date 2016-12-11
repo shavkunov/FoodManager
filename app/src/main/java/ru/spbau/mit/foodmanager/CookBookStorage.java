@@ -1,10 +1,6 @@
 package ru.spbau.mit.foodmanager;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.sql.Connection;
@@ -15,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 /**
  * Хранилище всех рецептов.
@@ -22,21 +19,19 @@ import java.util.Random;
 public class CookBookStorage {
     private static CookBookStorage instance;
     private final String LOG_TAG = "CookBookStorageLogs";
-    private Random r;
 
     private final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
     private String user = "foodmanagertest";
     private final String password = "Wc22_0f_0TA2";
-    Connection c;
+    Connection connection;
 
     private CookBookStorage() {
         try {
-            c = DriverManager.getConnection(url, user, password);
-            c.setAutoCommit(false);
+            connection = DriverManager.getConnection(url, user, password);
+            connection.setAutoCommit(false);
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Problems with connection");
         }
-        r = new Random();
     }
 
     public static CookBookStorage getInstance() {
@@ -45,6 +40,32 @@ public class CookBookStorage {
         }
 
         return instance;
+    }
+
+    public void addRecipeToDatabase(Recipe recipe) {
+        try {
+            connection.setAutoCommit(false);
+            Statement stmt = connection.createStatement();
+
+            insertRecipeCategories(stmt, recipe);
+
+            stmt.close();
+            connection.setAutoCommit(true);
+
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to insert new recipe");
+            e.printStackTrace();
+        }
+    }
+
+    private void insertRecipeCategories(Statement stmt, Recipe recipe) throws SQLException {
+        ArrayList<Integer> categoryIDs = recipe.getCategoryID();
+        for (int categoryID : categoryIDs) {
+            String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
+                                       + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
+
+            stmt.executeUpdate(insertCategoryQuery);
+        }
     }
 
     /**
@@ -56,7 +77,7 @@ public class CookBookStorage {
                                  "WHERE recipe_ID = " + ID;
 
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
             ArrayList<Integer> ids = new ArrayList<>();
 
@@ -82,7 +103,7 @@ public class CookBookStorage {
                             "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet steps = stmt.executeQuery(stepsQuery);
             ArrayList<Step> recipeSteps = new ArrayList<>();
 
@@ -116,7 +137,7 @@ public class CookBookStorage {
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
             ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
 
@@ -145,7 +166,7 @@ public class CookBookStorage {
         String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet mainData = stmt.executeQuery(recipeQuery);
 
             String recipeName = null;
@@ -174,7 +195,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(filterQuery);
 
             ArrayList<Recipe> res = new ArrayList<>();
@@ -201,7 +222,7 @@ public class CookBookStorage {
                                       " ORDER BY RAND() LIMIT 1";
 
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
 
             int recipeID = 0;
@@ -222,7 +243,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
         String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(categoryQuery);
 
             ArrayList<Recipe> res = new ArrayList<>();
@@ -244,7 +265,7 @@ public class CookBookStorage {
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
 
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
             if (category.next()) {
                 String description = category.getString("name");
@@ -269,7 +290,7 @@ public class CookBookStorage {
         LinkedList<Category> categories = new LinkedList<>();
 
         try {
-            Statement stmt = c.createStatement();
+            Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
 
             while (category.next()) {
