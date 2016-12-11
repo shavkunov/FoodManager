@@ -7,7 +7,7 @@
         android:id="@+id/menu_day_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
     <LinearLayout
         android:id="@+id/menu_day_mealtimes"

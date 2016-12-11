@@ -64,6 +64,13 @@ public class CookBookActivity extends AppCompatActivity {
         showCategories();
     }
 
+    public void onActivityResult(int requestCode, int errorCode, Intent resultContainer) {
+        if (errorCode == RESULT_OK) {
+            setResult(RESULT_OK, resultContainer);
+            finish();
+        }
+    }
+
     private void showCategories() {
         ListView listView = (ListView) findViewById(R.id.cook_book_list);
         //TODO: сделать собственные адаптеры для CookBook и Category
@@ -86,7 +93,7 @@ public class CookBookActivity extends AppCompatActivity {
                         break;
                     case TARGET_RECIPE:
                         intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
-                        intent.putExtra("Target", TARGET_RECIPE);
+                        intent.putExtras(task);
                         intent.putExtra("Category", categories.get(i).getID());
                         startActivityForResult(intent, TARGET_RECIPE);
                         break;
