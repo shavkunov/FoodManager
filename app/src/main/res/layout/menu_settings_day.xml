@@ -8,8 +8,8 @@
         android:gravity="center">
         <ImageButton
             android:id="@+id/menu_settings_day_mealtime_add"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/imbtn_size"
+            android:layout_height="@dimen/imbtn_size"
             android:scaleType="centerInside"
             android:src="@drawable/add"
             android:background="@color/colorTransparent"

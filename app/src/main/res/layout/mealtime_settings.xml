@@ -51,8 +51,8 @@
             </ScrollView>
             <ImageButton
                 android:id="@+id/mealtime_settings_add"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
                 android:scaleType="centerInside"
                 android:src="@drawable/add"
                 android:background="@color/colorTransparent"
