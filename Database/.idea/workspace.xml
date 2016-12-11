@@ -66,8 +66,8 @@
       <file leaf-file-name="DatabaseCreator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2610">
-              <caret line="177" column="25" selection-start-line="177" selection-start-column="16" selection-end-line="177" selection-end-column="25" />
+            <state relative-caret-position="570">
+              <caret line="105" column="37" selection-start-line="105" selection-start-column="37" selection-end-line="105" selection-end-column="45" />
               <folding>
                 <element signature="imports" expanded="false" />
                 <marker date="1481314618000" expanded="true" signature="673:702" ph="DROP TABLE I... " />
@@ -1070,12 +1070,12 @@
       <workItem from="1481283620851" duration="11369000" />
       <workItem from="1481373549245" duration="1916000" />
       <workItem from="1481403167526" duration="249000" />
-      <workItem from="1481417841705" duration="880000" />
+      <workItem from="1481417841705" duration="1091000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53975000" />
+    <option name="totallyTimeSpent" value="54186000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -1300,8 +1300,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/DatabaseCreator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2610">
-          <caret line="177" column="25" selection-start-line="177" selection-start-column="16" selection-end-line="177" selection-end-column="25" />
+        <state relative-caret-position="570">
+          <caret line="105" column="37" selection-start-line="105" selection-start-column="37" selection-end-line="105" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="false" />
             <marker date="1481314618000" expanded="true" signature="673:702" ph="DROP TABLE I... " />

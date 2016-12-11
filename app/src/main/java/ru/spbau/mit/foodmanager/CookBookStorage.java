@@ -59,10 +59,12 @@ public class CookBookStorage {
             Statement stmt = c.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
             ArrayList<Integer> ids = new ArrayList<>();
-            
+
             while (categories.next()) {
                 ids.add(categories.getInt("category_ID"));
             }
+
+            stmt.close();
         } catch (SQLException e) {
             System.out.println("Unable to get categories of recipe");
             e.printStackTrace();
@@ -77,26 +79,30 @@ public class CookBookStorage {
     public ArrayList<Step> getRecipeSteps(int ID) {
         String stepsQuery = "SELECT * FROM Step INNER JOIN Image ON " +
                             "Step.ID = Image.entity_ID " +
-                            "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
-        Cursor steps = db.rawQuery(stepsQuery, new String[] {String.valueOf(ID)});
+                            "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet steps = stmt.executeQuery(stepsQuery);
+            ArrayList<Step> recipeSteps = new ArrayList<>();
 
-        ArrayList<Step> recipeSteps = new ArrayList<>();
-        if (steps != null && steps.moveToFirst()) {
-            do {
-                String description = steps.getString(steps.getColumnIndex("description"));
-                byte[] bytes = steps.getBlob(steps.getColumnIndex("source"));
-                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Step newStep = new Step(description, bm);
-                recipeSteps.add(newStep);
+            while (steps.next()) {
+                String stepDescription = steps.getString("description");
+                String imageID = steps.getString("drive_ID");
 
-            } while (steps.moveToNext());
+                // TODO : load from google drive
+                Bitmap bm = null;
+                recipeSteps.add(new Step(stepDescription, bm));
+            }
 
-        } else {
+            stmt.close();
+            return recipeSteps;
+
+        } catch (SQLException e) {
+            System.out.println("Unable to ger recipe steps");
+            e.printStackTrace();
+
             return null;
         }
-
-        steps.close();
-        return recipeSteps;
     }
 
     /**
