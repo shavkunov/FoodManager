@@ -13,6 +13,11 @@ import android.widget.Spinner;
 import java.util.ArrayList;
 
 public class CookBookActivity extends AppCompatActivity {
+    private Intent task;
+    public static final int TARGET_NO = 0;
+    public static final int TARGET_CATEGORY = 1;
+    public static final int TARGET_RECIPE = 2;
+    private Integer target;
     private static final String[] CATEGORY_TYPES =
             {"Тип блюда",
             "Национальные кухни"};
@@ -21,9 +26,11 @@ public class CookBookActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cook_book);
+
+        task = getIntent();
+        target = task.getIntExtra("Target", TARGET_NO);
         //Init List
         categories = new ArrayList<>();
         cookbook =  CookBookStorage.getInstance(this);
@@ -70,9 +77,26 @@ public class CookBookActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
-                intent.putExtra("Category", categories.get(i).getID());
-                startActivity(intent);
+                Intent intent;
+                switch (target) {
+                    case TARGET_NO:
+                        intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
+                        intent.putExtra("Category", categories.get(i).getID());
+                        startActivity(intent);
+                        break;
+                    case TARGET_RECIPE:
+                        intent = new Intent(CookBookActivity.this, CookBookCategoryActivity.class);
+                        intent.putExtra("Target", TARGET_RECIPE);
+                        intent.putExtra("Category", categories.get(i).getID());
+                        startActivityForResult(intent, TARGET_RECIPE);
+                        break;
+                    case TARGET_CATEGORY:
+                        intent = task;
+                        intent.putExtra("Result", categories.get(i).getID());
+                        setResult(RESULT_OK, intent);
+                        finish();
+                        break;
+                }
             }
         });
     }
