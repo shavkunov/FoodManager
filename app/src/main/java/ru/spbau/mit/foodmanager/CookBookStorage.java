@@ -98,7 +98,7 @@ public class CookBookStorage {
             return recipeSteps;
 
         } catch (SQLException e) {
-            System.out.println("Unable to ger recipe steps");
+            System.out.println("Unable to get recipe steps");
             e.printStackTrace();
 
             return null;
@@ -110,30 +110,31 @@ public class CookBookStorage {
      * @param ID ID рецепта.
      */
     public ArrayList<Ingredient> getRecipeIngredients(int ID) {
-        String ingredientsQuery = "SELECT * FROM Ingredient_to_recipe itr " +
-                                  "INNER JOIN Ingredient ing ON " +
+        String ingredientsQuery = "SELECT * FROM Ingredient_to_recipe AS itr " +
+                                  "INNER JOIN Ingredient AS ing ON " +
                                   "itr.ingredient_ID = ing.ID " +
-                                  "WHERE itr.recipe_ID = ?";
-        Cursor ingredients = db.rawQuery(ingredientsQuery, new String[] {String.valueOf(ID)});
+                                  "WHERE itr.recipe_ID = " + ID;
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
+            ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
 
-        ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
-        if (ingredients != null && ingredients.moveToFirst()) {
-            do {
-                String name = ingredients.getString(ingredients.getColumnIndex("name"));
-                Measure measure = Measure.values()[
-                        ingredients.getInt(ingredients.getColumnIndex("measure"))];
-                double quantity = ingredients.getDouble(ingredients.getColumnIndex("quantity"));
+            while (ingredients.next()) {
+                String name = ingredients.getString("name");
+                Measure measure = Measure.values()[ingredients.getInt("measure")];
+                double quantity = ingredients.getDouble("quantity");
 
-                Ingredient ingredient = new Ingredient(name, measure, quantity);
-                recipeIngredients.add(ingredient);
-            } while (ingredients.moveToNext());
+                recipeIngredients.add(new Ingredient(name, measure, quantity));
+            }
 
-        } else {
+            stmt.close();
+            return recipeIngredients;
+        } catch (SQLException e) {
+            System.out.println("Unable to get recipe ingredients");
+            e.printStackTrace();
+
             return null;
         }
-
-        ingredients.close();
-        return recipeIngredients;
     }
 
     /**
