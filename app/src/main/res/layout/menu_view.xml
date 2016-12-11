@@ -26,10 +26,16 @@
                 android:text="@string/menu_view_generate_str"/>
         </LinearLayout>
         <!-- Current menu view -->
-        <ListView
-            android:id="@+id/menu_view_list_view"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </ListView>
+            <LinearLayout
+                android:id="@+id/menu_view_days"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </RelativeLayout>
