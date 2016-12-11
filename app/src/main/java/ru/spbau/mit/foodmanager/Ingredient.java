@@ -46,6 +46,10 @@ public class Ingredient implements Serializable {
         return null;
     }
 
+    public Measure getMeasure() {
+        return type;
+    }
+
     public double getQuantity() {
         return quantity;
     }

@@ -47,7 +47,11 @@ public class CookBookStorage {
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
 
+            int recipeID = insertRecipe(stmt, recipe);
+            recipe.setID(recipeID);
             insertRecipeCategories(stmt, recipe);
+            ArrayList<Integer> ingredientIDs = insertIngredients(stmt, recipe);
+            insertRecipeIngredientRelation(stmt, recipe, ingredientIDs);
 
             stmt.close();
             connection.setAutoCommit(true);
@@ -58,9 +62,45 @@ public class CookBookStorage {
         }
     }
 
+    private void insertRecipeIngredientRelation(
+            Statement stmt, Recipe recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
+
+        for (int i = 0; i < recipe.getIngredients().size(); i++) {
+            double quantity = recipe.getIngredients().get(i).getQuantity();
+            int measureOrdinal = recipe.getIngredients().get(i).getMeasure().ordinal();
+            String insertRelationQuery = "INSERT INTO Ingredient_to_recipe " +
+                                         "(recipe_ID, measure, quantity) VALUES " +
+                                         "(" + ingredientIDs.get(i) + ", " + recipe.getID() +
+                                         ", " + measureOrdinal + ", " + quantity + ")";
+
+            stmt.executeUpdate(insertRelationQuery);
+        }
+    }
+
+    private ArrayList<Integer> insertIngredients(Statement stmt, Recipe recipe)
+            throws SQLException {
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (Ingredient ing : recipe.getIngredients()) {
+            String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description " +
+                                           "VALUES (" + recipe.getID() + ", '"
+                                           + ing.getName() + "')";
+
+            ids.add(stmt.executeUpdate(insertIngredientQuery));
+        }
+
+        return ids;
+    }
+
+    private int insertRecipe(Statement stmt, Recipe recipe) throws SQLException {
+        String insertRecipeQuery = "INSERT INTO Recipe(name, description) " +
+                                   "VALUES (" + recipe.getName() + ", '" +
+                                   recipe.getDescription() + "')";
+
+        return stmt.executeUpdate(insertRecipeQuery);
+    }
+
     private void insertRecipeCategories(Statement stmt, Recipe recipe) throws SQLException {
-        ArrayList<Integer> categoryIDs = recipe.getCategoryID();
-        for (int categoryID : categoryIDs) {
+        for (int categoryID : recipe.getCategoryID()) {
             String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
                                        + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
 
