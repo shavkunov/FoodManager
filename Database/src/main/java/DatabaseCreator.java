@@ -49,7 +49,6 @@ public class DatabaseCreator {
         BufferedReader readerCategories = new BufferedReader(new FileReader(categories));
 
         String category;
-
         for (int i = 0; (category = readerCategories.readLine()) != null; i++) {
             int is_national_kitchen = 0;
             int is_category_dish = 0;

@@ -7,6 +7,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -17,15 +22,20 @@ import java.util.Random;
 public class CookBookStorage {
     private static CookBookStorage instance;
     private final String LOG_TAG = "CookBookStorageLogs";
-    private SQLiteDatabase db;
     private Random r;
 
-    /**
-     * Загрузка базы данных.
-     */
+    private final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
+    private String user = "foodmanagertest";
+    private final String password = "Wc22_0f_0TA2";
+    Connection c;
+
     private CookBookStorage(Context context) {
-        DataBaseHelper helper = new DataBaseHelper(context);
-        db = helper.openDatabase();
+        try {
+            c = DriverManager.getConnection(url, user, password);
+            c.setAutoCommit(false);
+        } catch (SQLException e) {
+            System.out.println("Problems with connection");
+        }
         r = new Random();
     }
 
@@ -42,24 +52,22 @@ public class CookBookStorage {
      * @param ID ID рецепта.
      */
     public ArrayList<Integer> getRecipeCategories(int ID) {
-        Cursor categories = db.query("Recipe_to_category", new String[] {"category_ID"},
-                                     "recipe_ID = ?", new String[] { String.valueOf(ID) },
-                                     null, null, null);
+        String categoriesQuery = "SELECT category_ID FROM Recipe_to_category " +
+                                 "WHERE recipe_ID = " + ID;
 
-        ArrayList<Integer> ids = new ArrayList<>();
-        if (categories != null && categories.moveToFirst()) {
-            do {
-                int categoryID = categories.getInt(categories.getColumnIndex("category_ID"));
-                ids.add(categoryID);
-
-            } while (categories.moveToNext());
-
-        } else {
-            return null;
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet categories = stmt.executeQuery(categoriesQuery);
+            ArrayList<Integer> ids = new ArrayList<>();
+            
+            while (categories.next()) {
+                ids.add(categories.getInt("category_ID"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Unable to get categories of recipe");
+            e.printStackTrace();
         }
-
-        categories.close();
-        return ids;
+        return null;
     }
 
     /**
@@ -68,8 +76,8 @@ public class CookBookStorage {
      */
     public ArrayList<Step> getRecipeSteps(int ID) {
         String stepsQuery = "SELECT * FROM Step INNER JOIN Image ON " +
-                "Step.ID = Image.entity_ID " +
-                "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
+                            "Step.ID = Image.entity_ID " +
+                            "WHERE Step.recipe_ID = ? AND Image.entity_type = 0";
         Cursor steps = db.rawQuery(stepsQuery, new String[] {String.valueOf(ID)});
 
         ArrayList<Step> recipeSteps = new ArrayList<>();
