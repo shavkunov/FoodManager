@@ -152,6 +152,8 @@ public class CookBookStorage {
             if (mainData.next()) {
                 recipeName = mainData.getString("name");
                 recipeDescription = mainData.getString("description");
+            } else {
+                return null;
             }
 
             stmt.close();
@@ -170,20 +172,23 @@ public class CookBookStorage {
      */
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
-        Cursor recipes = db.rawQuery(filterQuery, null);
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet recipes = stmt.executeQuery(filterQuery);
 
-        ArrayList<Recipe> res = new ArrayList<>();
-        if (recipes != null && recipes.moveToFirst()) {
-            do {
-                int recipeID = recipes.getInt(recipes.getColumnIndex("ID"));
-                res.add(getRecipe(recipeID));
-            } while (recipes.moveToNext());
+            ArrayList<Recipe> res = new ArrayList<>();
+            while (recipes.next()) {
+                res.add(getRecipe(recipes.getInt("ID")));
+            }
 
-        } else {
+            stmt.close();
+            return res;
+        } catch (SQLException e) {
+            System.out.println("Unable to filter recipes");
+            e.printStackTrace();
+
             return null;
         }
-
-        return res;
     }
 
     /**
