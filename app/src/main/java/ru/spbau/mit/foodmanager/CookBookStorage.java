@@ -34,7 +34,7 @@ public class CookBookStorage {
             c = DriverManager.getConnection(url, user, password);
             c.setAutoCommit(false);
         } catch (SQLException e) {
-            System.out.println("Problems with connection");
+            Log.d(LOG_TAG, "Problems with connection");
         }
         r = new Random();
     }
@@ -66,9 +66,10 @@ public class CookBookStorage {
 
             stmt.close();
         } catch (SQLException e) {
-            System.out.println("Unable to get categories of recipe");
+            Log.d(LOG_TAG, "Unable to get categories of recipe");
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -98,11 +99,11 @@ public class CookBookStorage {
             return recipeSteps;
 
         } catch (SQLException e) {
-            System.out.println("Unable to get recipe steps");
+            Log.d(LOG_TAG, "Unable to get recipe steps");
             e.printStackTrace();
-
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -130,11 +131,11 @@ public class CookBookStorage {
             stmt.close();
             return recipeIngredients;
         } catch (SQLException e) {
-            System.out.println("Unable to get recipe ingredients");
+            Log.d(LOG_TAG, "Unable to get recipe ingredients");
             e.printStackTrace();
-
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -160,11 +161,11 @@ public class CookBookStorage {
             return new Recipe(ID, recipeDescription, recipeName);
 
         } catch (SQLException e) {
-            System.out.println("Unable to get recipe main information");
+            Log.d(LOG_TAG, "Unable to get recipe main information");
             e.printStackTrace();
-
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -184,11 +185,11 @@ public class CookBookStorage {
             stmt.close();
             return res;
         } catch (SQLException e) {
-            System.out.println("Unable to filter recipes");
+            Log.d(LOG_TAG, "Unable to filter recipes");
             e.printStackTrace();
-
-            return null;
         }
+
+        return null;
     }
 
     /**
