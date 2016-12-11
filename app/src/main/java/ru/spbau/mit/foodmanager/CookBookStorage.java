@@ -211,6 +211,9 @@ public class CookBookStorage {
             while (recipes.next()) {
                 res.add(getRecipe(recipes.getInt("recipe_ID")));
             }
+
+            stmt.close();
+            return res;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get recipes of category");
             e.printStackTrace();
@@ -225,12 +228,14 @@ public class CookBookStorage {
         try {
             Statement stmt = c.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
-
             if (category.next()) {
                 String description = category.getString("name");
                 // пока картинок категорий у нас нет
-                return new Category(ID, description, this, null);
+                Category c =  new Category(ID, description, this, null);
+                stmt.close();
+                return c;
             } else {
+                stmt.close();
                 return null;
             }
 
@@ -245,14 +250,22 @@ public class CookBookStorage {
     private LinkedList<Category> getCategoryFromQuery(String categoryQuery) {
         LinkedList<Category> categories = new LinkedList<>();
 
-        Cursor cursor = db.rawQuery(categoryQuery, null);
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet category = stmt.executeQuery(categoryQuery);
 
-        while (cursor.moveToNext()) {
-            int categoryID = cursor.getInt(cursor.getColumnIndex("ID"));
-            categories.add(getCategoryByID(categoryID));
+            while (category.next()) {
+                categories.add(getCategoryByID(category.getInt("ID")));
+            }
+
+            stmt.close();
+            return categories;
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to get categories");
+            e.printStackTrace();
         }
 
-        return categories;
+        return null;
     }
 
     public LinkedList<Category> getRecipiesTypeOfDish() {
