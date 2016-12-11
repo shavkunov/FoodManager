@@ -15,6 +15,7 @@ public class Recipe implements Serializable {
     /** ID рецепта */
     private int ID;
 
+    // эти три поля будут использованы для того, чтобы вставлять рецепт пользователя в БД.
     /** Содержит идентификаторы категорий, к которым принадлежит блюдо */
     private ArrayList<Integer> categoryID;
 
