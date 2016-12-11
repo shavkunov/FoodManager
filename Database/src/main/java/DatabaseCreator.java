@@ -18,7 +18,6 @@ public class DatabaseCreator {
         String queryDisableForeignChecks = "SET FOREIGN_KEY_CHECKS = 0";
         String queryDeleteCategory = "DROP TABLE IF EXISTS Category";
         String queryDeleteRecipe = "DROP TABLE IF EXISTS Recipe";
-        String queryDeleteRecipeToWeekMenu = "DROP TABLE IF EXISTS Recipe_to_week_menu";
         String queryDeleteStep = "DROP TABLE IF EXISTS Step";
         String queryDeleteRecipeToCategory = "DROP TABLE IF EXISTS Recipe_to_category";
         String queryDeleteImage = "DROP TABLE IF EXISTS Image";
@@ -29,7 +28,6 @@ public class DatabaseCreator {
         stmt.executeUpdate(queryDeleteCategory);
         stmt.executeUpdate(queryDeleteRecipe);
         stmt.executeUpdate(queryDeleteRecipeToCategory);
-        stmt.executeUpdate(queryDeleteRecipeToWeekMenu);
         stmt.executeUpdate(queryDeleteStep);
         stmt.executeUpdate(queryDeleteImage);
         stmt.executeUpdate(queryDeleteIngredientToRecipe);
