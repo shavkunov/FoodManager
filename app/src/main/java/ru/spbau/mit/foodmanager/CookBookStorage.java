@@ -196,9 +196,27 @@ public class CookBookStorage {
      * Выбор случайного блюда категории.
      */
     public Recipe chooseRandomDishFromCategory(int categoryID) {
-        ArrayList<Recipe> dishes = getRecipesOfCategory(categoryID);
+        String getRandomRecipeQuery = "SELECT recipe_ID FROM Recipe_to_category " +
+                                      "WHERE category_ID = " + categoryID +
+                                      " ORDER BY RAND() LIMIT 1";
 
-        return dishes.get(Math.abs(r.nextInt()) % dishes.size());
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
+
+            int recipeID = 0;
+            if (recipe.next()) {
+                recipeID = recipe.getInt("recipe_ID");
+            }
+
+            stmt.close();
+            return getRecipe(recipeID);
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to get random dish");
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
