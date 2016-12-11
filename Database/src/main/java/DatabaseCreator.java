@@ -76,13 +76,6 @@ public class DatabaseCreator {
 
         stmt.executeUpdate(queryCreationRecipe);
 
-        String queryCreationOfRecipeToWeekMenu = "CREATE TABLE Recipe_to_week_menu (" +
-                                                 "recipe_ID INTEGER PRIMARY KEY NOT NULL," +
-                                                 "date TEXT NOT NULL, " +
-                                                 "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID))";
-
-        stmt.executeUpdate(queryCreationOfRecipeToWeekMenu);
-
         String queryCreationStep = "CREATE TABLE Step (" +
                                    "ID INTEGER PRIMARY KEY NOT NULL, " +
                                    "recipe_ID INTEGER NOT NULL, " +
