@@ -36,7 +36,10 @@ public class DaySettings implements Serializable {
     }
 
     public DaySettings(ArrayList<MealtimeSettings> settings) {
-        mealtimeSettings = settings;
+        mealtimeSettings = new ArrayList<>();
+        for (MealtimeSettings s : settings) {
+            mealtimeSettings.add(new MealtimeSettings(s.getName(), s.dishesCategories()));
+        }
     }
 
     public ArrayList<MealtimeSettings> getMealtimeSettings() {

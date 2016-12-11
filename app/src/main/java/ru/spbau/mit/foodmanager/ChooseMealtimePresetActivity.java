@@ -21,7 +21,7 @@ public class ChooseMealtimePresetActivity extends AppCompatActivity {
     private ArrayList<DaySettings.MealtimeSettings> presets;
     private HashMap<DaySettings.MealtimeSettings, View> presetView;
     private LayoutInflater inflater;
-    private final LinearLayout presetList = (LinearLayout) findViewById(R.id.choose_mealtime_preset_list);
+    private LinearLayout presetList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,8 @@ public class ChooseMealtimePresetActivity extends AppCompatActivity {
         menuSettings = MenuSettings.getInstance();
         presets = DaySettings.getMealtimePresets();
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        presetList = (LinearLayout) findViewById(R.id.choose_mealtime_preset_list);
+        presetView = new HashMap<>();
         fillPresets();
     }
 
@@ -109,7 +111,7 @@ public class ChooseMealtimePresetActivity extends AppCompatActivity {
     }
 
     private void returnResult(DaySettings.MealtimeSettings result) {
-        Intent intent = new Intent();
+        Intent intent = getIntent();
         intent.putExtra("Result", result);
         setResult(RESULT_OK, intent);
         finish();
