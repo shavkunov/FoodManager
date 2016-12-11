@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,6 +53,8 @@ public class CookBookStorage {
             insertRecipeCategories(stmt, recipe);
             ArrayList<Integer> ingredientIDs = insertIngredients(stmt, recipe);
             insertRecipeIngredientRelation(stmt, recipe, ingredientIDs);
+            ArrayList<Integer> stepIDs = insertSteps(stmt, recipe);
+            insertImageStepRelation(stepIDs);
 
             stmt.close();
             connection.setAutoCommit(true);
@@ -62,9 +65,36 @@ public class CookBookStorage {
         }
     }
 
+    private void insertImageStepRelation(ArrayList<Integer> ids) throws SQLException {
+
+        for (int stepID : ids) {
+            String insertRelation = "INSERT INTO Image VALUES (?, ?, ?)";
+            String driveID = null; // TODO : upload to google drive
+            PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
+            preparedStatement.setInt(1, 0);
+            preparedStatement.setInt(2, stepID);
+            preparedStatement.setString(3, driveID);
+            preparedStatement.execute();
+        }
+    }
+
+    private ArrayList<Integer> insertSteps(Statement stmt, Recipe recipe) throws SQLException {
+        ArrayList<Integer> ids = new ArrayList<>();
+
+        for (Step s : recipe.getSteps()) {
+            String insertStep = "INSERT INTO Step VALUES (recipe_ID, description) (" +
+                                recipe.getID() + ", '" + s.getDescription() + "')";
+
+            ids.add(stmt.executeUpdate(insertStep));
+        }
+
+        return ids;
+    }
+
     private void insertRecipeIngredientRelation(
             Statement stmt, Recipe recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
 
+        // ingredients.size() == ingredientIDs.size()
         for (int i = 0; i < recipe.getIngredients().size(); i++) {
             double quantity = recipe.getIngredients().get(i).getQuantity();
             int measureOrdinal = recipe.getIngredients().get(i).getMeasure().ordinal();

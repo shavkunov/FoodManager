@@ -151,12 +151,12 @@ public class DatabaseCreator {
                 //System.out.println(driveID);
 
                 String insertImage = "INSERT INTO Image VALUES (?, ?, ?, ?)";
-                PreparedStatement preparedStatament = c.prepareStatement(insertImage);
-                preparedStatament.setInt(1, numberOfAllStep); // картинок столько же сколько и шагов
-                preparedStatament.setInt(2, 0);
-                preparedStatament.setInt(3, numberOfAllStep); // ID шага
-                preparedStatament.setString(4, driveID);
-                preparedStatament.execute();
+                PreparedStatement preparedStatement = c.prepareStatement(insertImage);
+                preparedStatement.setInt(1, numberOfAllStep); // картинок столько же сколько и шагов
+                preparedStatement.setInt(2, 0);
+                preparedStatement.setInt(3, numberOfAllStep); // ID шага
+                preparedStatement.setString(4, driveID);
+                preparedStatement.execute();
 
                 numberOfAllStep++;
             }
