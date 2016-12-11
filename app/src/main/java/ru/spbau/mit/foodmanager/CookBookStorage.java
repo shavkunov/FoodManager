@@ -220,22 +220,26 @@ public class CookBookStorage {
     }
 
     public Category getCategoryByID(int ID) {
-        Category c = null;
-
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
-        Cursor categoryCursor = db.rawQuery(categoryQuery, null);
 
-        if (categoryCursor != null && categoryCursor.moveToFirst()) {
-            String description = categoryCursor.getString(
-                                 categoryCursor.getColumnIndex("name"));
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet category = stmt.executeQuery(categoryQuery);
 
-            c = new Category(ID, description, this, null); // пока картинок категорий у нас нет
-        } else {
-            return null;
+            if (category.next()) {
+                String description = category.getString("name");
+                // пока картинок категорий у нас нет
+                return new Category(ID, description, this, null);
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to get category");
+            e.printStackTrace();
         }
 
-        categoryCursor.close();
-        return c;
+        return null;
     }
 
     private LinkedList<Category> getCategoryFromQuery(String categoryQuery) {
