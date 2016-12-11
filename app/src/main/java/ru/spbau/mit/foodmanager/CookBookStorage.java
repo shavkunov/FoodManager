@@ -29,7 +29,7 @@ public class CookBookStorage {
     private final String password = "Wc22_0f_0TA2";
     Connection c;
 
-    private CookBookStorage(Context context) {
+    private CookBookStorage() {
         try {
             c = DriverManager.getConnection(url, user, password);
             c.setAutoCommit(false);
@@ -39,9 +39,9 @@ public class CookBookStorage {
         r = new Random();
     }
 
-    public static CookBookStorage getInstance(Context context) {
+    public static CookBookStorage getInstance() {
         if (instance == null) {
-            instance = new CookBookStorage(context);
+            instance = new CookBookStorage();
         }
 
         return instance;
@@ -249,7 +249,7 @@ public class CookBookStorage {
             if (category.next()) {
                 String description = category.getString("name");
                 // пока картинок категорий у нас нет
-                Category c =  new Category(ID, description, this, null);
+                Category c =  new Category(ID, description, null);
                 stmt.close();
                 return c;
             } else {

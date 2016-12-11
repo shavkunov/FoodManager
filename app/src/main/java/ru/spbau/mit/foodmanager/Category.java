@@ -8,13 +8,11 @@ import java.util.ArrayList;
 public class Category implements Serializable {
     private String description;
     private int ID;
-    private CookBookStorage cookbook;
     private Bitmap image;
 
-    public Category(int ID, String description, CookBookStorage cookbook, Bitmap image) {
+    public Category(int ID, String description, Bitmap image) {
         this.ID = ID;
         this.description = description;
-        this.cookbook = cookbook;
         this.image = image;
     }
 
@@ -27,7 +25,7 @@ public class Category implements Serializable {
     }
 
     public ArrayList<Recipe> getRecipes() {
-        return cookbook.getRecipesOfCategory(this.ID);
+        return CookBookStorage.getInstance().getRecipesOfCategory(this.ID);
     }
 
     public Bitmap getImage() {
