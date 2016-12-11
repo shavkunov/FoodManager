@@ -202,22 +202,21 @@ public class CookBookStorage {
     }
 
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
-        ArrayList<Recipe> res = new ArrayList<>();
-
         String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
-        Cursor cursor = db.rawQuery(categoryQuery, null);
+        try {
+            Statement stmt = c.createStatement();
+            ResultSet recipes = stmt.executeQuery(categoryQuery);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                int recipeID = cursor.getInt(cursor.getColumnIndex("recipe_ID"));
-                res.add(getRecipe(recipeID));
-            } while (cursor.moveToNext());
-
-        } else {
-            return null;
+            ArrayList<Recipe> res = new ArrayList<>();
+            while (recipes.next()) {
+                res.add(getRecipe(recipes.getInt("recipe_ID")));
+            }
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to get recipes of category");
+            e.printStackTrace();
         }
 
-        return res;
+        return null;
     }
 
     public Category getCategoryByID(int ID) {
