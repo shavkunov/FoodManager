@@ -1,12 +1,10 @@
 package ru.spbau.mit.foodmanager;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.icu.util.Calendar;
-import android.icu.util.TimeUnit;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
@@ -18,24 +16,23 @@ public class NotificationService extends Service {
     private static final String COOK_NOTIFICATION_TITLE = "Время начинать готовить";
     private static final String COOK_NOTIFICATION_TEXT = "Сейчас самое время приготовить что-нибудь вкусное!";
     private NotificationManager notificationManager;
-    private long notificationTimeBegin;
-    private long notificationTimeEnd;
     private Calendar calendar = Calendar.getInstance();
     private MenuSettings menuSettings = MenuSettings.getInstance();
+    private NotificationSettings notificationSettings = NotificationSettings.getInstance();
 
     @Override
     public void onCreate() {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationTimeBegin = 0; //TODO Get normal time from settings
-        notificationTimeEnd = System.currentTimeMillis()*2;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             while (true) {
-                sendCookNotification();
+                if (notificationSettings.getShowCookNotifications()) {
+                    sendCookNotification();
+                }
             }
         }
         catch (Exception e) {
@@ -49,6 +46,8 @@ public class NotificationService extends Service {
      */
     private void sendCookNotification() {
         long timeOfDay = System.currentTimeMillis() % calendar.get(Calendar.MILLISECONDS_IN_DAY);
+        long notificationTimeBegin = notificationSettings.getTimeOfDayBeginCookNotifications();
+        long notificationTimeEnd = notificationSettings.getTimeOfDayEndCookNotifications();
         Day day = calendarDayToDay(calendar.get(Calendar.DAY_OF_WEEK));
         if (timeOfDay > notificationTimeBegin && timeOfDay < notificationTimeEnd && menuSettings.isCookingDay(day)) {
             Intent intent = new Intent(this, MainActivity.class);
