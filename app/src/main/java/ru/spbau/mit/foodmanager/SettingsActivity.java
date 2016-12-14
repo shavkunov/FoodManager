@@ -17,4 +17,9 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MenuSettingsActivity.class);
         startActivity(intent);
     }
+
+    public void onNotificationSettingsClick(View v) {
+        Intent intent = new Intent(this, NotificationSettingsActivity.class);
+        startActivity(intent);
+    }
 }

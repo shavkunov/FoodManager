@@ -19,8 +19,8 @@ public class NotificationService extends Service {
     private static final String COOK_NOTIFICATION_TITLE = "Время начинать готовить";
     private static final String COOK_NOTIFICATION_TEXT = "Сейчас самое время приготовить что-нибудь вкусное!";
     private NotificationManager notificationManager;
-    private Day lastCookDayNotify;
-    private Boolean notifyedToday;
+    private static Day lastCookDayNotify;
+    private static Boolean notifyedToday;
     private Calendar calendar = Calendar.getInstance();
     private MenuSettings menuSettings = MenuSettings.getInstance();
     private NotificationSettings notificationSettings = NotificationSettings.getInstance();
@@ -40,7 +40,8 @@ public class NotificationService extends Service {
                     if (calendarDayToDay(calendar.get(Calendar.DAY_OF_WEEK)) != lastCookDayNotify) {
                         notifyedToday = false;
                     }
-                    if (notificationSettings.getShowCookNotifications() && !notifyedToday) {
+                    if (notificationSettings.getShowCookNotifications() && !notifyedToday
+                            && notificationSettings.getShowCookNotifications()) {
                         sendCookNotification();
                     }
                 }

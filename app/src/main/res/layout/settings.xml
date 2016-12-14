@@ -24,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/settings_menu_settings_btn"/>
             <Button
+                android:onClick="onNotificationSettingsClick"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_notification_settings_btn"/>

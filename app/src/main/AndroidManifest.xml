@@ -38,7 +38,9 @@
             android:name=".NotificationService"
             android:enabled="true"
             android:exported="true"
-            android:process=":FoodManagerNotificationService"/>
+            android:process=":FoodManagerNotificationService" />
+
+        <activity android:name=".NotificationSettingsActivity"></activity>
     </application>
 
 </manifest>
