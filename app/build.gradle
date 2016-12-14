@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+sourceCompatibility = 1.7
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
@@ -29,5 +31,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.0.0'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
     testCompile 'junit:junit:4.12'
 }

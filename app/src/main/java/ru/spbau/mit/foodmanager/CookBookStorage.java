@@ -1,6 +1,8 @@
 package ru.spbau.mit.foodmanager;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.StrictMode;
 import android.util.Log;
 
 import java.sql.Connection;
@@ -24,14 +26,19 @@ public class CookBookStorage {
     private final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
     private String user = "foodmanagertest";
     private final String password = "Wc22_0f_0TA2";
-    Connection connection;
+    private Connection connection;
 
     private CookBookStorage() {
         try {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
-            connection.setAutoCommit(false);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Log.d(LOG_TAG, "Problems with connection");
+            Log.d(LOG_TAG, e.toString());
+            Log.d(LOG_TAG, e.getMessage());
+            Log.d(LOG_TAG, e.getCause().getMessage());
         }
     }
 

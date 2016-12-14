@@ -21,7 +21,7 @@ public class StepViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.step_view);
         Intent i = getIntent();
-        recipe = CookBookStorage.getInstance(this).getRecipe(i.getIntExtra("Recipe", -1));
+        recipe = CookBookStorage.getInstance().getRecipe(i.getIntExtra("Recipe", -1));
         steps = recipe.getSteps();
         TextView recipeName = (TextView)findViewById(R.id.step_view_recipe_name);
         recipeName.setText(recipe.getName());

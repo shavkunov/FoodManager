@@ -28,7 +28,7 @@ public class MenuViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_view);
-        menu = new MenuStorage(CookBookStorage.getInstance(this));
+        menu = new MenuStorage(CookBookStorage.getInstance());
         allDayMenu = menu.getMenu();
         if (allDayMenu == null) {
             menu.setNewWeekMenu();

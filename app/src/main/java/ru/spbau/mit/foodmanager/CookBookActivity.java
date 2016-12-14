@@ -23,7 +23,7 @@ public class CookBookActivity extends AppCompatActivity {
         //Init List
         ListView listView = (ListView) findViewById(R.id.cook_book_list);
         categories = new ArrayList<>();
-        CookBookStorage cookbook = CookBookStorage.getInstance(this);
+        CookBookStorage cookbook = CookBookStorage.getInstance();
         categories.addAll(cookbook.getRecipiesTypeOfDish());
         ArrayList<String> names = new ArrayList<>();
         for (Category c : categories) {
