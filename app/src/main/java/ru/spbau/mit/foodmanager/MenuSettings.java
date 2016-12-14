@@ -34,20 +34,11 @@ public class MenuSettings {
         return settingsByDay.get(day);
     }
 
-    public HashMap<Day, DaySettings> getSettingsForAllDays() {
-        return settingsByDay;
-    }
-
     public Boolean isCookingDay(Day day) {
         return isCookingDay.get(day);
     }
 
     public void setCookingDay(Day day, Boolean isCookingDay) {
         this.isCookingDay.put(day, isCookingDay);
-    }
-
-    public void setDaySettings(Day d, DaySettings settings) {
-        //TODO обновлять БД
-        settingsByDay.put(d, settings);
     }
 }

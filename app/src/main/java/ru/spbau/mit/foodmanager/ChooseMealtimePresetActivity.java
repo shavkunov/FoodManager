@@ -58,7 +58,7 @@ public class ChooseMealtimePresetActivity extends AppCompatActivity {
                     DaySettings.MealtimeSettings result =
                             (DaySettings.MealtimeSettings) resultContainer.getSerializableExtra("Result");
                     presets.add(result);
-                    generatePresetView(presetList, result);
+                    presetList.addView(generatePresetView(presetList, result));
                 }
                 break;
             case REQUEST_EDIT :

@@ -23,4 +23,6 @@
     <string name="settings_menu_settings_btn">Настройки генератора меню</string>
     <string name="settings_notification_settings_btn">Настройки оповещений</string>
     <string name="menu_settings_day_is_cookingday">День готовки</string>
+    <string name="mealtime_settings_name_txt">Название:</string>
+    <string name="mealtime_settings_header_txt">Настройки шаблона приема пищи</string>
 </resources>

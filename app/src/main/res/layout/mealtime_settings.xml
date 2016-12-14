@@ -14,6 +14,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="@string/mealtime_settings_header_txt"
+            />
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -22,7 +30,8 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/mealtime_settings_name_txt"/>
             <EditText
                 android:id="@+id/mealtime_settings_name"
                 android:layout_width="match_parent"
@@ -32,7 +41,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onSaveClick"/>
+            android:onClick="onSaveClick"
+            android:text="Сохранить"/>
         <!-- Body -->
         <RelativeLayout
             android:layout_width="match_parent"
