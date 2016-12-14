@@ -16,7 +16,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            Log.d("BOOT_COMPLETE_RECEIVER", "Catch!");
+            context.startService(new Intent(context, NotificationService.class));
         }
     }
 }

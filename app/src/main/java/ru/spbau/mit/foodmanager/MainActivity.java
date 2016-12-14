@@ -11,6 +11,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        startService(new Intent(this, NotificationService.class));
+        startService(new Intent(this, NotificationService.class));
     }
 
     public void onOpenCookBookClick(View view) {

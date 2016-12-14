@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.0"
     defaultConfig {
         applicationId "ru.spbau.mit.foodmanager"
-        minSdkVersion 14
+        minSdkVersion 24
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
