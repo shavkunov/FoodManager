@@ -32,6 +32,10 @@ public class CloudManager {
     private Connection connection;
     private AssetManager manager;
 
+    /**
+     * Инициализация разрешений для создания соединения с БД. Загрузка драйвера.
+     * @throws Exception не получилось найти драйвер для БД или не удалось установить соединение.
+     */
     public CloudManager(Context context) throws Exception {
         manager = context.getAssets();
 
@@ -41,6 +45,9 @@ public class CloudManager {
         connection = DriverManager.getConnection(url, user, password);
     }
 
+    /**
+     * Скрипт был задуман, чтобы загружать рецепты из source. Старые данные удаляем.
+     */
     private void dropExistingTables(Statement stmt) throws SQLException {
         // only for MySQL!
         String queryDisableForeignChecks = "SET FOREIGN_KEY_CHECKS = 0";
@@ -63,6 +70,9 @@ public class CloudManager {
         stmt.executeUpdate(queryEnableForeignChecks);
     }
 
+    /**
+     * Создание таблицы Category.
+     */
     private void createTableCategory(Statement stmt) throws Exception {
         String queryCreationOfCategory = "CREATE TABLE Category (" +
                 "ID INTEGER PRIMARY KEY NOT NULL, " +
@@ -101,6 +111,9 @@ public class CloudManager {
         }
     }
 
+    /**
+     * Создание остальных таблиц. Наполнение будет происходит в методе setupCloudServices
+     */
     private void createOtherEmptyTables(Statement stmt) throws SQLException {
         String queryCreationRecipe = "CREATE TABLE Recipe (" +
                 "ID INTEGER PRIMARY KEY NOT NULL, " +
@@ -150,6 +163,11 @@ public class CloudManager {
         stmt.executeUpdate(queryCreationOfIngredientToRecipe);
     }
 
+    /**
+     * Загрузка изображения.
+     * @param path путь до изображения в папке assets.
+     * @return онлайн ссылка на изображение в сервисе cloudinary
+     */
     private String uploadImage(String path) throws Exception {
         InputStream imageIn = manager.open(path);
 
@@ -163,11 +181,22 @@ public class CloudManager {
         return link;
     }
 
+    /**
+     * Получение ридера файла.
+     * @param path путь до файла в папке assets.
+     * @return ридер для чтения файла.
+     */
     private BufferedReader getReaderFromPath(String path) throws IOException {
         InputStream is = manager.open(path);
         return new BufferedReader(new InputStreamReader(is, "UTF-8"));
     }
 
+    /**
+     * Вставка картинки в базу данных.
+     * @param number это одновременно и ID шага и ключ.
+     * @param link ссылка на изображение.
+     * @throws SQLException
+     */
     private void insertImage(int number, String link) throws SQLException {
         String insertImage = "INSERT INTO Image VALUES (?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
@@ -179,6 +208,9 @@ public class CloudManager {
         preparedStatement.execute();
     }
 
+    /**
+     * Создание БД на сервере.
+     */
     public void setupCloudServices() throws Exception {
         connection.setAutoCommit(false);
         Statement stmt = connection.createStatement();
@@ -212,6 +244,7 @@ public class CloudManager {
             String step;
 
             // считается, что количество шагов = количество картинок
+            // загрузили шаги интструкции
             for (int i = 1; (step = readerSteps.readLine()) != null; i++) {
                 String insertStep = "INSERT INTO Step (ID, recipe_ID, description) VALUES " +
                                     "(" + numberOfAllStep + ", " + Integer.parseInt(recipeID)
@@ -226,6 +259,7 @@ public class CloudManager {
                 numberOfAllStep++;
             }
 
+            // загрузка категорий рецепта
             String recipeCategoriesPath = "source/recipes/" + recipeID + "/category";
             BufferedReader readerRecipeCategories = getReaderFromPath(recipeCategoriesPath);
             String recipeCategory;
@@ -245,6 +279,7 @@ public class CloudManager {
                 stmt.executeUpdate(insertRecipeToCategory);
             }
 
+            // загрузка ингредиентов рецепта
             String recipeIngredientsPath = "source/recipes/" + recipeID + "/ingredients";
             BufferedReader readerRecipeIngredients = getReaderFromPath(recipeIngredientsPath);
             String ingredientLine;
