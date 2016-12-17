@@ -1,10 +1,19 @@
 package ru.spbau.mit.foodmanager;
 
-import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,16 +22,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.Map;
 
 /**
  * Хранилище всех рецептов.
  */
 public class CookBookStorage {
     private static CookBookStorage instance;
-    private final String LOG_TAG = "CookBookStorageLogs";
-
+    private final String LOG_TAG = "CookBookStorageTAG";
+    private final String CLOUDINARY_URL = "cloudinary://285162791646134:yGqzM1FdReQ8uPa1taEUZihoNgI@dxc952wrd";
     private final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
     private String user = "foodmanagertest";
     private final String password = "Wc22_0f_0TA2";
@@ -63,30 +71,51 @@ public class CookBookStorage {
             ArrayList<Integer> ingredientIDs = insertIngredients(stmt, recipe);
             insertRecipeIngredientRelation(stmt, recipe, ingredientIDs);
             ArrayList<Integer> stepIDs = insertSteps(stmt, recipe);
-            insertImageStepRelation(stepIDs);
+            insertImageStepRelation(stepIDs, recipe);
 
             stmt.close();
             connection.setAutoCommit(true);
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to insert new recipe");
             e.printStackTrace();
         }
     }
 
     /**
+     * Загрузка изображения.
+     * @param imageIn изображение.
+     * @return онлайн ссылка на изображение в сервисе cloudinary
+     */
+    private String uploadImage(InputStream imageIn) throws Exception {
+        Cloudinary cloudinary = new Cloudinary(CLOUDINARY_URL);
+        Map result = cloudinary.uploader().upload(imageIn, ObjectUtils.emptyMap());
+        JSONObject jsonObject = new JSONObject(result);
+
+        return jsonObject.getString("url");
+    }
+
+    /**
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
      * @param ids идентификаторы картинок загруженные в insertSteps.
      */
-    private void insertImageStepRelation(ArrayList<Integer> ids) throws SQLException {
+    private void insertImageStepRelation(ArrayList<Integer> ids, Recipe recipe) throws Exception {
 
-        for (int stepID : ids) {
+        for (int i = 0; i < ids.size(); i++) {
             String insertRelation = "INSERT INTO Image VALUES (?, ?, ?)";
-            String driveID = null; // TODO : upload to google drive
+
+            Bitmap bitmap = recipe.getSteps().get(i).getImage();
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+            byte[] bitmapdata = bos.toByteArray();
+            ByteArrayInputStream bs = new ByteArrayInputStream(bitmapdata);
+
+            String link = uploadImage(bs);
             PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
             preparedStatement.setInt(1, 0);
-            preparedStatement.setInt(2, stepID);
-            preparedStatement.setString(3, driveID);
+            preparedStatement.setInt(2, ids.get(i));
+            preparedStatement.setString(3, link);
             preparedStatement.execute();
         }
     }
@@ -198,6 +227,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            return ids;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get categories of recipe");
             e.printStackTrace();
@@ -221,17 +251,17 @@ public class CookBookStorage {
 
             while (steps.next()) {
                 String stepDescription = steps.getString("description");
-                String imageID = steps.getString("drive_ID");
+                String imageURL = steps.getString("link");
 
-                // TODO : load from google drive
-                Bitmap bm = null;
-                recipeSteps.add(new Step(stepDescription, bm));
+                URL url = new URL(imageURL);
+                Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                recipeSteps.add(new Step(stepDescription, image));
             }
 
             stmt.close();
             return recipeSteps;
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to get recipe steps");
             e.printStackTrace();
         }
