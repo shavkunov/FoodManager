@@ -10,7 +10,7 @@ public class MenuSettings {
     static final private MenuSettings instance = new MenuSettings();
 
     private MenuSettings() {
-        //TODO: Загружать и сохранять в БД
+        //TODO: Загружать из и сохранять в БД инстанс
         settingsByDay = new HashMap<>();
         isCookingDay = new HashMap<>();
         for (Day d : Day.values()) {

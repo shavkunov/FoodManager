@@ -24,6 +24,7 @@ public class MenuStorage {
             "Воскресенье"};
 
     private MenuStorage(CookBookStorage cookbook) {
+        //TODO Загружать из и сохранять в БД инстанс
         dayMenus = new HashMap<>();
         this.cookbook = cookbook;
     }

@@ -40,7 +40,8 @@
             android:exported="true"
             android:process=":FoodManagerNotificationService" />
 
-        <activity android:name=".NotificationSettingsActivity"></activity>
+        <activity android:name=".NotificationSettingsActivity" />
+        <activity android:name=".EditRecipeActivity"></activity>
     </application>
 
 </manifest>

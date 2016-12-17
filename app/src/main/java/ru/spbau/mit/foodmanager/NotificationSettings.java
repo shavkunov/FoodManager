@@ -20,7 +20,7 @@ public class NotificationSettings {
         showCookNotifications= true;
         timeOfDayBeginCookNotifications = 0;
         timeOfDayEndCookNotifications = Calendar.getInstance().get(Calendar.MILLISECONDS_IN_DAY);
-        //TODO: Init from file
+        //TODO: Сохранять в и загружать из БД
     }
 
     public void setShowCookNotifications(Boolean b) {
