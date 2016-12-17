@@ -33,9 +33,9 @@ public class MenuStorage {
         return DAY_NAMES;
     }
 
-    static public MenuStorage getInstance(Context context) {
+    static public MenuStorage getInstance() {
         if (instance == null) {
-            instance = new MenuStorage(CookBookStorage.getInstance(context));
+            instance = new MenuStorage(CookBookStorage.getInstance());
         }
         return instance;
     }

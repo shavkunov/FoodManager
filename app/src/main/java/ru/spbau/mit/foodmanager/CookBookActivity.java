@@ -33,7 +33,7 @@ public class CookBookActivity extends AppCompatActivity {
         target = task.getIntExtra("Target", TARGET_NO);
         //Init List
         categories = new ArrayList<>();
-        cookbook =  CookBookStorage.getInstance(this);
+        cookbook =  CookBookStorage.getInstance();
         categories.addAll(cookbook.getRecipiesTypeOfDish());
         //Group by init
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
