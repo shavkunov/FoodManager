@@ -6,12 +6,15 @@
     <TextView
         android:id="@+id/menu_day_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <ListView
-        android:id="@+id/menu_day_listview"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:id="@+id/menu_day_mealtimes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/day_menu_recipe_padding">
+        android:paddingLeft="@dimen/day_menu_recipe_padding"
+        android:orientation="vertical">
 
-    </ListView>
+    </LinearLayout>
 </LinearLayout>

@@ -1,41 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/menu_view"
+    android:id="@+id/menu_settngs"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ru.spbau.mit.foodmanager.MenuViewActivity">
+    tools:context="ru.spbau.mit.foodmanager.MenuSettingsActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical">
-        <!-- Menu control panel -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/menu_view_generate_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onGenerateBtnClick"
-                android:text="@string/menu_view_generate_str"/>
-        </LinearLayout>
-        <!-- Current menu view -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <LinearLayout
-                android:id="@+id/menu_view_days"
+                android:id="@+id/menu_settings_days"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
                 android:orientation="vertical">
 
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
+
 </RelativeLayout>

@@ -15,14 +15,16 @@ import java.util.ArrayList;
 
 public class CookBookCategoryActivity extends AppCompatActivity {
     private Category category;
+    private Intent task;
+    private Integer target;
     private ArrayList<Recipe> recipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cook_book_category);
-        Intent task = getIntent();
-        Log.d("COOKBOOKCATEGORY", ((Integer)task.getIntExtra("Category", -1)).toString());
+        task = getIntent();
+        target =  task.getIntExtra("Target",CookBookActivity.TARGET_NO);
         category = CookBookStorage.getInstance().getCategoryByID(task.getIntExtra("Category", -1));
         if (category != null) {
             recipes = category.getRecipes();
@@ -41,10 +43,20 @@ public class CookBookCategoryActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("CategoryActivityLogs", ((Integer)i).toString());
-                Intent intent = new Intent(CookBookCategoryActivity.this, RecipeViewActivity.class);
-                intent.putExtra("Recipe", recipes.get(i).getID());
-                startActivity(intent);
+                Intent intent;
+                switch (target) {
+                    case CookBookActivity.TARGET_NO :
+                        intent = new Intent(CookBookCategoryActivity.this, RecipeViewActivity.class);
+                        intent.putExtra("Recipe", recipes.get(i).getID());
+                        startActivity(intent);
+                        break;
+                    case  CookBookActivity.TARGET_RECIPE :
+                        intent = task;
+                        intent.putExtra("Result", recipes.get(i).getID());
+                        setResult(RESULT_OK, intent);
+                        finish();
+                        break;
+                }
             }
         });
     }

@@ -11,6 +11,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        startService(new Intent(this, NotificationService.class));
+        startService(new Intent(this, NotificationService.class));
     }
 
     public void onOpenCookBookClick(View view) {
@@ -25,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onShoppingListClick(View view) {
         Intent intent = new  Intent(this, ShoppingListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onSettingsClick(View view) {
+        Intent intent = new  Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 }

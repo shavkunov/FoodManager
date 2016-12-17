@@ -10,28 +10,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity="center"
     tools:context="ru.spbau.mit.foodmanager.MainActivity">
-    <LinearLayout
+    <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/cookbook"
-            android:onClick="onOpenCookBookClick"/>
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/menu"
-            android:onClick="onWeekMenuClick"/>
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/shoppinglist"
-            android:onClick="onShoppingListClick"/>
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"/>
-    </LinearLayout>
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/logo"/>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/cookbook"
+                android:onClick="onOpenCookBookClick"/>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/menu"
+                android:onClick="onWeekMenuClick"/>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/shoppinglist"
+                android:onClick="onShoppingListClick"/>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings"
+                android:onClick="onSettingsClick"/>
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

@@ -19,4 +19,10 @@
     <string name="step_view_next_str">Вперед</string>
     <string name="step_view_count1_str">Шаг\ </string>
     <string name="step_view_count2_str">\ из\ </string>
+    <string name="cook_book_group_by_text">Сгруппировать по:</string>
+    <string name="settings_menu_settings_btn">Настройки генератора меню</string>
+    <string name="settings_notification_settings_btn">Настройки оповещений</string>
+    <string name="menu_settings_day_is_cookingday">День готовки</string>
+    <string name="mealtime_settings_name_txt">Название:</string>
+    <string name="mealtime_settings_header_txt">Настройки шаблона приема пищи</string>
 </resources>

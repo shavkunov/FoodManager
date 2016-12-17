@@ -2,70 +2,120 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Реализация хранилища меню. Кроме названий методов здесь ничего не читать!
- * Олег, настало твое время.
+ * Хранит меню для каждого дня недели
  */
 public class MenuStorage {
-    /**
-     * Список рецептов на неделю.
-     */
-    private ArrayList<ArrayList<Recipe>> listDishes;
+    private HashMap<Day, DayMenu> dayMenus;
     private CookBookStorage cookbook;
+    static private MenuStorage instance;
+    static final private String[] DAY_NAMES = {
+            "Понедельник",
+            "Вторник",
+            "Среда",
+            "Четверг",
+            "Пятница",
+            "Суббота",
+            "Воскресенье"};
 
-    MenuStorage(CookBookStorage cookbook) {
-        listDishes = null;
+    private MenuStorage(CookBookStorage cookbook) {
+        //TODO Загружать из и сохранять в БД инстанс
+        dayMenus = new HashMap<>();
         this.cookbook = cookbook;
     }
 
-    /**
-     * TODO
-     */
-    private void generateDayMenu(Day day) {
-        HashMap<Recipe, Integer> m = new HashMap<>();
+    static public String[] getDayNames() {
+        return DAY_NAMES;
+    }
 
-        // TODO Implementation
+    static public MenuStorage getInstance(Context context) {
+        if (instance == null) {
+            instance = new MenuStorage(CookBookStorage.getInstance(context));
+        }
+        return instance;
     }
 
     /**
-     * @return возвращает меню. i-ая запись в списке соответствует списку рецептов на i-ый день.
-     * Внимание: запись в списке может означать null, это значит, что нет меню на этот день.
-     * Сделано это для того, чтобы мы могли создавать меню, например, только на один день.
+     * Возвращает HashMap, где ключ - день, значение - DayMenu
      */
-    public ArrayList<ArrayList<Recipe>> getMenu() {
-        setNewWeekMenu();
-        return listDishes;
+    public HashMap<Day, DayMenu> getMenu() {
+        return dayMenus;
     }
 
     /**
-     * Используется ТОЛЬКО в случае, если пользователя не устраивает конкретный день в меню.
-     * @param day метод заново создает меню для этого дня.
+     * Записывает новое меню на определенный день
      */
-    public void setNewDayMenu(Day day) {
-        generateDayMenu(day);
+    public void setNewDayMenu(Day day, DayMenu dayMenu) {
+        if (day != null) {
+            dayMenus.put(day,dayMenu);
+        }
     }
 
     /**
-     * Создание меню на неделю.
-     * TODO
+     * Генерирует меню на один день, учитывая настройки и имеющиеся рецепты
+     * @param settings настройки меню на этот день
+     * @param recipes Map из CategoryID в RecipeID. Если для какой-то категории есть рецепт, то будет использован именно он
      */
-    public void setNewWeekMenu() {
-        // TODO : Implementation
+    public DayMenu generateDayMenu(DaySettings settings, HashMap<Integer, Integer> recipes) {
+        ArrayList<DayMenu.Mealtime> dishesForDay = new ArrayList<>();
+        for (DaySettings.MealtimeSettings mealtimeSettings : settings.getMealtimeSettings()) {
+            ArrayList<Integer> mealtimeRecipes = new ArrayList<>();
+            for (Integer categoryID : mealtimeSettings.dishesCategories()) {
+                if (recipes.get(categoryID) == null) {
+                    recipes.put(categoryID, cookbook.chooseRandomDishFromCategory(categoryID).getID());
+                }
+                mealtimeRecipes.add(recipes.get(categoryID));
+            }
+            dishesForDay.add(new DayMenu.Mealtime(mealtimeSettings.getName(), mealtimeRecipes));
+        }
+        return new DayMenu(dishesForDay);
     }
 
     /**
-     * @param day создание меню только для одного дня на неделе.
+     * Генерирует меню на неделю
      */
-    public void setOnlyOneDayMenu(Day day) {
-        for (Day d : Day.values()) {
-            if (d == day) {
-                generateDayMenu(d);
-            } else {
-                listDishes.set(d.ordinal(), null);
+    public void generateWeekMenu() {
+        MenuSettings settings = MenuSettings.getInstance();
+        Day firstCookingDay = Day.Monday;
+        for (Day day : Day.values()) {
+            if (settings.isCookingDay(day)) {
+                firstCookingDay = day;
+                break;
+            }
+        }
+        if (!settings.isCookingDay(firstCookingDay)) {
+            //TODO обработать случай, когда нет дней готовки.
+        }
+        //Получаем для каждого дня готовки список дней, на которые готовим.
+        HashMap<Day, ArrayList<Day>> cookForDays = new HashMap<>();
+        Day currentCookingDay = firstCookingDay;
+        for (Integer day = firstCookingDay.ordinal(); day < Day.values().length; day++) {
+            if (settings.isCookingDay(Day.values()[day])) {
+                currentCookingDay = Day.values()[day];
+                cookForDays.put(currentCookingDay, new ArrayList<Day>());
+            }
+            cookForDays.get(currentCookingDay).add(Day.values()[day]);
+        }
+        for (Integer day = 0; day < firstCookingDay.ordinal(); day++) {
+            cookForDays.get(currentCookingDay).add(Day.values()[day]);
+        }
+        //Получаем рецепты для каждого дня готовки
+        for (Day cookingDay : cookForDays.keySet()) {
+            //TODO Использовать множество категорий
+            //Создаем меню на каждый день
+            HashMap<Integer, Integer> categoryRecipes = new HashMap<>();
+            for (Day day : cookForDays.get(cookingDay)) {
+                DaySettings daySettings = settings.getDaySettings(day);
+                dayMenus.put(day, null);
+                if (daySettings != null) {
+                    DayMenu dayMenu = generateDayMenu(daySettings, categoryRecipes);
+                    dayMenus.put(day, dayMenu);
+                }
             }
         }
     }

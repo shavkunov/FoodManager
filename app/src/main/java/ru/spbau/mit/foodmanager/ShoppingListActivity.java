@@ -19,6 +19,7 @@ import java.util.List;
 
 public class ShoppingListActivity extends AppCompatActivity {
 
+    private CookBookStorage cookbook;
     private HashMap<String, Double> productCount;
     private ArrayList<String> productNames;
     private ArrayList<Recipe> recipes;
@@ -28,24 +29,26 @@ public class ShoppingListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list);
         //Init List
-        MenuStorage menu = new MenuStorage(CookBookStorage.getInstance());
-        ArrayList<ArrayList<Recipe>> menuRecipes = menu.getMenu();
-        if (menuRecipes == null) {
-            menuRecipes = new ArrayList<>();
-        }
+        cookbook = CookBookStorage.getInstance();
+        MenuStorage menu = MenuStorage.getInstance();
+        HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
         recipes = new ArrayList<>();
-        for(ArrayList<Recipe> rs : menuRecipes) {
-            recipes.addAll(rs);
+        for(DayMenu rs : menuRecipes.values()) {
+            for (Integer id : rs.getDishes()) {
+                recipes.add(cookbook.getRecipe(id));
+            }
         }
         productCount = new HashMap<>();
         for(Recipe r : recipes) {
-            for(Ingredient i : r.getIngredients()) {
-                if (productCount.get(i.getName()) == null) {
-                    productCount.put(i.getName(), 0.0);
-                }
-                productCount.put(i.getName(),
-                        i.getQuantity() + productCount.get(i.getName()));
-            }
+            if (r != null) {
+				for(Ingredient i : cookbook.getRecipeIngredients(r.getID())) {
+					if (productCount.get(i.getName()) == null) {
+						productCount.put(i.getName(), 0.0);
+					}
+					productCount.put(i.getName(),
+							i.getQuantity() + productCount.get(i.getName()));
+				}
+			}
         }
         productNames = new ArrayList<>();
         for (String name : productCount.keySet()) {
@@ -53,12 +56,8 @@ public class ShoppingListActivity extends AppCompatActivity {
         }
         ListView listView = (ListView) findViewById(R.id.shopping_list_view);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_multiple_choice, productNames);
         listView.setAdapter(adapter);
-      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {}
-        }); */
     }
 }

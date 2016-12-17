@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!-- Edit btns -->
+    <ImageButton
+        android:id="@+id/mealtime_settings_dish_delete"
+        android:layout_width="@dimen/imbtn_size"
+        android:layout_height="@dimen/imbtn_size"
+        android:src="@drawable/delete"
+        android:background="@color/colorTransparent"
+        android:scaleType="centerInside"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
+    <ImageButton
+        android:id="@+id/mealtime_settings_dish_edit"
+        android:src="@drawable/edit"
+        android:background="@color/colorTransparent"
+        android:layout_width="@dimen/imbtn_size"
+        android:layout_height="@dimen/imbtn_size"
+        android:scaleType="centerInside"
+        android:layout_toLeftOf="@id/mealtime_settings_dish_delete"
+        android:layout_toStartOf="@id/mealtime_settings_dish_delete"
+        android:layout_centerVertical="true"/>
+    <!-- Mealtime name -->
+    <TextView
+        android:id="@+id/mealtime_settings_dish_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/mealtime_settings_dish_edit"
+        android:layout_toStartOf="@id/mealtime_settings_dish_edit"
+        android:layout_centerVertical="true"
+        android:textSize="17sp"/>
+</RelativeLayout>
