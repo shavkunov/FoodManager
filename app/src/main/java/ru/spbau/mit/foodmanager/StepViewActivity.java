@@ -1,10 +1,8 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +20,7 @@ public class StepViewActivity extends AppCompatActivity {
         setContentView(R.layout.step_view);
         Intent i = getIntent();
         recipe = CookBookStorage.getInstance().getRecipe(i.getIntExtra("Recipe", -1));
-        steps = recipe.getSteps();
+        steps = CookBookStorage.getInstance().getRecipeSteps(recipe.getID());
         TextView recipeName = (TextView)findViewById(R.id.step_view_recipe_name);
         recipeName.setText(recipe.getName());
         //Log.d("STEP_BY_STEPLOGGER", ((Integer)steps.size()).toString());
