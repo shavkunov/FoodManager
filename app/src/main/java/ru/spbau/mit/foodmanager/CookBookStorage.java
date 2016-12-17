@@ -36,9 +36,6 @@ public class CookBookStorage {
             connection = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Problems with connection");
-            Log.d(LOG_TAG, e.toString());
-            Log.d(LOG_TAG, e.getMessage());
-            Log.d(LOG_TAG, e.getCause().getMessage());
         }
     }
 
