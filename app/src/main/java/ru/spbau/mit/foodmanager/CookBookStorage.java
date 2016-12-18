@@ -11,9 +11,13 @@ import com.cloudinary.utils.ObjectUtils;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,7 +32,8 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Хранилище всех рецептов. Singleton.
+ * Хранилище всех рецептов. Singleton. В этом классе слишком много методов, которые можно отнести
+ * к другим классам. Будет изменено после рефакторинга.
  */
 public class CookBookStorage {
     /**
@@ -72,8 +77,19 @@ public class CookBookStorage {
      */
     private String userID;
 
+    /**
+     * Контекст приложения.
+     */
+    private Context context;
+
+    /**
+     * Название файла, где будут храниться избранные рецепты пользователя.
+     */
+    private final String favoritesFileName = "Favorites";
+
     private CookBookStorage(Context context) {
         try {
+            this.context = context;
             userID = Installation.getUserID(context);
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -502,6 +518,93 @@ public class CookBookStorage {
         }
 
         return false;
+    }
+
+    /**
+     * Добавить рецепт в избранное.
+     * @param recipe рецепт, который хотим добавить.
+     */
+    public void addToFavorites(Recipe recipe)  {
+        if (isRecipeFavorite(recipe)) {
+            return;
+        }
+
+        File favorites = new File(context.getFilesDir(), favoritesFileName);
+        FileOutputStream outputStream = null;
+        if (favorites.exists()) {
+            try {
+                outputStream = context.openFileOutput(favoritesFileName, Context.MODE_APPEND);
+                String data = " " + recipe.getID();
+                outputStream.write(data.getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                outputStream = context.openFileOutput(favoritesFileName, Context.MODE_PRIVATE);
+                outputStream.write(String.valueOf(recipe.getID()).getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Получение рецептов в виде их идентификаторов из избранного.
+     * @return пустой список если избранного нет.
+     */
+    private ArrayList<Integer> getRecipesIDFromFavorites() {
+        ArrayList<Integer> res = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                                context.openFileInput(favoritesFileName)));
+
+            String line = br.readLine();
+
+            for (String number : line.split(" ")) {
+                int ID = Integer.parseInt(number);
+                res.add(ID);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return res;
+    }
+
+    /**
+     * Проверка на наличие рецепта в избранном.
+     * @param recipe есть ли этот рецепт в избранном
+     * @return true если рецепт есть, иначе false.
+     */
+    private boolean isRecipeFavorite(Recipe recipe) {
+        ArrayList<Integer> ids = getRecipesIDFromFavorites();
+
+        boolean answer = false;
+        for (int ID : ids) {
+            if (recipe.getID() == ID) {
+                answer = true;
+            }
+        }
+
+        return answer;
+    }
+
+    /**
+     * Получение избранных рецептов.
+     * @return пустой список если в избранном пусто.
+     */
+    public ArrayList<Recipe> getFavorites() {
+        ArrayList<Integer> ids = getRecipesIDFromFavorites();
+        ArrayList<Recipe> res = new ArrayList<>();
+
+        for (int ID : ids) {
+            res.add(getRecipe(ID));
+        }
+
+        return res;
     }
 
     /**
