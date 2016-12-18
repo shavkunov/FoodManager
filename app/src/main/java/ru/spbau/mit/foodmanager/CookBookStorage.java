@@ -1,5 +1,6 @@
 package ru.spbau.mit.foodmanager;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.StrictMode;
@@ -37,9 +38,11 @@ public class CookBookStorage {
     private String user = "foodmanagertest";
     private final String password = "Wc22_0f_0TA2";
     private Connection connection;
+    private String userID;
 
-    private CookBookStorage() {
+    private CookBookStorage(Context context) {
         try {
+            userID = Installation.getUserID(context);
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Class.forName("com.mysql.jdbc.Driver");
@@ -48,9 +51,9 @@ public class CookBookStorage {
         }
     }
 
-    public static CookBookStorage getInstance() {
+    public static CookBookStorage getInstance(Context context) {
         if (instance == null) {
-            instance = new CookBookStorage();
+            instance = new CookBookStorage(context);
         }
 
         return instance;
@@ -365,6 +368,103 @@ public class CookBookStorage {
         }
 
         return null;
+    }
+
+    /**
+     * Возвращает количество лайков рецепта.
+     * @param recipe вернется количество лайков этого рецепта.
+     * @return null если не удалось соединится с сервером, иначе количество лайков.
+     */
+    public Integer getRecipeLikes(Recipe recipe) {
+        String likesQuery = "SELECT COUNT(*) AS total WHERE recipe_ID = " + recipe.getID();
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+            Statement stmt = connection.createStatement();
+            return stmt.executeQuery(likesQuery).getInt("total");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Если пользователь поставил лайк то вернется True, иначе False. Null если не получилось
+     * соединиться с сервером.
+     * @param recipe вернется лайк пользователя этого рецепта.
+     * @return если пользователь поставил лайк то вернется True, иначе False. Null если не получилось
+     * соединиться с сервером.
+     */
+    public Boolean getUserLike(Recipe recipe) {
+        String likesQuery = "SELECT COUNT(*) AS total WHERE recipe_ID = " + recipe.getID() +
+                            " AND user_ID = '" + userID + "'";
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+            Statement stmt = connection.createStatement();
+            int like = stmt.executeQuery(likesQuery).getInt("total");
+            return like == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Метод ставит лайк пользователя.
+     * @param recipe этому рецепту пользователь ставит лайк.
+     * @param state true, тогда поставится лайк, иначе не поставится
+     * @return true если операция прошла успешно, иначе false.
+     */
+    public boolean setLike(Recipe recipe, boolean state) {
+        Boolean userLike = getUserLike(recipe);
+        if (userLike == null) {
+            return false;
+        }
+
+        //состояние не изменилось
+        // пользователь уже поставил лайк и нужно поставить
+        // пользователь не ставил лайк и не нужно ставить.
+        if (userLike == state) {
+            return true;
+        }
+
+        // пользователь не ставил лайк и надо поставить лайк.
+        if (!userLike && state) {
+            try {
+                String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
+                                      userID + "', " + recipe.getID() + ")";
+
+                connection = DriverManager.getConnection(url, user, password);
+                Statement stmt = connection.createStatement();
+                stmt.executeUpdate(setLikeQuery);
+
+                stmt.close();
+                connection.close();
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        // пользователь поставил лайк и надо убрать лайк.
+        try {
+            String removeLikeQuery = "DELETE FROM Like WHERE user_ID = '" + userID +
+                                     "' AND recipe_ID = " + recipe.getID();
+            connection = DriverManager.getConnection(url, user, password);
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(removeLikeQuery);
+
+            stmt.close();
+            connection.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     /**
