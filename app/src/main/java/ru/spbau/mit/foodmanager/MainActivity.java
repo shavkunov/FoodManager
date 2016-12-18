@@ -12,7 +12,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         startService(new Intent(this, NotificationService.class));
-        startService(new Intent(this, NotificationService.class));
     }
 
     public void onOpenCookBookClick(View view) {

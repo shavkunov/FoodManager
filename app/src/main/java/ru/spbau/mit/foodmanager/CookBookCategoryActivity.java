@@ -18,18 +18,28 @@ public class CookBookCategoryActivity extends AppCompatActivity {
     private Intent task;
     private Integer target;
     private ArrayList<Recipe> recipes;
+    private GifImageView loaderAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cook_book_category);
+        //Init loaderAnimation
+        loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
+        loaderAnimation.setGifImageResource(R.drawable.loading_animation);
+        loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //Task init
         task = getIntent();
         target =  task.getIntExtra("Target",CookBookActivity.TARGET_NO);
-        category = CookBookStorage.getInstance().getCategoryByID(task.getIntExtra("Category", -1));
-        if (category != null) {
-            recipes = category.getRecipes();
-        }
-        //ListInitialize
+        //TODO LOAD CATEGORY IN ANOTHER THREAD
+        ContentLoader contentLoader = new ContentLoader(task.getIntExtra("Category", -1));
+        Thread loader = new Thread(contentLoader);
+        loader.start();
+        //category = CookBookStorage.getInstance().getCategoryByID(task.getIntExtra("Category", -1));
+    }
+
+    private void showRecipies() {
+        Log.d("ShowRecipies", "Show");
         ListView listView = (ListView) findViewById(R.id.cook_book_category_list);
         ArrayList<String> names = new ArrayList<>();
         if (recipes != null) {
@@ -37,6 +47,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                 names.add(r.getName());
             }
         }
+        Log.d("names", ((Integer)names.size()).toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, names);
         listView.setAdapter(adapter);
@@ -59,5 +70,36 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public class ContentLoader implements Runnable {
+        private int categoryID;
+        public ContentLoader(int id) {
+            this.categoryID = id;
+        }
+
+        @Override
+        public void run() {
+            Log.d("Find categories", "Find!");
+            CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(true);
+                    loaderAnimation.setVisibility(View.VISIBLE);
+                }
+            });
+            category = CookBookStorage.getInstance().getCategoryByID(categoryID);
+            if (category != null) {
+                recipes = category.getRecipes();
+            }
+            CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(false);
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    showRecipies();
+                }
+            });
+        }
     }
 }

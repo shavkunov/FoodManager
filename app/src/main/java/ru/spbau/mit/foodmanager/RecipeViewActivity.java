@@ -20,18 +20,36 @@ public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_COUNT_DIVIDER = "        ";
     private static final int IMAGES_WIDTH = 200; //dp
     private static final int IMAGES_HEIGHT = 150; //dp
-    private static Recipe recipe;
+    private Recipe recipe;
+    private ArrayList<Step> steps;
+    private ArrayList<Integer> categories;
+    private GifImageView loaderAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_view);
+
+        //Init loaderAnimation
+        loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
+        loaderAnimation.setGifImageResource(R.drawable.loading_animation);
+        loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //Init Task
         Intent intent = getIntent();
-        CookBookStorage cookbook = CookBookStorage.getInstance();
-        recipe = cookbook.getRecipe(intent.getIntExtra("Recipe", -1));
-        ArrayList<Step> steps = cookbook.getRecipeSteps(recipe.getID());
-        ArrayList<Integer> categories = cookbook.getRecipeCategories(recipe.getID());
+        ContentLoader contentLoader = new ContentLoader(intent.getIntExtra("Recipe", -1));
+        Thread loader = new Thread(contentLoader);
+        loader.start();
+   }
+
+    public void onCookClick(View v) {
+        Intent intent = new Intent(this, StepViewActivity.class);
+        intent.putExtra("Recipe", recipe.getID());
+        startActivity(intent);
+    }
+
+    private void showRecipe() {
         //Header
+        CookBookStorage cookbook = CookBookStorage.getInstance();
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
@@ -82,11 +100,35 @@ public class RecipeViewActivity extends AppCompatActivity {
             }
         }
         ingridientsView.setText(ingridientList.toString());
-   }
+    }
 
-    public void onCookClick(View v) {
-        Intent intent = new Intent(this, StepViewActivity.class);
-        intent.putExtra("Recipe", recipe.getID());
-        startActivity(intent);
+    public class ContentLoader implements Runnable {
+        private int recipeID;
+        public ContentLoader(int id) {
+            this.recipeID = id;
+        }
+
+        @Override
+        public void run() {
+            RecipeViewActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(true);
+                    loaderAnimation.setVisibility(View.VISIBLE);
+                }
+            });
+            CookBookStorage cookbook = CookBookStorage.getInstance();
+            recipe = cookbook.getRecipe(recipeID);
+            steps = cookbook.getRecipeSteps(recipe.getID());
+            categories = cookbook.getRecipeCategories(recipe.getID());
+            RecipeViewActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(false);
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    showRecipe();
+                }
+            });
+        }
     }
 }
