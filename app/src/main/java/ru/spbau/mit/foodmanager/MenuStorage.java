@@ -29,7 +29,6 @@ public class MenuStorage implements Serializable {
             "Воскресенье"};
 
     private MenuStorage(Context context) {
-        //TODO Загружать из и сохранять в БД инстанс
         dayMenus = new HashMap<>();
         MenuStorage.context = context;
     }
@@ -39,11 +38,11 @@ public class MenuStorage implements Serializable {
     }
 
     static public MenuStorage getInstance(Context context) {
-        loadMenuSettings();
+        loadMenuStorage();
 
         if (instance == null) {
             instance = new MenuStorage(context);
-            saveMenuSettings();
+            saveMenuStorage();
         }
         return instance;
     }
@@ -64,7 +63,7 @@ public class MenuStorage implements Serializable {
         }
     }
 
-    public static void saveMenuSettings() {
+    public static void saveMenuStorage() {
         try {
             FileOutputStream output = context.openFileOutput(
                     menuStorageFilename, Context.MODE_PRIVATE);
@@ -77,7 +76,7 @@ public class MenuStorage implements Serializable {
         }
     }
 
-    public static void loadMenuSettings() {
+    public static void loadMenuStorage() {
         File settings = new File(context.getFilesDir(), menuStorageFilename);
         if (settings.exists()) {
             try {
