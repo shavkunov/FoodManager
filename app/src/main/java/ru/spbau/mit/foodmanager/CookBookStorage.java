@@ -28,16 +28,48 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Хранилище всех рецептов.
+ * Хранилище всех рецептов. Singleton.
  */
 public class CookBookStorage {
+    /**
+     * Инстанс класса CookBookStorage.
+     */
     private static CookBookStorage instance;
+
+    /**
+     * Вспомогательный тег для отладки.
+     */
     private final String LOG_TAG = "CookBookStorageTAG";
+
+    /**
+     * Логин для хостинга картинок cloudinary.
+     * Его можно собирать из трех частей, но я не думаю, что это нужно.
+     */
     private final String CLOUDINARY_URL = "cloudinary://285162791646134:yGqzM1FdReQ8uPa1taEUZihoNgI@dxc952wrd";
-    private final String url = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
+
+    /**
+     * Ссылка на базу данных на сервисе gearhost.
+     */
+    private final String databaseURL = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
+
+    /**
+     * Пользователь базы данных.
+     */
     private String user = "foodmanagertest";
+
+    /**
+     * Пароль от базы данных.
+     */
     private final String password = "Wc22_0f_0TA2";
+
+    /**
+     * Коннект к базе данных.
+     */
     private Connection connection;
+
+    /**
+     * ID пользователя.
+     */
     private String userID;
 
     private CookBookStorage(Context context) {
@@ -51,6 +83,11 @@ public class CookBookStorage {
         }
     }
 
+    /**
+     * Получение инстанса класса CookBookStorage.
+     * @param context context нужен только для получения ID юзера.
+     * @return инстанс класса.
+     */
     public static CookBookStorage getInstance(Context context) {
         if (instance == null) {
             instance = new CookBookStorage(context);
@@ -66,7 +103,7 @@ public class CookBookStorage {
      */
     public void addRecipeToDatabase(Recipe recipe) {
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
 
@@ -223,7 +260,7 @@ public class CookBookStorage {
                                  "WHERE recipe_ID = " + ID;
 
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
             ArrayList<Integer> ids = new ArrayList<>();
@@ -252,7 +289,7 @@ public class CookBookStorage {
                             "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet steps = stmt.executeQuery(stepsQuery);
             ArrayList<Step> recipeSteps = new ArrayList<>();
@@ -288,7 +325,7 @@ public class CookBookStorage {
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
             ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
@@ -319,7 +356,7 @@ public class CookBookStorage {
         String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet mainData = stmt.executeQuery(recipeQuery);
 
@@ -350,7 +387,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(filterQuery);
 
@@ -378,7 +415,7 @@ public class CookBookStorage {
     public Integer getRecipeLikes(Recipe recipe) {
         String likesQuery = "SELECT COUNT(*) AS total WHERE recipe_ID = " + recipe.getID();
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             return stmt.executeQuery(likesQuery).getInt("total");
         } catch (SQLException e) {
@@ -399,7 +436,7 @@ public class CookBookStorage {
         String likesQuery = "SELECT COUNT(*) AS total WHERE recipe_ID = " + recipe.getID() +
                             " AND user_ID = '" + userID + "'";
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             int like = stmt.executeQuery(likesQuery).getInt("total");
             return like == 1;
@@ -435,7 +472,7 @@ public class CookBookStorage {
                 String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
                                       userID + "', " + recipe.getID() + ")";
 
-                connection = DriverManager.getConnection(url, user, password);
+                connection = DriverManager.getConnection(databaseURL, user, password);
                 Statement stmt = connection.createStatement();
                 stmt.executeUpdate(setLikeQuery);
 
@@ -453,7 +490,7 @@ public class CookBookStorage {
         try {
             String removeLikeQuery = "DELETE FROM Like WHERE user_ID = '" + userID +
                                      "' AND recipe_ID = " + recipe.getID();
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(removeLikeQuery);
 
@@ -476,7 +513,7 @@ public class CookBookStorage {
                                       " ORDER BY RAND() LIMIT 1";
 
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
 
@@ -527,10 +564,15 @@ public class CookBookStorage {
         return selectedRecipes.get(index);
     }
 
+    /**
+     * Получение всех рецептов категории.
+     * @param ID идентификатор категории.
+     * @return рецепты категории.
+     */
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
         String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(categoryQuery);
 
@@ -550,11 +592,16 @@ public class CookBookStorage {
         return null;
     }
 
+    /**
+     * Получение категории по ID.
+     * @param ID идентификатор категории, которую хотим получить.
+     * @return инстанс класса Category
+     */
     public Category getCategoryByID(int ID) {
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
 
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
             if (category.next()) {
@@ -577,11 +624,16 @@ public class CookBookStorage {
         return null;
     }
 
+    /**
+     * Получение списка категорий.
+     * @param categoryQuery запрос к БД какие именно категории нужно получить.
+     * @return Linked List категорий, полученных из запроса.
+     */
     private LinkedList<Category> getCategoryFromQuery(String categoryQuery) {
         LinkedList<Category> categories = new LinkedList<>();
 
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
 
@@ -600,12 +652,19 @@ public class CookBookStorage {
         return null;
     }
 
+    /**
+     * Получение списка категорий по типу блюда.
+     * @return список категорий по типу блюда.
+     */
     public LinkedList<Category> getRecipiesTypeOfDish() {
         String categoryQuery = "SELECT ID FROM Category WHERE is_category_dish = 1";
 
         return getCategoryFromQuery(categoryQuery);
     }
-
+    /**
+     * Получение списка категорий по национальной кухне блюда.
+     * @return список категорий по национальной кухне блюда.
+     */
     public LinkedList<Category> getRecipiesNationalKitchen() {
         String categoryQuery = "SELECT ID FROM Category WHERE is_national_kitchen = 1";
 

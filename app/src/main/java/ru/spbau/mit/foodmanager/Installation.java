@@ -12,6 +12,10 @@ public class Installation {
     private static String sID = null;
     private static final String INSTALLATION = "INSTALLATION";
 
+    /**
+     * Получение пользовательского ID. Подробнее по ссылке.
+     * https://android-developers.googleblog.com/2011/03/identifying-app-installations.html
+     */
     public synchronized static String getUserID(Context context) {
         if (sID == null) {
             File installation = new File(context.getFilesDir(), INSTALLATION);
