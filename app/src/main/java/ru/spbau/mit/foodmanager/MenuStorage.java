@@ -2,16 +2,23 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Хранит меню для каждого дня недели
  */
-public class MenuStorage {
+public class MenuStorage implements Serializable {
     private HashMap<Day, DayMenu> dayMenus;
-    private Context context;
-    static private MenuStorage instance;
+    private static Context context;
+    private static MenuStorage instance;
+    private static final String menuStorageFilename = "MenuStorage";
     static final private String[] DAY_NAMES = {
             "Понедельник",
             "Вторник",
@@ -24,7 +31,7 @@ public class MenuStorage {
     private MenuStorage(Context context) {
         //TODO Загружать из и сохранять в БД инстанс
         dayMenus = new HashMap<>();
-        this.context = context;
+        MenuStorage.context = context;
     }
 
     static public String[] getDayNames() {
@@ -32,8 +39,11 @@ public class MenuStorage {
     }
 
     static public MenuStorage getInstance(Context context) {
+        loadMenuSettings();
+
         if (instance == null) {
             instance = new MenuStorage(context);
+            saveMenuSettings();
         }
         return instance;
     }
@@ -54,10 +64,37 @@ public class MenuStorage {
         }
     }
 
+    public static void saveMenuSettings() {
+        try {
+            FileOutputStream output = context.openFileOutput(
+                    menuStorageFilename, Context.MODE_PRIVATE);
+
+            ObjectOutputStream outputStream = new ObjectOutputStream(output);
+            outputStream.writeObject(instance);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadMenuSettings() {
+        File settings = new File(context.getFilesDir(), menuStorageFilename);
+        if (settings.exists()) {
+            try {
+                FileInputStream input = context.openFileInput(menuStorageFilename);
+                ObjectInputStream inputStream = new ObjectInputStream(input);
+                instance = (MenuStorage) inputStream.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Генерирует меню на один день, учитывая настройки и имеющиеся рецепты
      * @param settings настройки меню на этот день
-     * @param recipes Map из CategoryID в RecipeID. Если для какой-то категории есть рецепт, то будет использован именно он
+     * @param recipes Map из CategoryID в RecipeID. Если для какой-то категории есть рецепт,
+     * то будет использован именно он
      */
     public DayMenu generateDayMenu(DaySettings settings, HashMap<Integer, Integer> recipes) {
         ArrayList<DayMenu.Mealtime> dishesForDay = new ArrayList<>();
@@ -79,7 +116,7 @@ public class MenuStorage {
      * Генерирует меню на неделю
      */
     public void generateWeekMenu() {
-        MenuSettings settings = MenuSettings.getInstance();
+        MenuSettings settings = MenuSettings.getInstance(context);
         Day firstCookingDay = Day.Monday;
         for (Day day : Day.values()) {
             if (settings.isCookingDay(day)) {

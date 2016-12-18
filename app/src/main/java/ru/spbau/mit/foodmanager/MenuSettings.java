@@ -15,12 +15,12 @@ import java.util.HashMap;
 public class MenuSettings implements Serializable {
     private HashMap<Day, DaySettings> settingsByDay;
     private HashMap<Day, Boolean> isCookingDay;
-    private Context context;
+    private static Context context;
     private static MenuSettings instance;
     private static final String menuSettingsFilename = "MenuSettings";
 
     private MenuSettings(Context context) {
-        this.context = context;
+        MenuSettings.context = context;
         settingsByDay = new HashMap<>();
         isCookingDay = new HashMap<>();
         for (Day d : Day.values()) {
@@ -36,21 +36,20 @@ public class MenuSettings implements Serializable {
         }
     }
 
-    public void saveMenuSettings() {
-        File settings = new File(context.getFilesDir(), menuSettingsFilename);
+    public static void saveMenuSettings() {
         try {
             FileOutputStream output = context.openFileOutput(
                                       menuSettingsFilename, Context.MODE_PRIVATE);
 
             ObjectOutputStream outputStream = new ObjectOutputStream(output);
-            outputStream.writeObject(this);
+            outputStream.writeObject(instance);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void loadMenuSettings() {
+    public static void loadMenuSettings() {
         File settings = new File(context.getFilesDir(), menuSettingsFilename);
         if (settings.exists()) {
             try {
@@ -63,7 +62,7 @@ public class MenuSettings implements Serializable {
         }
     }
 
-    public MenuSettings getInstance(Context context) {
+    public static MenuSettings getInstance(Context context) {
         loadMenuSettings();
 
         if (instance == null) {
