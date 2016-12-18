@@ -1,9 +1,8 @@
 package ru.spbau.mit.foodmanager;
 
-import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -11,7 +10,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class NotificationSettingsActivity extends AppCompatActivity {
-    private NotificationSettings settings = NotificationSettings.getInstance();
+    private NotificationSettings settings = NotificationSettings.getInstance(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

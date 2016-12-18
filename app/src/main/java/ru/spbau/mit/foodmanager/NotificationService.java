@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,8 +21,8 @@ public class NotificationService extends Service {
     private static Day lastCookDayNotify;
     private static Boolean notifyedToday;
     private Calendar calendar = Calendar.getInstance();
-    private MenuSettings menuSettings = MenuSettings.getInstance();
-    private NotificationSettings notificationSettings = NotificationSettings.getInstance();
+    private MenuSettings menuSettings = MenuSettings.getInstance(this);
+    private NotificationSettings notificationSettings = NotificationSettings.getInstance(this);
 
     @Override
     public void onCreate() {

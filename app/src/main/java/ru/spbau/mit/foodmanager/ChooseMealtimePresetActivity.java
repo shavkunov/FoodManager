@@ -2,9 +2,8 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -27,7 +26,7 @@ public class ChooseMealtimePresetActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_mealtime_preset);
-        menuSettings = MenuSettings.getInstance();
+        menuSettings = MenuSettings.getInstance(this);
         presets = DaySettings.getMealtimePresets();
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         presetList = (LinearLayout) findViewById(R.id.choose_mealtime_preset_list);
