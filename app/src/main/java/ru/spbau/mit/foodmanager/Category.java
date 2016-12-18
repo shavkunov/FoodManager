@@ -1,5 +1,6 @@
 package ru.spbau.mit.foodmanager;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
@@ -9,11 +10,13 @@ public class Category {
     private String description;
     private int ID;
     private Bitmap image;
+    private Context context;
 
-    public Category(int ID, String description, Bitmap image) {
+    public Category(int ID, String description, Bitmap image, Context context) {
         this.ID = ID;
         this.description = description;
         this.image = image;
+        this.context = context;
     }
 
     public int getID() {
@@ -25,7 +28,7 @@ public class Category {
     }
 
     public ArrayList<Recipe> getRecipes() {
-        return CookBookStorage.getInstance().getRecipesOfCategory(this.ID);
+        return CookBookStorage.getInstance(context).getRecipesOfCategory(this.ID);
     }
 
     public Bitmap getImage() {

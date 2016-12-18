@@ -29,8 +29,8 @@ public class ShoppingListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list);
         //Init List
-        cookbook = CookBookStorage.getInstance();
-        MenuStorage menu = MenuStorage.getInstance();
+        cookbook = CookBookStorage.getInstance(this);
+        MenuStorage menu = MenuStorage.getInstance(this);
         HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
         recipes = new ArrayList<>();
         for(DayMenu rs : menuRecipes.values()) {

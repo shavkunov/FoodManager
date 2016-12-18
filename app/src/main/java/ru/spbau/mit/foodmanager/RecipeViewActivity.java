@@ -24,7 +24,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_view);
         Intent intent = getIntent();
-        CookBookStorage cookbook = CookBookStorage.getInstance();
+        CookBookStorage cookbook = CookBookStorage.getInstance(this);
         recipe = cookbook.getRecipe(intent.getIntExtra("Recipe", -1));
         ArrayList<Step> steps = cookbook.getRecipeSteps(recipe.getID());
         ArrayList<Integer> categories = cookbook.getRecipeCategories(recipe.getID());

@@ -28,8 +28,8 @@ public class MenuViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_view);
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        cookbook = CookBookStorage.getInstance();
-        menu = MenuStorage.getInstance();
+        cookbook = CookBookStorage.getInstance(this);
+        menu = MenuStorage.getInstance(this);
         allDayMenu = menu.getMenu();
         showRecipes();
     }

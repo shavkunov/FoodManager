@@ -101,7 +101,7 @@ public class CookBookStorage {
 
     /**
      * Получение инстанса класса CookBookStorage.
-     * @param context context нужен только для получения ID юзера.
+     * @param context контекст приложения.
      * @return инстанс класса.
      */
     public static CookBookStorage getInstance(Context context) {
@@ -710,7 +710,7 @@ public class CookBookStorage {
             if (category.next()) {
                 String description = category.getString("name");
                 // пока картинок категорий у нас нет
-                Category c =  new Category(ID, description, null);
+                Category c =  new Category(ID, description, null, context);
                 stmt.close();
                 connection.close();
                 return c;

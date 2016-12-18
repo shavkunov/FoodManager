@@ -1,8 +1,6 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +10,7 @@ import java.util.HashMap;
  */
 public class MenuStorage {
     private HashMap<Day, DayMenu> dayMenus;
-    private CookBookStorage cookbook;
+    private Context context;
     static private MenuStorage instance;
     static final private String[] DAY_NAMES = {
             "Понедельник",
@@ -23,19 +21,19 @@ public class MenuStorage {
             "Суббота",
             "Воскресенье"};
 
-    private MenuStorage(CookBookStorage cookbook) {
+    private MenuStorage(Context context) {
         //TODO Загружать из и сохранять в БД инстанс
         dayMenus = new HashMap<>();
-        this.cookbook = cookbook;
+        this.context = context;
     }
 
     static public String[] getDayNames() {
         return DAY_NAMES;
     }
 
-    static public MenuStorage getInstance() {
+    static public MenuStorage getInstance(Context context) {
         if (instance == null) {
-            instance = new MenuStorage(CookBookStorage.getInstance());
+            instance = new MenuStorage(context);
         }
         return instance;
     }
@@ -67,6 +65,7 @@ public class MenuStorage {
             ArrayList<Integer> mealtimeRecipes = new ArrayList<>();
             for (Integer categoryID : mealtimeSettings.dishesCategories()) {
                 if (recipes.get(categoryID) == null) {
+                    CookBookStorage cookbook = CookBookStorage.getInstance(context);
                     recipes.put(categoryID, cookbook.chooseRandomDishFromCategory(categoryID).getID());
                 }
                 mealtimeRecipes.add(recipes.get(categoryID));
