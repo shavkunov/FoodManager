@@ -161,6 +161,12 @@ public class CloudManager {
                 "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID))";
 
         stmt.executeUpdate(queryCreationOfIngredientToRecipe);
+
+        String queryCreationOfTableLikes = "CREATE TABLE Likes (" +
+                                           "user_ID TEXT NOT NULL, " +
+                                           "recipe_ID INTEGER NOT NULL, " +
+                                           "FOREIGN KEY (recipe_ID) REFERENCES Recipe(ID))";
+        stmt.executeUpdate(queryCreationOfTableLikes);
     }
 
     /**

@@ -78,7 +78,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                         i.getTypeName() + "\n");
             }
         }
-        ingridientsView.setText(ingridientList.toString());
+        ingridientsView.setText(ingredientList.toString());
    }
 
     public void onCookClick(View v) {

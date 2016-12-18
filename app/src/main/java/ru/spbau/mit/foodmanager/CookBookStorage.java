@@ -21,8 +21,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Хранилище всех рецептов.
@@ -41,7 +43,6 @@ public class CookBookStorage {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Problems with connection");
         }
@@ -62,6 +63,7 @@ public class CookBookStorage {
      */
     public void addRecipeToDatabase(Recipe recipe) {
         try {
+            connection = DriverManager.getConnection(url, user, password);
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
 
@@ -75,7 +77,7 @@ public class CookBookStorage {
 
             stmt.close();
             connection.setAutoCommit(true);
-
+            connection.close();
         } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to insert new recipe");
             e.printStackTrace();
@@ -218,6 +220,7 @@ public class CookBookStorage {
                                  "WHERE recipe_ID = " + ID;
 
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
             ArrayList<Integer> ids = new ArrayList<>();
@@ -227,6 +230,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return ids;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get categories of recipe");
@@ -245,6 +249,7 @@ public class CookBookStorage {
                             "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet steps = stmt.executeQuery(stepsQuery);
             ArrayList<Step> recipeSteps = new ArrayList<>();
@@ -259,6 +264,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return recipeSteps;
 
         } catch (Exception e) {
@@ -279,6 +285,7 @@ public class CookBookStorage {
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
             ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
@@ -292,6 +299,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return recipeIngredients;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get recipe ingredients");
@@ -308,6 +316,7 @@ public class CookBookStorage {
         String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet mainData = stmt.executeQuery(recipeQuery);
 
@@ -321,6 +330,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return new Recipe(ID, recipeDescription, recipeName);
 
         } catch (SQLException e) {
@@ -337,6 +347,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(filterQuery);
 
@@ -346,6 +357,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return res;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to filter recipes");
@@ -364,6 +376,7 @@ public class CookBookStorage {
                                       " ORDER BY RAND() LIMIT 1";
 
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
 
@@ -373,6 +386,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return getRecipe(recipeID);
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get random dish");
@@ -382,9 +396,41 @@ public class CookBookStorage {
         return null;
     }
 
+    /**
+     * Получение рецепта, который одновременно принадлежит некоторым категориям.
+     * @param ids id категорий, к которым должен принадлежать рецепт.
+     * @return рецепт или null если такого нет.
+     */
+    public Recipe getRecipeFromCategoriesIntersect(ArrayList<Integer> ids) {
+        ArrayList<Recipe> recipesFromFirstCategory = getRecipesOfCategory(ids.get(0));
+        ArrayList<Recipe> selectedRecipes = new ArrayList<>();
+
+        HashMap<Integer, Integer> hm = new HashMap<>();
+        for (int i = 1; i < ids.size(); i++) {
+            hm.put(ids.get(i), 1);
+        }
+        for (Recipe r : recipesFromFirstCategory) {
+            int size = ids.size();
+            for (Integer ID : r.getCategoryID()) {
+                if (hm.containsKey(ID)) {
+                    size--;
+                }
+            }
+
+            if (size == 0) {
+                selectedRecipes.add(r);
+            }
+        }
+
+        Random randomGenerator = new Random();
+        int index = randomGenerator.nextInt(selectedRecipes.size());
+        return selectedRecipes.get(index);
+    }
+
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
         String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(categoryQuery);
 
@@ -394,6 +440,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return res;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get recipes of category");
@@ -407,6 +454,7 @@ public class CookBookStorage {
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
 
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
             if (category.next()) {
@@ -414,12 +462,13 @@ public class CookBookStorage {
                 // пока картинок категорий у нас нет
                 Category c =  new Category(ID, description, null);
                 stmt.close();
+                connection.close();
                 return c;
             } else {
                 stmt.close();
+                connection.close();
                 return null;
             }
-
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get category");
             e.printStackTrace();
@@ -432,6 +481,7 @@ public class CookBookStorage {
         LinkedList<Category> categories = new LinkedList<>();
 
         try {
+            connection = DriverManager.getConnection(url, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
 
@@ -440,6 +490,7 @@ public class CookBookStorage {
             }
 
             stmt.close();
+            connection.close();
             return categories;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get categories");
