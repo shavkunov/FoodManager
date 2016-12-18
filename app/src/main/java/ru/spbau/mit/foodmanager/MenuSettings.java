@@ -30,7 +30,7 @@ public class MenuSettings implements Serializable {
             mealtieSettings.add(DaySettings.getMealtimePresets().get(0));
             mealtieSettings.add(DaySettings.getMealtimePresets().get(1));
             mealtieSettings.add(DaySettings.getMealtimePresets().get(2));
-            DaySettings settings = new DaySettings(mealtieSettings);
+            DaySettings settings = new DaySettings(mealtieSettings, context);
             settingsByDay.put(d, settings);
             //DEBUG ONLY
         }
