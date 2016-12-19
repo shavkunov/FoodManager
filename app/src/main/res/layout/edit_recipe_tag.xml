@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+    <TextView
+        android:id="@+id/edit_recipe_tag_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/edit_recipe_delete_tag"
+        android:src="@drawable/delete"
+        android:background="@color/colorTransparent"
+        android:layout_width="@dimen/imbtn_size"
+        android:layout_height="@dimen/imbtn_size"
+        android:scaleType="centerInside"
+        android:onClick="onDeleteTagClick"/>
+
+</LinearLayout>

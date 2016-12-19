@@ -33,4 +33,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new  Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
+
+    public void onAddRecipeClick(View view) {
+        Intent intent = new Intent(this, EditRecipeActivity.class);
+        startActivity(intent);
+    }
 }

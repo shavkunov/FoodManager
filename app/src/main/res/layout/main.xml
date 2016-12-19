@@ -30,6 +30,11 @@
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:text="Добавить рецепт"
+                android:onClick="onAddRecipeClick"/>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/menu"
                 android:onClick="onWeekMenuClick"/>
             <Button

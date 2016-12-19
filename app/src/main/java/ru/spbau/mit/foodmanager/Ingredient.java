@@ -18,7 +18,12 @@ public class Ingredient implements Serializable {
     }
 
     public String getTypeName() {
-        switch (type) {
+        return getMeasureName(type);
+    }
+
+
+    public static String getMeasureName(Measure m) {
+        switch (m) {
             case gr:
                 return "гр.";
 
@@ -52,5 +57,17 @@ public class Ingredient implements Serializable {
 
     public double getQuantity() {
         return quantity;
+    }
+
+    public void setName(String s) {
+        name = s;
+    }
+
+    public void setQuantity(double q) {
+        quantity = q;
+    }
+
+    public void setMeasure(Measure m) {
+        type = m;
     }
 }
