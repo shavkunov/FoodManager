@@ -3,9 +3,25 @@ package ru.spbau.mit.foodmanager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
+    private static ArrayList<Integer> loaderResources;
+    private static Random random = new Random();
+    public static int getRandomLoaderResource() {
+        if (loaderResources == null) {
+            loaderResources = new ArrayList<>();
+            loaderResources.add(R.drawable.loading_animation);
+            loaderResources.add(R.drawable.loading_animation2);
+            loaderResources.add(R.drawable.loading_animation3);
+        }
+        int resID = loaderResources.get(Math.abs(random.nextInt()) % loaderResources.size());
+        return resID;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

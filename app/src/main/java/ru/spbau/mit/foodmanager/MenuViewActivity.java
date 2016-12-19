@@ -19,25 +19,36 @@ public class MenuViewActivity extends AppCompatActivity {
     private final static int REQUEST_ADD = 0;
     private final static int REQUEST_EDIT = 1;
     private HashMap<Day, DayMenu> allDayMenu;
+    private HashMap<Integer, Recipe> recipes;
     private CookBookStorage cookbook;
     private MenuStorage menu;
     private LayoutInflater inflater;
+    private GifImageView loaderAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_view);
+        //Init loaderAnimation
+        loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
+        loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+        loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         cookbook = CookBookStorage.getInstance();
         menu = MenuStorage.getInstance();
-        allDayMenu = menu.getMenu();
-        showRecipes();
+        recipes = new HashMap<>();
+        //Init Task
+        ContentLoader contentLoader = new ContentLoader(false);
+        Thread loader = new Thread(contentLoader);
+        loader.start();
     }
 
     public void onGenerateBtnClick(View v) {
-        menu.generateWeekMenu();
-        allDayMenu = menu.getMenu();
-        showRecipes();
+        //Init Task
+        ContentLoader contentLoader = new ContentLoader(true);
+        Thread loader = new Thread(contentLoader);
+        loader.start();
     }
 
     public void onActivityResult(int requestCode, int errorCode, Intent resultContainer) {
@@ -48,11 +59,13 @@ public class MenuViewActivity extends AppCompatActivity {
             switch (requestCode) {
                 case REQUEST_ADD :
                     allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipes().add(result);
+                    //TODO upload recipe
                     showRecipes();
                     break;
                 case REQUEST_EDIT :
                     Integer position = resultContainer.getIntExtra("Position", -1);
                     allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipes().set(position, result);
+                    //TODO upload recipe
                     showRecipes();
                     break;
             }
@@ -115,11 +128,11 @@ public class MenuViewActivity extends AppCompatActivity {
                                     final Day day, final Integer mealtimePos) {
         View recipeView = inflater.inflate(R.layout.menu_view_day_menu_meltime_list_element, null);
         TextView recipeName = (TextView) recipeView.findViewById(R.id.menu_day_mealtime_dish_name);
-        final Integer recipeID = mealtime.getRecipes().get(position);
+        final Integer recipeID = mealtime.getRecipes().get(position); //WTF
         ImageButton editDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_edit);
         ImageButton deleteDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_delete);
 
-        recipeName.setText(cookbook.getRecipe(recipeID).getName());
+        recipeName.setText(recipes.get(recipeID).getName());
         recipeName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,5 +161,47 @@ public class MenuViewActivity extends AppCompatActivity {
             }
         });
         parent.addView(recipeView);
+    }
+
+    public class ContentLoader implements Runnable {
+        private boolean generateNewMenu;
+
+        public ContentLoader(boolean generate) {
+            generateNewMenu = generate;
+        }
+
+        @Override
+        public void run() {
+            MenuViewActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(true);
+                    loaderAnimation.setVisibility(View.VISIBLE);
+                }
+            });
+            if (generateNewMenu) {
+                menu.generateWeekMenu();
+            }
+            allDayMenu = menu.getMenu();
+            for (DayMenu dm : allDayMenu.values()) {
+                for (DayMenu.Mealtime m : dm.getMealtimes()) {
+                    for (Integer id : m.getRecipes()) {
+                        if (recipes.get(id) == null) {
+                            recipes.put(id, cookbook.getRecipe(id));
+                        }
+                    }
+                }
+            }
+
+            MenuViewActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(false);
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    showRecipes();
+                    loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+                }
+            });
+        }
     }
 }

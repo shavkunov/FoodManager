@@ -26,48 +26,30 @@ import java.util.List;
 public class ShoppingListActivity extends AppCompatActivity {
 
     private CookBookStorage cookbook;
-    private HashMap<String, Double> productCount;
-    private ArrayList<String> productNames;
     private ArrayList<Recipe> recipes;
+    private ArrayList<Ingredient> ingredients;
+    private GifImageView loaderAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shopping_list);
-        //Init List
+        //Init loaderAnimation
+        loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
+        loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+        loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //Init cookbook
         cookbook = CookBookStorage.getInstance();
-        MenuStorage menu = MenuStorage.getInstance();
-        HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
-        recipes = new ArrayList<>();
-        for (DayMenu rs : menuRecipes.values()) {
-            for (Integer id : rs.getDishes()) {
-                recipes.add(cookbook.getRecipe(id));
-                //TODO: do in background
-            }
-        }
-        ArrayList<Ingredient> allIngredients = new ArrayList<>();
-        productCount = new HashMap<>();
-        for (Recipe r : recipes) {
-            allIngredients.addAll(cookbook.getRecipeIngredients(r.getID()));
-        }
-        ArrayList<Ingredient> ingredients = new ArrayList<>();
-        for (Ingredient i : allIngredients) {
-            Boolean newIngredient = true;
-            for (Ingredient j : ingredients) {
-                if (i.getName().equals(j.getName()) && i.getMeasure().equals(j.getName())) {
-                    newIngredient = false;
-                    j.setQuantity(j.getQuantity() + i.getQuantity());
-                }
-            }
-            if (newIngredient) {
-                ingredients.add(i);
-            }
-        }
+        //Init Task
+        ContentLoader contentLoader = new ContentLoader();
+        Thread loader = new Thread(contentLoader);
+        loader.start();
+    }
+
+    private void showIngredients() {
         ListView listView = (ListView) findViewById(R.id.shopping_list_view);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         IngredientAdapter adapter = new IngredientAdapter(ingredients);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-        //        android.R.layout.simple_list_item_multiple_choice, productNames);
         listView.setAdapter(adapter);
     }
 
@@ -124,6 +106,59 @@ public class ShoppingListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isChecked.put((Integer)compoundButton.getTag(), b);
             }
+        }
+    }
+
+    public class ContentLoader implements Runnable {
+
+        public ContentLoader() {
+        }
+
+        @Override
+        public void run() {
+            ShoppingListActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(true);
+                    loaderAnimation.setVisibility(View.VISIBLE);
+                }
+            });
+            MenuStorage menu = MenuStorage.getInstance();
+            HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
+            recipes = new ArrayList<>();
+            for (DayMenu rs : menuRecipes.values()) {
+                for (Integer id : rs.getDishes()) {
+                    recipes.add(cookbook.getRecipe(id));
+                    //TODO: do in background
+                }
+            }
+            ArrayList<Ingredient> allIngredients = new ArrayList<>();
+            for (Recipe r : recipes) {
+                allIngredients.addAll(cookbook.getRecipeIngredients(r.getID()));
+            }
+            ingredients = new ArrayList<>();
+            for (Ingredient i : allIngredients) {
+                Boolean newIngredient = true;
+                for (Ingredient j : ingredients) {
+                    if (i.getName().equals(j.getName()) && i.getMeasure().equals(j.getName())) {
+                        newIngredient = false;
+                        j.setQuantity(j.getQuantity() + i.getQuantity());
+                    }
+                }
+                if (newIngredient) {
+                    ingredients.add(i);
+                }
+            }
+
+            ShoppingListActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loaderAnimation.setIsVisible(false);
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    showIngredients();
+                    loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+                }
+            });
         }
     }
 }

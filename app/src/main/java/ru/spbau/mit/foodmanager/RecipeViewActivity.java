@@ -32,7 +32,7 @@ public class RecipeViewActivity extends AppCompatActivity {
 
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(R.drawable.loading_animation);
+        loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         //Init Task
         Intent intent = getIntent();
@@ -127,6 +127,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipe();
+                    loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });
         }
