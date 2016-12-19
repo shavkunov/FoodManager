@@ -19,48 +19,72 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/edit_recipe_header_photo"
                 android:layout_width="125dp"
                 android:layout_height="85dp"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside" />-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
-                <EditText
-                    android:id="@+id/edit_recipe_header_name"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:textSize="17sp"
-                    android:textStyle="bold"/>
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center">
-                    <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_height="wrap_content"
+                        android:text="Название:"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                    <EditText
+                        android:id="@+id/edit_recipe_header_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:textSize="17sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Тэги:"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
                         <LinearLayout
-                            android:id="@+id/edit_recipe_header_tags"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            android:gravity="center">
+                            android:layout_height="match_parent">
+                            <LinearLayout
+                                android:id="@+id/edit_recipe_header_tags"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal"
+                                android:gravity="center">
 
+                            </LinearLayout>
+                            <ImageButton
+                                android:id="@+id/edit_recipe_add_tag"
+                                android:src="@drawable/add"
+                                android:background="@color/colorTransparent"
+                                android:layout_width="@dimen/imbtn_size"
+                                android:layout_height="@dimen/imbtn_size"
+                                android:scaleType="centerInside"
+                                android:onClick="onAddTagClick"/>
                         </LinearLayout>
-                        <ImageButton
-                            android:id="@+id/edit_recipe_add_tag"
-                            android:src="@drawable/add"
-                            android:background="@color/colorTransparent"
-                            android:layout_width="@dimen/imbtn_size"
-                            android:layout_height="@dimen/imbtn_size"
-                            android:scaleType="centerInside"
-                            android:onClick="onAddTagClick"/>
-                    </LinearLayout>
-                </HorizontalScrollView>
+                    </HorizontalScrollView>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
         <!-- Recipe Controls -->
@@ -99,8 +123,7 @@
                 <EditText
                     android:id="@+id/edit_recipe_body_description"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/normal_text_size"/>
+                    android:layout_height="wrap_content"/>
                 <!-- Ingredients edit -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -109,7 +132,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/recipe_body_ingredients_str"
+                        android:text="Ингердиенты"
                         android:textSize="16sp"
                         android:textStyle="bold"/>
                     <RelativeLayout
@@ -122,7 +145,7 @@
                             android:orientation="vertical"
                             android:divider="@drawable/border"
                             android:showDividers="middle"
-                            android:paddingLeft="@dimen/imbtn_size"/>
+                            android:paddingLeft="15dp"/>
                         <ImageButton
                             android:id="@+id/edit_recipe_body_add_ingredient"
                             android:layout_width="@dimen/imbtn_size"

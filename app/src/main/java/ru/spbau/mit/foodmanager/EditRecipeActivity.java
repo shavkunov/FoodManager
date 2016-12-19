@@ -38,6 +38,7 @@ public class EditRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_recipe);
         ingredients = new ArrayList<>();
+        uriSteps = new ArrayList<>();
         tags = new ArrayList<>();
     }
 
@@ -45,7 +46,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int errorCode, Intent resultContainer) {
         if (errorCode == RESULT_OK) {
             switch (requestCode) {
-                case REQUEST_PICK_IMAGE:
+                /*case REQUEST_PICK_IMAGE:
                     Uri newImage = resultContainer.getData();
                     ImageView recipeImage = (ImageView) findViewById(R.id.edit_recipe_header_photo);
                     try {
@@ -54,7 +55,7 @@ public class EditRecipeActivity extends AppCompatActivity {
                     catch (IOException e) {
                         //Cant upload image;
                     }
-                    break;
+                    break;*/
                 case REQUEST_EDIT_STEPS:
                     uriSteps = (ArrayList<UriStep>) resultContainer.getSerializableExtra("UriSteps");
                     break;
@@ -102,8 +103,7 @@ public class EditRecipeActivity extends AppCompatActivity {
         }
         result.setSteps(steps);
         //TODO Another Thread
-        //Temporary off.
-        //CookBookStorage.getInstance().addRecipeToDatabase(result);
+        CookBookStorage.getInstance().addRecipeToDatabase(result);
         finish();
     }
 
@@ -142,7 +142,9 @@ public class EditRecipeActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                newIngredient.setQuantity(Double.parseDouble(charSequence.toString()));
+                if (charSequence.length() != 0) {
+                    newIngredient.setQuantity(Double.parseDouble(charSequence.toString()));
+                }
             }
             @Override
             public void afterTextChanged(Editable editable) {}
@@ -179,7 +181,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     }
 
     //We have no separated pic of recipe yet
-    public void onRecipeImageClick(View v) {
+    /*public void onRecipeImageClick(View v) {
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
         getIntent.setType("image/*");
         Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -187,7 +189,7 @@ public class EditRecipeActivity extends AppCompatActivity {
         Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
         startActivityForResult(chooserIntent, REQUEST_PICK_IMAGE);
-    }
+    }*/
 
     public void onAddTagClick(View view) {
         Intent task = new Intent(this, CookBookActivity.class);
