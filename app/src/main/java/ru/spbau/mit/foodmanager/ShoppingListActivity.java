@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -140,15 +141,22 @@ public class ShoppingListActivity extends AppCompatActivity {
             for (Ingredient i : allIngredients) {
                 Boolean newIngredient = true;
                 for (Ingredient j : ingredients) {
-                    if (i.getName().equals(j.getName()) && i.getMeasure().equals(j.getName())) {
+                    if (i.getName().equals(j.getName()) && i.getMeasure().equals(j.getMeasure())) {
                         newIngredient = false;
                         j.setQuantity(j.getQuantity() + i.getQuantity());
+                        break;
                     }
                 }
                 if (newIngredient) {
                     ingredients.add(i);
                 }
             }
+            ingredients.sort(new Comparator<Ingredient>() {
+                @Override
+                public int compare(Ingredient i1, Ingredient i2) {
+                    return i1.getName().compareTo(i2.getName());
+                }
+            });
 
             ShoppingListActivity.this.runOnUiThread(new Runnable() {
                 @Override
