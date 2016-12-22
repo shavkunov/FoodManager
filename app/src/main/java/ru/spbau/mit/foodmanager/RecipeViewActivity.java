@@ -9,6 +9,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +25,10 @@ public class RecipeViewActivity extends AppCompatActivity {
     private ArrayList<Step> steps;
     private ArrayList<Integer> categories;
     private GifImageView loaderAnimation;
+    private ImageButton likeBtn;
+    private ImageButton favoriteBtn;
+    private boolean liked;
+    private boolean inFavourites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +39,16 @@ public class RecipeViewActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //Init like & selected btn
+        likeBtn = (ImageButton) findViewById(R.id.recipe_like);
+        favoriteBtn = (ImageButton) findViewById(R.id.recipe_add_to_favorites);
         //Init Task
         Intent intent = getIntent();
         ContentLoader contentLoader = new ContentLoader(intent.getIntExtra("Recipe", -1));
         Thread loader = new Thread(contentLoader);
         loader.start();
+        liked = false; //TODO: init with real values
+        inFavourites = false; //TODO: Init image srcs
    }
 
     public void onCookClick(View v) {
@@ -47,6 +57,17 @@ public class RecipeViewActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onLikeClick(View v) {
+        //TODO: init images
+        liked = !liked;
+        //TODO put to cookbook
+    }
+
+    public void onFavoriteClick(View v) {
+        //TODO: init images
+        inFavourites = !inFavourites;
+        //TODO put to cookbook
+    }
     private void showRecipe() {
         //Header
         CookBookStorage cookbook = CookBookStorage.getInstance();
@@ -113,7 +134,6 @@ public class RecipeViewActivity extends AppCompatActivity {
             RecipeViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(true);
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
@@ -124,7 +144,6 @@ public class RecipeViewActivity extends AppCompatActivity {
             RecipeViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipe();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());

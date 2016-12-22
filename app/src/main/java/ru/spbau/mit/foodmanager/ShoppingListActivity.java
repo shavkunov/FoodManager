@@ -120,7 +120,6 @@ public class ShoppingListActivity extends AppCompatActivity {
             ShoppingListActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(true);
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
@@ -161,7 +160,6 @@ public class ShoppingListActivity extends AppCompatActivity {
             ShoppingListActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showIngredients();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());

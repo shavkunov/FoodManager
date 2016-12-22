@@ -84,7 +84,6 @@ public class CookBookCategoryActivity extends AppCompatActivity {
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(true);
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
@@ -95,7 +94,6 @@ public class CookBookCategoryActivity extends AppCompatActivity {
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipies();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());

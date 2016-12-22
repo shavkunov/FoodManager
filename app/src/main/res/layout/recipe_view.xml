@@ -62,16 +62,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/recipe_goto_stepbystep_str"
                 android:onClick="onCookClick"/>
-            <Button
+            <ImageButton
                 android:id="@+id/recipe_add_to_favorites"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/recipe_add_to_favorites_str"/>
-            <Button
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
+                android:onClick="onFavoriteClick"/>
+            <ImageButton
                 android:id="@+id/recipe_like"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/recipe_like_str"/>
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
+                android:onClick="onLikeClick"/>
             <!-- TODO: redesign buttons -->
         </LinearLayout>
         <!-- Recipe Description -->

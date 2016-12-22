@@ -130,7 +130,6 @@ public class CookBookActivity extends AppCompatActivity {
             CookBookActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(true);
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
@@ -146,7 +145,6 @@ public class CookBookActivity extends AppCompatActivity {
             CookBookActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showCategories();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());

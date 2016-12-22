@@ -75,7 +75,6 @@ public class StepViewActivity extends AppCompatActivity {
             StepViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(true);
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
@@ -85,7 +84,6 @@ public class StepViewActivity extends AppCompatActivity {
             StepViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipe();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());

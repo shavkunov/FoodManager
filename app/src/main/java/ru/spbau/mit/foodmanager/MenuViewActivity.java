@@ -175,7 +175,6 @@ public class MenuViewActivity extends AppCompatActivity {
             MenuViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(true);
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
@@ -196,7 +195,6 @@ public class MenuViewActivity extends AppCompatActivity {
             MenuViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setIsVisible(false);
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipes();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
