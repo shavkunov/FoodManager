@@ -40,8 +40,8 @@ public class CookBookActivity extends AppCompatActivity {
         task = getIntent();
         target = task.getIntExtra("Target", TARGET_NO);
         //Init Categories
-        cookbook = CookBookStorage.getInstance();
         categories = new ArrayList<>();
+        cookbook = CookBookStorage.getInstance(this);
         //Group by init
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_dropdown_item, CATEGORY_TYPES);

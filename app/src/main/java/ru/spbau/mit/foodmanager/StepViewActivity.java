@@ -1,10 +1,8 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,7 +76,7 @@ public class StepViewActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
-            CookBookStorage cookbook = CookBookStorage.getInstance();
+            CookBookStorage cookbook = CookBookStorage.getInstance(StepViewActivity.this);
             recipe = cookbook.getRecipe(recipeID);
             steps = cookbook.getRecipeSteps(recipe.getID());
             StepViewActivity.this.runOnUiThread(new Runnable() {

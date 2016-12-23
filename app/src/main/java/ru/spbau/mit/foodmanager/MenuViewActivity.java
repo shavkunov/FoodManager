@@ -35,8 +35,8 @@ public class MenuViewActivity extends AppCompatActivity {
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        cookbook = CookBookStorage.getInstance();
-        menu = MenuStorage.getInstance();
+        cookbook = CookBookStorage.getInstance(this);
+        menu = MenuStorage.getInstance(this);
         recipes = new HashMap<>();
         //Init Task
         ContentLoader contentLoader = new ContentLoader(false);

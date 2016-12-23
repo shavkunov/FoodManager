@@ -1,19 +1,24 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Хранит меню для каждого дня недели
  */
-public class MenuStorage {
+public class MenuStorage implements Serializable {
     private HashMap<Day, DayMenu> dayMenus;
-    private CookBookStorage cookbook;
-    static private MenuStorage instance;
+    private static Context context;
+    private static MenuStorage instance;
+    private static final String menuStorageFilename = "MenuStorage";
     static final private String[] DAY_NAMES = {
             "Понедельник",
             "Вторник",
@@ -23,19 +28,21 @@ public class MenuStorage {
             "Суббота",
             "Воскресенье"};
 
-    private MenuStorage(CookBookStorage cookbook) {
-        //TODO Загружать из и сохранять в БД инстанс
+    private MenuStorage(Context context) {
         dayMenus = new HashMap<>();
-        this.cookbook = cookbook;
+        MenuStorage.context = context;
     }
 
     static public String[] getDayNames() {
         return DAY_NAMES;
     }
 
-    static public MenuStorage getInstance() {
+    static public MenuStorage getInstance(Context context) {
+        loadMenuStorage();
+
         if (instance == null) {
-            instance = new MenuStorage(CookBookStorage.getInstance());
+            instance = new MenuStorage(context);
+            saveMenuStorage();
         }
         return instance;
     }
@@ -56,10 +63,37 @@ public class MenuStorage {
         }
     }
 
+    public static void saveMenuStorage() {
+        try {
+            FileOutputStream output = context.openFileOutput(
+                    menuStorageFilename, Context.MODE_PRIVATE);
+
+            ObjectOutputStream outputStream = new ObjectOutputStream(output);
+            outputStream.writeObject(instance);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadMenuStorage() {
+        File settings = new File(context.getFilesDir(), menuStorageFilename);
+        if (settings.exists()) {
+            try {
+                FileInputStream input = context.openFileInput(menuStorageFilename);
+                ObjectInputStream inputStream = new ObjectInputStream(input);
+                instance = (MenuStorage) inputStream.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Генерирует меню на один день, учитывая настройки и имеющиеся рецепты
      * @param settings настройки меню на этот день
-     * @param recipes Map из CategoryID в RecipeID. Если для какой-то категории есть рецепт, то будет использован именно он
+     * @param recipes Map из CategoryID в RecipeID. Если для какой-то категории есть рецепт,
+     * то будет использован именно он
      */
     public DayMenu generateDayMenu(DaySettings settings, HashMap<Integer, Integer> recipes) {
         ArrayList<DayMenu.Mealtime> dishesForDay = new ArrayList<>();
@@ -67,6 +101,7 @@ public class MenuStorage {
             ArrayList<Integer> mealtimeRecipes = new ArrayList<>();
             for (Integer categoryID : mealtimeSettings.dishesCategories()) {
                 if (recipes.get(categoryID) == null) {
+                    CookBookStorage cookbook = CookBookStorage.getInstance(context);
                     recipes.put(categoryID, cookbook.chooseRandomDishFromCategory(categoryID).getID());
                 }
                 mealtimeRecipes.add(recipes.get(categoryID));
@@ -80,7 +115,7 @@ public class MenuStorage {
      * Генерирует меню на неделю
      */
     public void generateWeekMenu() {
-        MenuSettings settings = MenuSettings.getInstance();
+        MenuSettings settings = MenuSettings.getInstance(context);
         Day firstCookingDay = Day.Monday;
         for (Day day : Day.values()) {
             if (settings.isCookingDay(day)) {

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         //Init cookbook
-        cookbook = CookBookStorage.getInstance();
+        cookbook = CookBookStorage.getInstance(this);
         //Init Task
         ContentLoader contentLoader = new ContentLoader();
         Thread loader = new Thread(contentLoader);
@@ -123,7 +124,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
-            MenuStorage menu = MenuStorage.getInstance();
+            MenuStorage menu = MenuStorage.getInstance(ShoppingListActivity.this);
             HashMap<Day, DayMenu> menuRecipes = menu.getMenu();
             recipes = new ArrayList<>();
             for (DayMenu rs : menuRecipes.values()) {
@@ -150,7 +151,8 @@ public class ShoppingListActivity extends AppCompatActivity {
                     ingredients.add(i);
                 }
             }
-            ingredients.sort(new Comparator<Ingredient>() {
+
+            Collections.sort(ingredients, new Comparator<Ingredient>() {
                 @Override
                 public int compare(Ingredient i1, Ingredient i2) {
                     return i1.getName().compareTo(i2.getName());

@@ -2,11 +2,8 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.support.annotation.IntegerRes;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -77,7 +74,7 @@ public class RecipeViewActivity extends AppCompatActivity {
     }
     private void showRecipe() {
         //Header
-        CookBookStorage cookbook = CookBookStorage.getInstance();
+        CookBookStorage cookbook = CookBookStorage.getInstance(this);
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
@@ -115,19 +112,19 @@ public class RecipeViewActivity extends AppCompatActivity {
 
         nameView.setText(recipe.getName());
         descriptionView.setText(recipe.getDescription());
-        StringBuilder ingridientList = new StringBuilder();
+        StringBuilder ingredientList = new StringBuilder();
         for (Ingredient i : cookbook.getRecipeIngredients(recipe.getID())) {
             if (i.getQuantity() >= 0.0) {
-                ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
+                ingredientList = ingredientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
                         INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() + " " +
                         i.getTypeName() + "\n");
             } else {
-                ingridientList = ingridientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
+                ingredientList = ingredientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
                         INGRIDIENT_LIST_COUNT_DIVIDER +
                         i.getTypeName() + "\n");
             }
         }
-        ingridientsView.setText(ingridientList.toString());
+        ingridientsView.setText(ingredientList.toString());
     }
 
     public class ContentLoader implements Runnable {
@@ -144,7 +141,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
-            CookBookStorage cookbook = CookBookStorage.getInstance();
+            CookBookStorage cookbook = CookBookStorage.getInstance(RecipeViewActivity.this);
             recipe = cookbook.getRecipe(recipeID);
             steps = cookbook.getRecipeSteps(recipe.getID());
             categories = cookbook.getRecipeCategories(recipe.getID());

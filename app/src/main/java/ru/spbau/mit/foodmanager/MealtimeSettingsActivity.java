@@ -29,7 +29,7 @@ public class MealtimeSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mealtime_settings);
 
-        cookbook = CookBookStorage.getInstance();
+        cookbook = CookBookStorage.getInstance(this);
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         dishes = (LinearLayout) findViewById(R.id.mealtime_settings_dishes);
         task = getIntent();

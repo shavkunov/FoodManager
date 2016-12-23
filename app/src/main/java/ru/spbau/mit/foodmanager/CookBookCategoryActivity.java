@@ -93,7 +93,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                 }
             });
             if (target != TARGET_FAVOURITES) {
-                category = CookBookStorage.getInstance().getCategoryByID(categoryID);
+                category = CookBookStorage.getInstance(CookBookCategoryActivity.this).getCategoryByID(categoryID);
                 if (category != null) {
                     recipes = category.getRecipes();
                 }

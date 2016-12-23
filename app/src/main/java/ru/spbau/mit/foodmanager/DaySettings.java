@@ -1,5 +1,12 @@
 package ru.spbau.mit.foodmanager;
 
+import android.content.Context;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -9,7 +16,9 @@ import java.util.ArrayList;
 
 public class DaySettings implements Serializable {
     private ArrayList<MealtimeSettings> mealtimeSettings = new ArrayList<>();
+    private static Context context;
     static private ArrayList<MealtimeSettings> presets;
+    private static final String presetsFilename = "Presets";
     static {
         presets = new ArrayList<>();
         {
@@ -29,13 +38,42 @@ public class DaySettings implements Serializable {
             categories.add(8);
             presets.add(new MealtimeSettings("Ужин", categories));
         }
-        //TODO: Загружать настройки приемов пищи из БД
+
+        loadPresets();
     }
+
+    public static void savePresets() {
+        try {
+            FileOutputStream output = context.openFileOutput(
+                    presetsFilename, Context.MODE_PRIVATE);
+
+            ObjectOutputStream outputStream = new ObjectOutputStream(output);
+            outputStream.writeObject(presets);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadPresets() {
+        File settings = new File(context.getFilesDir(), presetsFilename);
+        if (settings.exists()) {
+            try {
+                FileInputStream input = context.openFileInput(presetsFilename);
+                ObjectInputStream inputStream = new ObjectInputStream(input);
+                presets = (ArrayList<MealtimeSettings>) inputStream.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     static public ArrayList<MealtimeSettings> getMealtimePresets() {
         return presets;
     }
 
-    public DaySettings(ArrayList<MealtimeSettings> settings) {
+    public DaySettings(ArrayList<MealtimeSettings> settings, Context context) {
+        this.context = context;
         mealtimeSettings = new ArrayList<>();
         for (MealtimeSettings s : settings) {
             mealtimeSettings.add(new MealtimeSettings(s.getName(), s.dishesCategories()));
