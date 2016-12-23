@@ -25,6 +25,7 @@ public class RecipeViewActivity extends AppCompatActivity {
     private GifImageView loaderAnimation;
     private ImageButton likeBtn;
     private ImageButton favoriteBtn;
+    private TextView likeCounter;
     private boolean liked;
     private boolean inFavourites;
 
@@ -39,6 +40,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         //Init like & selected btn
         likeBtn = (ImageButton) findViewById(R.id.recipe_like);
+        likeCounter = (TextView) findViewById(R.id.recipe_like_count);
         favoriteBtn = (ImageButton) findViewById(R.id.recipe_add_to_favorites);
         //Init Task
         Intent intent = getIntent();
@@ -60,17 +62,22 @@ public class RecipeViewActivity extends AppCompatActivity {
             likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_on));
         }
         liked = !liked;
-        //TODO put to cookbook
+        CookBookStorage.getInstance(this).setLike(recipe, liked);
+        likeCounter.setText(CookBookStorage.getInstance(this).getRecipeLikes(recipe));
     }
 
     public void onFavoriteClick(View v) {
-        if (inFavourites) {
-            favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
-        } else {
-            favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
+        if (!inFavourites) {
+            if (inFavourites) {
+                favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
+            } else {
+                favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
+            }
+            inFavourites = !inFavourites;
         }
-        inFavourites = !inFavourites;
-        //TODO put to cookbook
+        if (inFavourites) {
+            CookBookStorage.getInstance(this).addToFavorites(recipe);
+        }
     }
     private void showRecipe() {
         //Header
@@ -141,12 +148,17 @@ public class RecipeViewActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
-            CookBookStorage cookbook = CookBookStorage.getInstance(RecipeViewActivity.this);
+            final CookBookStorage cookbook = CookBookStorage.getInstance(RecipeViewActivity.this);
             recipe = cookbook.getRecipe(recipeID);
             steps = cookbook.getRecipeSteps(recipe.getID());
             categories = cookbook.getRecipeCategories(recipe.getID());
-            liked = false; //TODO: init with real values
+            liked = cookbook.getUserLike(recipe);
             inFavourites = false;
+            for (Recipe r : cookbook.getFavorites()) {
+                if (r.getID() == recipe.getID()) {
+                    inFavourites = true;
+                }
+            }
             RecipeViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -163,6 +175,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     } else {
                         favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
                     }
+                    likeCounter.setText(cookbook.getRecipeLikes(recipe));
                 }
             });
         }
