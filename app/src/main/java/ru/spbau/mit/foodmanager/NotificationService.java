@@ -21,13 +21,15 @@ public class NotificationService extends Service {
     private static Day lastCookDayNotify;
     private static Boolean notifyedToday;
     private Calendar calendar = Calendar.getInstance();
-    private MenuSettings menuSettings = MenuSettings.getInstance(this);
-    private NotificationSettings notificationSettings = NotificationSettings.getInstance(this);
+    private MenuSettings menuSettings;
+    private NotificationSettings notificationSettings;
 
     @Override
     public void onCreate() {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationSettings = NotificationSettings.getInstance(this);
+        menuSettings = MenuSettings.getInstance(this);
     }
 
     @Override

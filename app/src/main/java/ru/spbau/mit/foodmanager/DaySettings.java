@@ -16,33 +16,10 @@ import java.util.ArrayList;
 
 public class DaySettings implements Serializable {
     private ArrayList<MealtimeSettings> mealtimeSettings = new ArrayList<>();
-    private static Context context;
     static private ArrayList<MealtimeSettings> presets;
     private static final String presetsFilename = "Presets";
-    static {
-        presets = new ArrayList<>();
-        {
-            ArrayList<Integer> categories = new ArrayList<>();
-            categories.add(10);
-            presets.add(new MealtimeSettings("Завтрак", categories));
-        }
-        {
-            ArrayList<Integer> categories = new ArrayList<>();
-            categories.add(9);
-            //categories.add(1);
-            //categories.add(0);
-            presets.add(new MealtimeSettings("Обед", categories));
-        }
-        {
-            ArrayList<Integer> categories = new ArrayList<>();
-            categories.add(8);
-            presets.add(new MealtimeSettings("Ужин", categories));
-        }
 
-        loadPresets();
-    }
-
-    public static void savePresets() {
+    public static void savePresets(Context context) {
         try {
             FileOutputStream output = context.openFileOutput(
                     presetsFilename, Context.MODE_PRIVATE);
@@ -55,7 +32,7 @@ public class DaySettings implements Serializable {
         }
     }
 
-    public static void loadPresets() {
+    public static void loadPresets(Context context) {
         File settings = new File(context.getFilesDir(), presetsFilename);
         if (settings.exists()) {
             try {
@@ -68,12 +45,35 @@ public class DaySettings implements Serializable {
         }
     }
 
-    static public ArrayList<MealtimeSettings> getMealtimePresets() {
+    static public ArrayList<MealtimeSettings> getMealtimePresets(Context context) {
+        if (presets == null) {
+            loadPresets(context);
+        }
+        if (presets == null) {
+            presets = new ArrayList<>();
+            {
+                ArrayList<Integer> categories = new ArrayList<>();
+                categories.add(10);
+                presets.add(new MealtimeSettings("Завтрак", categories));
+            }
+            {
+                ArrayList<Integer> categories = new ArrayList<>();
+                categories.add(9);
+                //categories.add(1);
+                //categories.add(0);
+                presets.add(new MealtimeSettings("Обед", categories));
+            }
+            {
+                ArrayList<Integer> categories = new ArrayList<>();
+                categories.add(8);
+                presets.add(new MealtimeSettings("Ужин", categories));
+            }
+            savePresets(context);
+        }
         return presets;
     }
 
-    public DaySettings(ArrayList<MealtimeSettings> settings, Context context) {
-        this.context = context;
+    public DaySettings(ArrayList<MealtimeSettings> settings) {
         mealtimeSettings = new ArrayList<>();
         for (MealtimeSettings s : settings) {
             mealtimeSettings.add(new MealtimeSettings(s.getName(), s.dishesCategories()));

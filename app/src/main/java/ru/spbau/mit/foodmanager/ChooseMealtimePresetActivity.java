@@ -27,11 +27,17 @@ public class ChooseMealtimePresetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_mealtime_preset);
         menuSettings = MenuSettings.getInstance(this);
-        presets = DaySettings.getMealtimePresets();
+        presets = DaySettings.getMealtimePresets(this);
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         presetList = (LinearLayout) findViewById(R.id.choose_mealtime_preset_list);
         presetView = new HashMap<>();
         fillPresets();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DaySettings.savePresets(this);
     }
 
     private void fillPresets() {

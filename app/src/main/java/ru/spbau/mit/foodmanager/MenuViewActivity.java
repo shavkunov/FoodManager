@@ -44,6 +44,12 @@ public class MenuViewActivity extends AppCompatActivity {
         loader.start();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MenuStorage.saveMenuStorage(this);
+    }
+
     public void onGenerateBtnClick(View v) {
         //Init Task
         ContentLoader contentLoader = new ContentLoader(true);
@@ -179,7 +185,7 @@ public class MenuViewActivity extends AppCompatActivity {
                 }
             });
             if (generateNewMenu) {
-                menu.generateWeekMenu();
+                menu.generateWeekMenu(MenuViewActivity.this);
             }
             allDayMenu = menu.getMenu();
             for (DayMenu dm : allDayMenu.values()) {

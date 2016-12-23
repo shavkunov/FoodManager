@@ -10,13 +10,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class NotificationSettingsActivity extends AppCompatActivity {
-    private NotificationSettings settings = NotificationSettings.getInstance(this);
+    private NotificationSettings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notification_settings);
 
+        settings = NotificationSettings.getInstance(this);
         Switch switchCookNotify = (Switch) findViewById(R.id.notification_settings_toggle_cook_notify);
         showTimes();
         //TODO Нормальный формат времени
@@ -24,9 +25,14 @@ public class NotificationSettingsActivity extends AppCompatActivity {
         switchCookNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                settings.setShowCookNotifications(b);
+                settings.setShowCookNotifications(b, NotificationSettingsActivity.this);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        NotificationSettings.saveNotificationSettings(this);
     }
 
     private void showTimes() {
@@ -46,7 +52,7 @@ public class NotificationSettingsActivity extends AppCompatActivity {
         TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                    settings.setTimeOfDayBeginCookNotifications(hour, minute);
+                    settings.setTimeOfDayBeginCookNotifications(hour, minute, NotificationSettingsActivity.this);
                     showTimes();
             }
         },
@@ -61,7 +67,7 @@ public class NotificationSettingsActivity extends AppCompatActivity {
         TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                settings.setTimeOfDayEndCookNotifications(hour, minute);
+                settings.setTimeOfDayEndCookNotifications(hour, minute, NotificationSettingsActivity.this);
                 showTimes();
             }
         },

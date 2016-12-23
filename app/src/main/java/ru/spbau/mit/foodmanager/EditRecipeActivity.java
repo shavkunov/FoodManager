@@ -67,7 +67,7 @@ public class EditRecipeActivity extends AppCompatActivity {
                     ImageButton newTagDelete = (ImageButton) newTag.findViewById(R.id.edit_recipe_delete_tag);
                     final Integer category = resultContainer.getIntExtra("Result", -1);
                     tags.add(category);
-                    newTagName.setText(CookBookStorage.getInstance().getCategoryByID(category).getDescription());
+                    newTagName.setText(CookBookStorage.getInstance(this).getCategoryByID(category).getDescription());
                     newTagDelete.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -103,7 +103,7 @@ public class EditRecipeActivity extends AppCompatActivity {
         }
         result.setSteps(steps);
         //TODO Another Thread
-        CookBookStorage.getInstance().addRecipeToDatabase(result);
+        CookBookStorage.getInstance(this).addRecipeToDatabase(result);
         finish();
     }
 

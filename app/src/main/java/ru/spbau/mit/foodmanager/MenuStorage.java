@@ -16,7 +16,6 @@ import java.util.HashMap;
  */
 public class MenuStorage implements Serializable {
     private HashMap<Day, DayMenu> dayMenus;
-    private static Context context;
     private static MenuStorage instance;
     private static final String menuStorageFilename = "MenuStorage";
     static final private String[] DAY_NAMES = {
@@ -28,9 +27,8 @@ public class MenuStorage implements Serializable {
             "Суббота",
             "Воскресенье"};
 
-    private MenuStorage(Context context) {
+    private MenuStorage() {
         dayMenus = new HashMap<>();
-        MenuStorage.context = context;
     }
 
     static public String[] getDayNames() {
@@ -38,11 +36,12 @@ public class MenuStorage implements Serializable {
     }
 
     static public MenuStorage getInstance(Context context) {
-        loadMenuStorage();
-
         if (instance == null) {
-            instance = new MenuStorage(context);
-            saveMenuStorage();
+            loadMenuStorage(context);
+        }
+        if (instance == null) {
+            instance = new MenuStorage();
+            saveMenuStorage(context);
         }
         return instance;
     }
@@ -63,7 +62,7 @@ public class MenuStorage implements Serializable {
         }
     }
 
-    public static void saveMenuStorage() {
+    public static void saveMenuStorage(Context context) {
         try {
             FileOutputStream output = context.openFileOutput(
                     menuStorageFilename, Context.MODE_PRIVATE);
@@ -76,7 +75,7 @@ public class MenuStorage implements Serializable {
         }
     }
 
-    public static void loadMenuStorage() {
+    public static void loadMenuStorage(Context context) {
         File settings = new File(context.getFilesDir(), menuStorageFilename);
         if (settings.exists()) {
             try {
@@ -95,7 +94,7 @@ public class MenuStorage implements Serializable {
      * @param recipes Map из CategoryID в RecipeID. Если для какой-то категории есть рецепт,
      * то будет использован именно он
      */
-    public DayMenu generateDayMenu(DaySettings settings, HashMap<Integer, Integer> recipes) {
+    public DayMenu generateDayMenu(DaySettings settings, HashMap<Integer, Integer> recipes, Context context) {
         ArrayList<DayMenu.Mealtime> dishesForDay = new ArrayList<>();
         for (DaySettings.MealtimeSettings mealtimeSettings : settings.getMealtimeSettings()) {
             ArrayList<Integer> mealtimeRecipes = new ArrayList<>();
@@ -114,7 +113,7 @@ public class MenuStorage implements Serializable {
     /**
      * Генерирует меню на неделю
      */
-    public void generateWeekMenu() {
+    public void generateWeekMenu(Context context) {
         MenuSettings settings = MenuSettings.getInstance(context);
         Day firstCookingDay = Day.Monday;
         for (Day day : Day.values()) {
@@ -148,10 +147,11 @@ public class MenuStorage implements Serializable {
                 DaySettings daySettings = settings.getDaySettings(day);
                 dayMenus.put(day, null);
                 if (daySettings != null) {
-                    DayMenu dayMenu = generateDayMenu(daySettings, categoryRecipes);
+                    DayMenu dayMenu = generateDayMenu(daySettings, categoryRecipes, context);
                     dayMenus.put(day, dayMenu);
                 }
             }
         }
+        saveMenuStorage(context);
     }
 }

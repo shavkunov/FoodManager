@@ -15,28 +15,26 @@ import java.util.HashMap;
 public class MenuSettings implements Serializable {
     private HashMap<Day, DaySettings> settingsByDay;
     private HashMap<Day, Boolean> isCookingDay;
-    private static Context context;
     private static MenuSettings instance;
     private static final String menuSettingsFilename = "MenuSettings";
 
     private MenuSettings(Context context) {
-        MenuSettings.context = context;
         settingsByDay = new HashMap<>();
         isCookingDay = new HashMap<>();
         for (Day d : Day.values()) {
             isCookingDay.put(d, true);
             //DEBUG ONLY
             ArrayList<DaySettings.MealtimeSettings> mealtieSettings = new ArrayList<>();
-            mealtieSettings.add(DaySettings.getMealtimePresets().get(0));
-            mealtieSettings.add(DaySettings.getMealtimePresets().get(1));
-            mealtieSettings.add(DaySettings.getMealtimePresets().get(2));
-            DaySettings settings = new DaySettings(mealtieSettings, context);
+            mealtieSettings.add(DaySettings.getMealtimePresets(context).get(0));
+            mealtieSettings.add(DaySettings.getMealtimePresets(context).get(1));
+            mealtieSettings.add(DaySettings.getMealtimePresets(context).get(2));
+            DaySettings settings = new DaySettings(mealtieSettings);
             settingsByDay.put(d, settings);
             //DEBUG ONLY
         }
     }
 
-    public static void saveMenuSettings() {
+    public static void saveMenuSettings(Context context) {
         try {
             FileOutputStream output = context.openFileOutput(
                                       menuSettingsFilename, Context.MODE_PRIVATE);
@@ -49,7 +47,7 @@ public class MenuSettings implements Serializable {
         }
     }
 
-    public static void loadMenuSettings() {
+    public static void loadMenuSettings(Context context) {
         File settings = new File(context.getFilesDir(), menuSettingsFilename);
         if (settings.exists()) {
             try {
@@ -63,11 +61,11 @@ public class MenuSettings implements Serializable {
     }
 
     public static MenuSettings getInstance(Context context) {
-        loadMenuSettings();
+        loadMenuSettings(context);
 
         if (instance == null) {
             instance = new MenuSettings(context);
-            saveMenuSettings();
+            saveMenuSettings(context);
         }
 
         return instance;
@@ -81,7 +79,8 @@ public class MenuSettings implements Serializable {
         return isCookingDay.get(day);
     }
 
-    public void setCookingDay(Day day, Boolean isCookingDay) {
+    public void setCookingDay(Day day, Boolean isCookingDay, Context c) {
         this.isCookingDay.put(day, isCookingDay);
+        saveMenuSettings(c);
     }
 }

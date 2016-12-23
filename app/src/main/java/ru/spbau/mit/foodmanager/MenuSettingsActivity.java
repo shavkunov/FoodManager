@@ -42,6 +42,12 @@ public class MenuSettingsActivity extends AppCompatActivity {
         fillDays();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MenuSettings.saveMenuSettings(this);
+    }
+
     public void onActivityResult(int requestCode, int errorCode, Intent resultContainer) {
         if (errorCode == RESULT_OK) {
             DaySettings.MealtimeSettings result;
@@ -94,7 +100,7 @@ public class MenuSettingsActivity extends AppCompatActivity {
             isCookingDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    menuSettings.setCookingDay(d, b);
+                    menuSettings.setCookingDay(d, b, MenuSettingsActivity.this);
                 }
             });
 
