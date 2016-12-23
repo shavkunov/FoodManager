@@ -14,6 +14,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 public class CookBookCategoryActivity extends AppCompatActivity {
+    public static final int TARGET_FAVOURITES = 10;
     private Category category;
     private Intent task;
     private Integer target;
@@ -31,7 +32,6 @@ public class CookBookCategoryActivity extends AppCompatActivity {
         //Task init
         task = getIntent();
         target =  task.getIntExtra("Target",CookBookActivity.TARGET_NO);
-        //TODO LOAD CATEGORY IN ANOTHER THREAD
         ContentLoader contentLoader = new ContentLoader(task.getIntExtra("Category", -1));
         Thread loader = new Thread(contentLoader);
         loader.start();
@@ -57,6 +57,11 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                 Intent intent;
                 switch (target) {
                     case CookBookActivity.TARGET_NO :
+                        intent = new Intent(CookBookCategoryActivity.this, RecipeViewActivity.class);
+                        intent.putExtra("Recipe", recipes.get(i).getID());
+                        startActivity(intent);
+                        break;
+                    case TARGET_FAVOURITES :
                         intent = new Intent(CookBookCategoryActivity.this, RecipeViewActivity.class);
                         intent.putExtra("Recipe", recipes.get(i).getID());
                         startActivity(intent);
@@ -87,9 +92,13 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
-            category = CookBookStorage.getInstance().getCategoryByID(categoryID);
-            if (category != null) {
-                recipes = category.getRecipes();
+            if (target != TARGET_FAVOURITES) {
+                category = CookBookStorage.getInstance().getCategoryByID(categoryID);
+                if (category != null) {
+                    recipes = category.getRecipes();
+                }
+            } else {
+                //TODO init with favourite recipes
             }
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override

@@ -30,8 +30,8 @@
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Добавить рецепт"
-                android:onClick="onAddRecipeClick"/>
+                android:text="Избранное"
+                android:onClick="onFavouritesClick"/>
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -42,6 +42,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/shoppinglist"
                 android:onClick="onShoppingListClick"/>
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Добавить рецепт"
+                android:onClick="onAddRecipeClick"/>
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

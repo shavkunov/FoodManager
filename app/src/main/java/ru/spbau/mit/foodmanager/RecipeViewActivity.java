@@ -1,6 +1,7 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.annotation.IntegerRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -47,8 +48,6 @@ public class RecipeViewActivity extends AppCompatActivity {
         ContentLoader contentLoader = new ContentLoader(intent.getIntExtra("Recipe", -1));
         Thread loader = new Thread(contentLoader);
         loader.start();
-        liked = false; //TODO: init with real values
-        inFavourites = false; //TODO: Init image srcs
    }
 
     public void onCookClick(View v) {
@@ -58,13 +57,21 @@ public class RecipeViewActivity extends AppCompatActivity {
     }
 
     public void onLikeClick(View v) {
-        //TODO: init images
+        if (liked) {
+            likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));
+        } else {
+            likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_on));
+        }
         liked = !liked;
         //TODO put to cookbook
     }
 
     public void onFavoriteClick(View v) {
-        //TODO: init images
+        if (inFavourites) {
+            favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
+        } else {
+            favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
+        }
         inFavourites = !inFavourites;
         //TODO put to cookbook
     }
@@ -141,12 +148,24 @@ public class RecipeViewActivity extends AppCompatActivity {
             recipe = cookbook.getRecipe(recipeID);
             steps = cookbook.getRecipeSteps(recipe.getID());
             categories = cookbook.getRecipeCategories(recipe.getID());
+            liked = false; //TODO: init with real values
+            inFavourites = false;
             RecipeViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipe();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+                    if (!liked) {
+                        likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));
+                    } else {
+                        likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_on));
+                    }
+                    if (!inFavourites) {
+                        favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
+                    } else {
+                        favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
+                    }
                 }
             });
         }

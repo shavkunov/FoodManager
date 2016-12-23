@@ -39,17 +39,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onWeekMenuClick(View view) {
-        Intent intent = new  Intent(this, MenuViewActivity.class);
+        Intent intent = new Intent(this, MenuViewActivity.class);
         startActivity(intent);
     }
 
     public void onShoppingListClick(View view) {
-        Intent intent = new  Intent(this, ShoppingListActivity.class);
+        Intent intent = new Intent(this, ShoppingListActivity.class);
         startActivity(intent);
     }
 
     public void onSettingsClick(View view) {
-        Intent intent = new  Intent(this, SettingsActivity.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void onFavouritesClick(View view) {
+        Intent intent = new Intent(this, CookBookCategoryActivity.class);
+        intent.putExtra("Target", CookBookCategoryActivity.TARGET_FAVOURITES);
         startActivity(intent);
     }
 

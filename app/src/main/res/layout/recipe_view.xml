@@ -56,22 +56,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/recipe_add_to_favorites"
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
+                android:scaleType="centerInside"
+                android:background="@color/colorTransparent"
+                android:src="@drawable/favourite_off"
+                android:onClick="onFavoriteClick"/>
+            <ImageButton
+                android:id="@+id/recipe_like"
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
+                android:scaleType="centerInside"
+                android:background="@color/colorTransparent"
+                android:src="@drawable/like_off"
+                android:onClick="onLikeClick"/>
+            <View
+                android:layout_width="35dp"
+                android:layout_height="35dp"></View>
             <Button
                 android:id="@+id/recipe_goto_stepbystep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/recipe_goto_stepbystep_str"
                 android:onClick="onCookClick"/>
-            <ImageButton
-                android:id="@+id/recipe_add_to_favorites"
-                android:layout_width="@dimen/imbtn_size"
-                android:layout_height="@dimen/imbtn_size"
-                android:onClick="onFavoriteClick"/>
-            <ImageButton
-                android:id="@+id/recipe_like"
-                android:layout_width="@dimen/imbtn_size"
-                android:layout_height="@dimen/imbtn_size"
-                android:onClick="onLikeClick"/>
             <!-- TODO: redesign buttons -->
         </LinearLayout>
         <!-- Recipe Description -->
