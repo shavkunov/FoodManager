@@ -98,7 +98,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                     recipes = category.getRecipes();
                 }
             } else {
-                //TODO init with favourite recipes
+                recipes = CookBookStorage.getInstance(CookBookCategoryActivity.this).getFavorites();
             }
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override
