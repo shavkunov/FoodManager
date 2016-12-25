@@ -120,7 +120,7 @@ public class CookBookStorage {
      */
     public void addRecipeToDatabase(Recipe recipe) {
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
@@ -277,7 +277,7 @@ public class CookBookStorage {
                                  "WHERE recipe_ID = " + ID;
 
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
@@ -306,7 +306,7 @@ public class CookBookStorage {
                             "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet steps = stmt.executeQuery(stepsQuery);
@@ -343,7 +343,7 @@ public class CookBookStorage {
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
@@ -374,7 +374,7 @@ public class CookBookStorage {
         String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet mainData = stmt.executeQuery(recipeQuery);
@@ -405,7 +405,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(filterQuery);
@@ -433,7 +433,7 @@ public class CookBookStorage {
     public Integer getRecipeLikes(Recipe recipe) {
         String likesQuery = "SELECT COUNT(*) AS total FROM Likes WHERE recipe_ID = " + recipe.getID();
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(likesQuery);
@@ -521,7 +521,7 @@ public class CookBookStorage {
         try {
             String removeLikeQuery = "DELETE FROM Like WHERE user_ID = '" + userID +
                                      "' AND recipe_ID = " + recipe.getID();
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(removeLikeQuery);
@@ -638,7 +638,7 @@ public class CookBookStorage {
                                       " ORDER BY RAND() LIMIT 1";
 
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
@@ -697,7 +697,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
         String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(categoryQuery);
@@ -726,7 +726,7 @@ public class CookBookStorage {
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
 
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
@@ -757,7 +757,7 @@ public class CookBookStorage {
         LinkedList<Category> categories = new LinkedList<>();
 
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);

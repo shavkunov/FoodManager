@@ -1,9 +1,8 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -136,9 +135,11 @@ public class CookBookActivity extends AppCompatActivity {
             categories.clear();
             switch (groupingBy) {
                 case GROUPINGBY_TYPE_OF_DISH:
+                    categories = new ArrayList<>();
                     categories.addAll(cookbook.getRecipiesTypeOfDish());
                     break;
                 case GROUPINGBY_NATIONAL_KITCHEN:
+                    categories = new ArrayList<>();
                     categories.addAll(cookbook.getRecipiesNationalKitchen());
                     break;
             }
