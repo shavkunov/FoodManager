@@ -1,32 +1,30 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
 public class ShoppingListActivity extends AppCompatActivity {
-
+    private static final String shoppingListFilename = "ShoppingList";
     private CookBookStorage cookbook;
     private ArrayList<Recipe> recipes;
     private ArrayList<Ingredient> ingredients;
@@ -46,6 +44,32 @@ public class ShoppingListActivity extends AppCompatActivity {
         ContentLoader contentLoader = new ContentLoader();
         Thread loader = new Thread(contentLoader);
         loader.start();
+    }
+
+    public void saveMenuStorage() {
+        try {
+            FileOutputStream output = this.openFileOutput(
+                    shoppingListFilename, Context.MODE_PRIVATE);
+
+            ObjectOutputStream outputStream = new ObjectOutputStream(output);
+            outputStream.writeObject(ingredients);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMenuStorage() {
+        File settings = new File(this.getFilesDir(), shoppingListFilename);
+        if (settings.exists()) {
+            try {
+                FileInputStream input = this.openFileInput(shoppingListFilename);
+                ObjectInputStream inputStream = new ObjectInputStream(input);
+                ingredients = (ArrayList<Ingredient>) inputStream.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void showIngredients() {
