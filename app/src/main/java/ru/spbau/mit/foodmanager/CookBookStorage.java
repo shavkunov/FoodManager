@@ -544,26 +544,44 @@ public class CookBookStorage {
             return;
         }
 
+        ArrayList<Integer> ids = getRecipesIDFromFavorites();
+        ids.add(recipe.getID());
+        addIDsToFavorites(ids);
+    }
+
+    /**
+     * Сделать избранным конкретные рецепты.
+     * @param ids в избранном хранятся id рецептов.
+     */
+    private void addIDsToFavorites(ArrayList<Integer> ids) {
         File favorites = new File(context.getFilesDir(), favoritesFileName);
+
         FileOutputStream outputStream = null;
-        if (favorites.exists()) {
-            try {
-                outputStream = context.openFileOutput(favoritesFileName, Context.MODE_APPEND);
-                String data = " " + recipe.getID();
-                outputStream.write(data.getBytes());
-                outputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+
+        try {
+            favorites.createNewFile();
+            outputStream = context.openFileOutput(favoritesFileName, Context.MODE_PRIVATE);
+            String data = String.valueOf(ids.get(0));
+            for (int i = 1; i < ids.size(); i++) {
+                data += " " + ids.get(i);
             }
-        } else {
-            try {
-                outputStream = context.openFileOutput(favoritesFileName, Context.MODE_PRIVATE);
-                outputStream.write(String.valueOf(recipe.getID()).getBytes());
-                outputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+            outputStream.write(data.getBytes());
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    /**
+     * Удаление рецепта из избранного.
+     * @param recipe удаление рецепта из избранного.
+     */
+    public void removeFromFavorites(Recipe recipe) {
+        ArrayList<Integer> ids = getRecipesIDFromFavorites();
+        ids.remove(recipe.getID());
+        addIDsToFavorites(ids);
     }
 
     /**
@@ -573,7 +591,7 @@ public class CookBookStorage {
     private ArrayList<Integer> getRecipesIDFromFavorites() {
         ArrayList<Integer> res = new ArrayList<>();
 
-        File favorites = new File(favoritesFileName);
+        File favorites = new File(context.getFilesDir(), favoritesFileName);
         if (!favorites.exists()) {
             return res;
         }
