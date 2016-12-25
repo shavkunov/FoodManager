@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
             loaderResources.add(R.drawable.loading_animation2);
             loaderResources.add(R.drawable.loading_animation3);
             loaderResources.add(R.drawable.loading_animation4);
-            loaderResources.add(R.drawable.loading_animation5);
+            loaderResources.add(R.drawable.loading_animation7);
             loaderResources.add(R.drawable.loading_animation6);
         }
         int resID = loaderResources.get(Math.abs(random.nextInt()) % loaderResources.size());

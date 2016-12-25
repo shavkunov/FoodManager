@@ -164,31 +164,35 @@ public class ShoppingListActivity extends AppCompatActivity {
                     //TODO: do in background
                 }
             }
-            ArrayList<Ingredient> allIngredients = new ArrayList<>();
-            for (Recipe r : recipes) {
-                allIngredients.addAll(cookbook.getRecipeIngredients(r.getID()));
-            }
-            ingredients = new ArrayList<>();
-            for (Ingredient i : allIngredients) {
-                Boolean newIngredient = true;
-                for (Ingredient j : ingredients) {
-                    if (i.getName().equals(j.getName()) && i.getMeasure().equals(j.getMeasure())) {
-                        newIngredient = false;
-                        j.setQuantity(j.getQuantity() + i.getQuantity());
-                        break;
+            loadMenuStorage();
+            if (ingredients == null) {
+                ArrayList<Ingredient> allIngredients = new ArrayList<>();
+                for (Recipe r : recipes) {
+                    allIngredients.addAll(cookbook.getRecipeIngredients(r.getID()));
+                }
+                ingredients = new ArrayList<>();
+                for (Ingredient i : allIngredients) {
+                    Boolean newIngredient = true;
+                    for (Ingredient j : ingredients) {
+                        if (i.getName().equals(j.getName()) && i.getMeasure().equals(j.getMeasure())) {
+                            newIngredient = false;
+                            j.setQuantity(j.getQuantity() + i.getQuantity());
+                            break;
+                        }
+                    }
+                    if (newIngredient) {
+                        ingredients.add(i);
                     }
                 }
-                if (newIngredient) {
-                    ingredients.add(i);
-                }
-            }
 
-            Collections.sort(ingredients, new Comparator<Ingredient>() {
-                @Override
-                public int compare(Ingredient i1, Ingredient i2) {
-                    return i1.getName().compareTo(i2.getName());
-                }
-            });
+                Collections.sort(ingredients, new Comparator<Ingredient>() {
+                    @Override
+                    public int compare(Ingredient i1, Ingredient i2) {
+                        return i1.getName().compareTo(i2.getName());
+                    }
+                });
+                saveMenuStorage();
+            }
 
             ShoppingListActivity.this.runOnUiThread(new Runnable() {
                 @Override
