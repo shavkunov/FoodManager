@@ -459,7 +459,7 @@ public class CookBookStorage {
                             recipe.getID() + " AND user_ID = '" + userID + "'";
         Log.d(LOG_TAG, likesQuery);
         try {
-            if (connection == null || connection.isClosed())
+            while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(likesQuery);
