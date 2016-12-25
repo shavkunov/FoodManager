@@ -315,6 +315,7 @@ public class CookBookStorage {
                 String imageURL = steps.getString("link");
 
                 URL url = new URL(imageURL);
+                Log.d(LOG_TAG, imageURL);
                 Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                 recipeSteps.add(new Step(stepDescription, image));
             }
@@ -449,14 +450,22 @@ public class CookBookStorage {
      * соединиться с сервером.
      */
     public Boolean getUserLike(Recipe recipe) {
-        String likesQuery = "SELECT COUNT(*) AS total WHERE recipe_ID = " + recipe.getID() +
-                            " AND user_ID = '" + userID + "'";
+        String likesQuery = "SELECT COUNT(*) AS total FROM Likes WHERE recipe_ID = " +
+                            recipe.getID() + " AND user_ID = '" + userID + "'";
+        Log.d(LOG_TAG, likesQuery);
         try {
             connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
-            int like = stmt.executeQuery(likesQuery).getInt("total");
+            ResultSet rs = stmt.executeQuery(likesQuery);
+            int like = 0;
+            if (rs.next())
+                like = rs.getInt("total");
+            Log.d(LOG_TAG, userID);
+            Log.d(LOG_TAG, String.valueOf(recipe.getID()));
+            Log.d(LOG_TAG, String.valueOf(like));
             return like == 1;
         } catch (SQLException e) {
+            Log.d(LOG_TAG, "Не удалось получить лайк");
             e.printStackTrace();
         }
 
@@ -569,6 +578,7 @@ public class CookBookStorage {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return res;
         }
 
         return res;
