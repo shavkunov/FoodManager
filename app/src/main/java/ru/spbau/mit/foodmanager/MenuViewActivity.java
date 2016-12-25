@@ -192,10 +192,12 @@ public class MenuViewActivity extends AppCompatActivity {
             }
             allDayMenu = menu.getMenu();
             for (DayMenu dm : allDayMenu.values()) {
-                for (DayMenu.Mealtime m : dm.getMealtimes()) {
-                    for (Integer id : m.getRecipes()) {
-                        if (recipes.get(id) == null) {
-                            recipes.put(id, cookbook.getRecipe(id));
+                if (dm != null) {
+                    for (DayMenu.Mealtime m : dm.getMealtimes()) {
+                        for (Integer id : m.getRecipes()) {
+                            if (recipes.get(id) == null) {
+                                recipes.put(id, cookbook.getRecipe(id));
+                            }
                         }
                     }
                 }

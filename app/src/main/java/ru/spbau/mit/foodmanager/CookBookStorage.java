@@ -584,7 +584,7 @@ public class CookBookStorage {
      */
     public void removeFromFavorites(Recipe recipe) {
         ArrayList<Integer> ids = getRecipesIDFromFavorites();
-        ids.remove(recipe.getID());
+        ids.remove((Integer)recipe.getID());
         addIDsToFavorites(ids);
     }
 

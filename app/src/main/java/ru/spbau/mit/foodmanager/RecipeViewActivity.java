@@ -69,17 +69,14 @@ public class RecipeViewActivity extends AppCompatActivity {
     }
 
     public void onFavoriteClick(View v) {
-        if (!inFavourites) {
-            if (inFavourites) {
-                favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
-            } else {
-                favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
-            }
-            inFavourites = !inFavourites;
-        }
         if (inFavourites) {
+            favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
+            CookBookStorage.getInstance(this).removeFromFavorites(recipe);
+        } else {
+            favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
             CookBookStorage.getInstance(this).addToFavorites(recipe);
         }
+        inFavourites = !inFavourites;
     }
     private void showRecipe() {
         //Header

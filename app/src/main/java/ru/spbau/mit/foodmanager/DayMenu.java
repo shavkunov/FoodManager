@@ -2,13 +2,14 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Описывет меню на день.
  */
 
-public class DayMenu {
+public class DayMenu implements Serializable{
     private ArrayList<Mealtime> mealtimes;
 
     /**
@@ -39,7 +40,7 @@ public class DayMenu {
     /**
      * Описывает один прием пищи
      */
-    public static class Mealtime {
+    public static class Mealtime implements Serializable {
         private ArrayList<Integer> recipeIDs;
         private String name;
         //Нужно ли время?

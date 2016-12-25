@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,16 +103,20 @@ public class ShoppingListActivity extends AppCompatActivity {
             if (isChecked.get(i) == null) {
                 isChecked.put(i, false);
             }
+            checkBox.setTag(i);
             checkBox.setChecked(isChecked.get(i));
+            checkBox.setOnCheckedChangeListener(onCheckedChangeListener);
             return view;
         }
 
-        public class OnIngredientCheckedListener implements CompoundButton.OnCheckedChangeListener {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                isChecked.put((Integer)compoundButton.getTag(), b);
-            }
-        }
+        private CompoundButton.OnCheckedChangeListener onCheckedChangeListener =
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        Log.d("Tag", "LOL" + b);
+                        isChecked.put((Integer)compoundButton.getTag(), b);
+                    }
+                };
     }
 
     public class ContentLoader implements Runnable {
