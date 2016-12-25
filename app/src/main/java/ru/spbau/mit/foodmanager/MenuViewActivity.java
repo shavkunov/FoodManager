@@ -24,6 +24,7 @@ public class MenuViewActivity extends AppCompatActivity {
     private MenuStorage menu;
     private LayoutInflater inflater;
     private GifImageView loaderAnimation;
+    private LinearLayout informationLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class MenuViewActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        informationLayout = (LinearLayout) findViewById(R.id.information_layout);
 
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         cookbook = CookBookStorage.getInstance(this);
@@ -182,6 +184,7 @@ public class MenuViewActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.VISIBLE);
+                    informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
             if (generateNewMenu) {
@@ -201,8 +204,9 @@ public class MenuViewActivity extends AppCompatActivity {
             MenuViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipes();
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });

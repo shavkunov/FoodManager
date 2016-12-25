@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -26,6 +27,7 @@ public class CookBookActivity extends AppCompatActivity {
     private ArrayList<Category> categories;
     private CookBookStorage cookbook;
     private GifImageView loaderAnimation;
+    private LinearLayout informationLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class CookBookActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init Task
         task = getIntent();
         target = task.getIntExtra("Target", TARGET_NO);
@@ -131,6 +134,7 @@ public class CookBookActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.VISIBLE);
+                    informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
             categories.clear();
@@ -145,8 +149,9 @@ public class CookBookActivity extends AppCompatActivity {
             CookBookActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
                     showCategories();
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });

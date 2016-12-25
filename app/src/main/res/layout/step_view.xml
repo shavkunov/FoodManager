@@ -10,6 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.spbau.mit.foodmanager.StepViewActivity">
     <LinearLayout
+        android:id="@+id/information_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -38,22 +39,24 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <Button
+                <ImageButton
                     android:id="@+id/step_view_previous"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/step_view_previous_str"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/previous"
                     android:onClick="onPrevBtnClick"/>
                 <!--<Button
                     android:id="@+id/step_view_recipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/step_view_recipe_str"/>-->
-                <Button
+                <ImageButton
                     android:id="@+id/step_view_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/step_view_next_str"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/next"
                     android:onClick="onNextBtnClick"/>
             </LinearLayout>
             <!-- Step counter -->

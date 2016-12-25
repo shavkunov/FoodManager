@@ -12,6 +12,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     private static ArrayList<Integer> loaderResources;
     private static Random random = new Random();
+
     public static int getRandomLoaderResource() {
         if (loaderResources == null) {
             loaderResources = new ArrayList<>();
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        CookBookStorage.getInstance(this);
         startService(new Intent(this, NotificationService.class));
     }
 

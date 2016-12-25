@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ public class ShoppingListActivity extends AppCompatActivity {
     private ArrayList<Recipe> recipes;
     private ArrayList<Ingredient> ingredients;
     private GifImageView loaderAnimation;
+    private LinearLayout informationLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init cookbook
         cookbook = CookBookStorage.getInstance(this);
         //Init Task
@@ -122,6 +125,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.VISIBLE);
+                    informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
             MenuStorage menu = MenuStorage.getInstance(ShoppingListActivity.this);
@@ -162,8 +166,9 @@ public class ShoppingListActivity extends AppCompatActivity {
             ShoppingListActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
                     showIngredients();
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });

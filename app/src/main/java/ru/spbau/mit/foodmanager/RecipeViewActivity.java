@@ -23,6 +23,7 @@ public class RecipeViewActivity extends AppCompatActivity {
     private ArrayList<Step> steps;
     private ArrayList<Integer> categories;
     private GifImageView loaderAnimation;
+    private LinearLayout informationLayout;
     private ImageButton likeBtn;
     private ImageButton favoriteBtn;
     private TextView likeCounter;
@@ -38,6 +39,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init like & selected btn
         likeBtn = (ImageButton) findViewById(R.id.recipe_like);
         likeCounter = (TextView) findViewById(R.id.recipe_like_count);
@@ -146,6 +148,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.VISIBLE);
+                    informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
             final CookBookStorage cookbook = CookBookStorage.getInstance(RecipeViewActivity.this);
@@ -162,8 +165,9 @@ public class RecipeViewActivity extends AppCompatActivity {
             RecipeViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipe();
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                     if (!liked) {
                         likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));

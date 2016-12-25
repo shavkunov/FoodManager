@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class StepViewActivity extends AppCompatActivity {
     private ArrayList<Step> steps;
     private Integer stepPosition = 0;
     private GifImageView loaderAnimation;
+    private LinearLayout informationLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,7 @@ public class StepViewActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init Task
         Intent i = getIntent();
         ContentLoader contentLoader = new ContentLoader(i.getIntExtra("Recipe", -1));
@@ -74,6 +77,7 @@ public class StepViewActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.VISIBLE);
+                    informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
             CookBookStorage cookbook = CookBookStorage.getInstance(StepViewActivity.this);
@@ -82,8 +86,9 @@ public class StepViewActivity extends AppCompatActivity {
             StepViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipe();
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });

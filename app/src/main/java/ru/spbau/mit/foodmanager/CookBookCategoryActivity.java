@@ -20,6 +20,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
     private Integer target;
     private ArrayList<Recipe> recipes;
     private GifImageView loaderAnimation;
+    private ListView informationLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        informationLayout = (ListView) findViewById(R.id.cook_book_category_list);
         //Task init
         task = getIntent();
         target =  task.getIntExtra("Target",CookBookActivity.TARGET_NO);
@@ -90,6 +92,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     loaderAnimation.setVisibility(View.VISIBLE);
+                    informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
             if (target != TARGET_FAVOURITES) {
@@ -103,8 +106,9 @@ public class CookBookCategoryActivity extends AppCompatActivity {
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipies();
+                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });
