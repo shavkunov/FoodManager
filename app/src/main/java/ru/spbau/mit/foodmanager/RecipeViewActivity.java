@@ -63,7 +63,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         }
         liked = !liked;
         CookBookStorage.getInstance(this).setLike(recipe, liked);
-        likeCounter.setText(CookBookStorage.getInstance(this).getRecipeLikes(recipe));
+        likeCounter.setText(String.valueOf(CookBookStorage.getInstance(this).getRecipeLikes(recipe)));
     }
 
     public void onFavoriteClick(View v) {
@@ -175,7 +175,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     } else {
                         favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
                     }
-                    likeCounter.setText(cookbook.getRecipeLikes(recipe));
+                    likeCounter.setText(String.valueOf(cookbook.getRecipeLikes(recipe)));
                 }
             });
         }

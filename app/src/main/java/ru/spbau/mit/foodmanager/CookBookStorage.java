@@ -94,6 +94,7 @@ public class CookBookStorage {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection(databaseURL, user, password);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Problems with connection");
         }
@@ -119,7 +120,8 @@ public class CookBookStorage {
      */
     public void addRecipeToDatabase(Recipe recipe) {
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
 
@@ -133,7 +135,6 @@ public class CookBookStorage {
 
             stmt.close();
             connection.setAutoCommit(true);
-            connection.close();
         } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to insert new recipe");
             e.printStackTrace();
@@ -276,7 +277,8 @@ public class CookBookStorage {
                                  "WHERE recipe_ID = " + ID;
 
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
             ArrayList<Integer> ids = new ArrayList<>();
@@ -286,7 +288,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return ids;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get categories of recipe");
@@ -305,7 +306,8 @@ public class CookBookStorage {
                             "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet steps = stmt.executeQuery(stepsQuery);
             ArrayList<Step> recipeSteps = new ArrayList<>();
@@ -316,12 +318,11 @@ public class CookBookStorage {
 
                 URL url = new URL(imageURL);
                 Log.d(LOG_TAG, imageURL);
-                Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                Bitmap image = BitmapFactory.decodeStream((InputStream)new URL(imageURL).getContent());
                 recipeSteps.add(new Step(stepDescription, image));
             }
 
             stmt.close();
-            connection.close();
             return recipeSteps;
 
         } catch (Exception e) {
@@ -342,7 +343,8 @@ public class CookBookStorage {
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
             ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
@@ -356,7 +358,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return recipeIngredients;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get recipe ingredients");
@@ -373,7 +374,8 @@ public class CookBookStorage {
         String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet mainData = stmt.executeQuery(recipeQuery);
 
@@ -387,7 +389,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return new Recipe(ID, recipeDescription, recipeName);
 
         } catch (SQLException e) {
@@ -404,7 +405,8 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(filterQuery);
 
@@ -414,7 +416,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return res;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to filter recipes");
@@ -430,11 +431,15 @@ public class CookBookStorage {
      * @return null если не удалось соединится с сервером, иначе количество лайков.
      */
     public Integer getRecipeLikes(Recipe recipe) {
-        String likesQuery = "SELECT COUNT(*) AS total WHERE recipe_ID = " + recipe.getID();
+        String likesQuery = "SELECT COUNT(*) AS total FROM Likes WHERE recipe_ID = " + recipe.getID();
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
-            return stmt.executeQuery(likesQuery).getInt("total");
+            ResultSet rs = stmt.executeQuery(likesQuery);
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -454,7 +459,8 @@ public class CookBookStorage {
                             recipe.getID() + " AND user_ID = '" + userID + "'";
         Log.d(LOG_TAG, likesQuery);
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(likesQuery);
             int like = 0;
@@ -497,12 +503,12 @@ public class CookBookStorage {
                 String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
                                       userID + "', " + recipe.getID() + ")";
 
-                connection = DriverManager.getConnection(databaseURL, user, password);
+                if (connection == null || connection.isClosed())
+                    connection = DriverManager.getConnection(databaseURL, user, password);
                 Statement stmt = connection.createStatement();
                 stmt.executeUpdate(setLikeQuery);
 
                 stmt.close();
-                connection.close();
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -515,12 +521,12 @@ public class CookBookStorage {
         try {
             String removeLikeQuery = "DELETE FROM Like WHERE user_ID = '" + userID +
                                      "' AND recipe_ID = " + recipe.getID();
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(removeLikeQuery);
 
             stmt.close();
-            connection.close();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -566,6 +572,12 @@ public class CookBookStorage {
      */
     private ArrayList<Integer> getRecipesIDFromFavorites() {
         ArrayList<Integer> res = new ArrayList<>();
+
+        File favorites = new File(favoritesFileName);
+        if (!favorites.exists()) {
+            return res;
+        }
+
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
                                 context.openFileInput(favoritesFileName)));
@@ -626,7 +638,8 @@ public class CookBookStorage {
                                       " ORDER BY RAND() LIMIT 1";
 
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
 
@@ -636,7 +649,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return getRecipe(recipeID);
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get random dish");
@@ -685,7 +697,8 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
         String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(categoryQuery);
 
@@ -695,7 +708,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return res;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get recipes of category");
@@ -714,7 +726,8 @@ public class CookBookStorage {
         String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
 
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
             if (category.next()) {
@@ -722,11 +735,9 @@ public class CookBookStorage {
                 // пока картинок категорий у нас нет
                 Category c =  new Category(ID, description, null, context);
                 stmt.close();
-                connection.close();
                 return c;
             } else {
                 stmt.close();
-                connection.close();
                 return null;
             }
         } catch (SQLException e) {
@@ -746,7 +757,8 @@ public class CookBookStorage {
         LinkedList<Category> categories = new LinkedList<>();
 
         try {
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
 
@@ -755,7 +767,6 @@ public class CookBookStorage {
             }
 
             stmt.close();
-            connection.close();
             return categories;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to get categories");
