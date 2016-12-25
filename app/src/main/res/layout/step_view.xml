@@ -45,6 +45,7 @@
                     android:layout_height="@dimen/imbtn_size"
                     android:scaleType="centerInside"
                     android:src="@drawable/previous"
+                    android:background="@color/colorTransparent"
                     android:onClick="onPrevBtnClick"/>
                 <!--<Button
                     android:id="@+id/step_view_recipe"
@@ -57,6 +58,7 @@
                     android:layout_height="@dimen/imbtn_size"
                     android:scaleType="centerInside"
                     android:src="@drawable/next"
+                    android:background="@color/colorTransparent"
                     android:onClick="onNextBtnClick"/>
             </LinearLayout>
             <!-- Step counter -->

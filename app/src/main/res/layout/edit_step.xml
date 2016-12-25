@@ -24,11 +24,13 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <Button
+                <ImageButton
                     android:id="@+id/step_view_previous"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/step_view_previous_str"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/previous"
+                    android:background="@color/colorTransparent"
                     android:onClick="onPrevBtnClick"/>
                 <!--<Button
                     android:id="@+id/step_view_recipe"
@@ -57,11 +59,13 @@
                     android:background="@color/colorTransparent"
                     android:scaleType="centerInside"
                     android:onClick="onDeleteClick"/>
-                <Button
+                <ImageButton
                     android:id="@+id/step_view_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/step_view_next_str"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/next"
+                    android:background="@color/colorTransparent"
                     android:onClick="onNextBtnClick"/>
             </LinearLayout>
             <!-- Step counter -->
