@@ -106,9 +106,9 @@ public class CookBookCategoryActivity extends AppCompatActivity {
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    showRecipies();
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
+                    showRecipies();
                     loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
                 }
             });

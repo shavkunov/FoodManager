@@ -136,14 +136,13 @@ public class CookBookActivity extends AppCompatActivity {
                     informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
+            //categories = new ArrayList<>();
             categories.clear();
             switch (groupingBy) {
                 case GROUPINGBY_TYPE_OF_DISH:
-                    categories = new ArrayList<>();
                     categories.addAll(cookbook.getRecipiesTypeOfDish());
                     break;
                 case GROUPINGBY_NATIONAL_KITCHEN:
-                    categories = new ArrayList<>();
                     categories.addAll(cookbook.getRecipiesNationalKitchen());
                     break;
             }
