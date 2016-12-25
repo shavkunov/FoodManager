@@ -503,7 +503,7 @@ public class CookBookStorage {
                 String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
                                       userID + "', " + recipe.getID() + ")";
 
-                if (connection == null || connection.isClosed())
+                while (connection == null || connection.isClosed())
                     connection = DriverManager.getConnection(databaseURL, user, password);
                 Statement stmt = connection.createStatement();
                 stmt.executeUpdate(setLikeQuery);
@@ -519,7 +519,7 @@ public class CookBookStorage {
 
         // пользователь поставил лайк и надо убрать лайк.
         try {
-            String removeLikeQuery = "DELETE FROM Like WHERE user_ID = '" + userID +
+            String removeLikeQuery = "DELETE FROM Likes WHERE user_ID = '" + userID +
                                      "' AND recipe_ID = " + recipe.getID();
             while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
