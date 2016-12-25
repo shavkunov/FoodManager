@@ -561,9 +561,13 @@ public class CookBookStorage {
         try {
             favorites.createNewFile();
             outputStream = context.openFileOutput(favoritesFileName, Context.MODE_PRIVATE);
-            String data = String.valueOf(ids.get(0));
-            for (int i = 1; i < ids.size(); i++) {
-                data += " " + ids.get(i);
+
+            String data = "";
+            if (ids.size() > 0) {
+                data = String.valueOf(ids.get(0));
+                for (int i = 1; i < ids.size(); i++) {
+                    data += " " + ids.get(i);
+                }
             }
 
             outputStream.write(data.getBytes());
@@ -581,6 +585,14 @@ public class CookBookStorage {
     public void removeFromFavorites(Recipe recipe) {
         ArrayList<Integer> ids = getRecipesIDFromFavorites();
         ids.remove(recipe.getID());
+        addIDsToFavorites(ids);
+    }
+
+    /**
+     * Очистка избранного.
+     */
+    public void clearAllFavorites() {
+        ArrayList<Integer> ids = new ArrayList<>();
         addIDsToFavorites(ids);
     }
 
