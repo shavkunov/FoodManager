@@ -149,14 +149,22 @@ public class RecipeViewActivity extends AppCompatActivity {
                 }
             });
             final CookBookStorage cookbook = CookBookStorage.getInstance(RecipeViewActivity.this);
-            recipe = cookbook.getRecipe(recipeID);
-            steps = cookbook.getRecipeSteps(recipe.getID());
-            categories = cookbook.getRecipeCategories(recipe.getID());
-            liked = cookbook.getUserLike(recipe);
-            inFavourites = false;
-            for (Recipe r : cookbook.getFavorites()) {
-                if (r.getID() == recipe.getID()) {
-                    inFavourites = true;
+            boolean loadingComplete = false;
+            while (!loadingComplete) {
+                try {
+                    recipe = cookbook.getRecipe(recipeID);
+                    steps = cookbook.getRecipeSteps(recipe.getID());
+                    categories = cookbook.getRecipeCategories(recipe.getID());
+                    liked = cookbook.getUserLike(recipe);
+                    inFavourites = false;
+                    for (Recipe r : cookbook.getFavorites()) {
+                        if (r.getID() == recipe.getID()) {
+                            inFavourites = true;
+                        }
+                    }
+                }
+                catch (Throwable e) {
+                    //Repeat
                 }
             }
             RecipeViewActivity.this.runOnUiThread(new Runnable() {

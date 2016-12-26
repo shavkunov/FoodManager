@@ -87,7 +87,6 @@ public class CookBookCategoryActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            Log.d("Find categories", "Find!");
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -95,13 +94,21 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                     informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
-            if (target != TARGET_FAVOURITES) {
-                category = CookBookStorage.getInstance(CookBookCategoryActivity.this).getCategoryByID(categoryID);
-                if (category != null) {
-                    recipes = category.getRecipes();
+            recipes = null;
+            while (recipes == null) {
+                try {
+                    if (target != TARGET_FAVOURITES) {
+                        category = CookBookStorage.getInstance(CookBookCategoryActivity.this).getCategoryByID(categoryID);
+                        if (category != null) {
+                            recipes = category.getRecipes();
+                        }
+                    } else {
+                        recipes = CookBookStorage.getInstance(CookBookCategoryActivity.this).getFavorites();
+                    }
                 }
-            } else {
-                recipes = CookBookStorage.getInstance(CookBookCategoryActivity.this).getFavorites();
+                catch (Throwable e) {
+                    //Repeat
+                }
             }
             CookBookCategoryActivity.this.runOnUiThread(new Runnable() {
                 @Override

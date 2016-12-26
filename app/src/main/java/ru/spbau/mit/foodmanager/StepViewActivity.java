@@ -37,7 +37,6 @@ public class StepViewActivity extends AppCompatActivity {
     private void showRecipe() {
         TextView recipeName = (TextView)findViewById(R.id.step_view_recipe_name);
         recipeName.setText(recipe.getName());
-        //Log.d("STEP_BY_STEPLOGGER", ((Integer)steps.size()).toString());
         TextView stepCount = (TextView)findViewById(R.id.step_view_step_count);
         stepCount.setText(((Integer)steps.size()).toString());
         showStep(stepPosition);
@@ -80,9 +79,17 @@ public class StepViewActivity extends AppCompatActivity {
                     informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
-            CookBookStorage cookbook = CookBookStorage.getInstance(StepViewActivity.this);
-            recipe = cookbook.getRecipe(recipeID);
-            steps = cookbook.getRecipeSteps(recipe.getID());
+            steps = null;
+            while (steps == null) {
+                try {
+                    CookBookStorage cookbook = CookBookStorage.getInstance(StepViewActivity.this);
+                    recipe = cookbook.getRecipe(recipeID);
+                    steps = cookbook.getRecipeSteps(recipe.getID());
+                }
+                catch (Throwable e) {
+                    //Repeat
+                }
+            }
             StepViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

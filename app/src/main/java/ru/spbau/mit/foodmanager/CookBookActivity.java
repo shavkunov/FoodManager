@@ -136,15 +136,21 @@ public class CookBookActivity extends AppCompatActivity {
                     informationLayout.setVisibility(View.INVISIBLE);
                 }
             });
-            //categories = new ArrayList<>();
             categories.clear();
-            switch (groupingBy) {
-                case GROUPINGBY_TYPE_OF_DISH:
-                    categories.addAll(cookbook.getRecipiesTypeOfDish());
-                    break;
-                case GROUPINGBY_NATIONAL_KITCHEN:
-                    categories.addAll(cookbook.getRecipiesNationalKitchen());
-                    break;
+            while(categories.isEmpty()) {
+                categories.clear();
+                try {
+                    switch (groupingBy) {
+                        case GROUPINGBY_TYPE_OF_DISH:
+                            categories.addAll(cookbook.getRecipiesTypeOfDish());
+                            break;
+                        case GROUPINGBY_NATIONAL_KITCHEN:
+                            categories.addAll(cookbook.getRecipiesNationalKitchen());
+                            break;
+                    }
+                } catch (Throwable e) {
+                    //Repeat
+                }
             }
             CookBookActivity.this.runOnUiThread(new Runnable() {
                 @Override
