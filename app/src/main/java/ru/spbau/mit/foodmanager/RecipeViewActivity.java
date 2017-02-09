@@ -37,7 +37,7 @@ public class RecipeViewActivity extends AppCompatActivity {
 
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+        loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init like & selected btn
@@ -173,7 +173,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     showRecipe();
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
-                    loaderAnimation.setGifImageResource(MainActivity.getRandomLoaderResource());
+                    loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
                     if (!liked) {
                         likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));
                     } else {
