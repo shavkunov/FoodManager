@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -305,6 +306,7 @@ public class CookBookStorage {
 
     /**
      * Получение инструкции для готовки из двух таблиц -- Step и Image.
+     * Картинки не загружаются.
      * @param ID ID рецепта.
      */
     public ArrayList<Step> getRecipeSteps(int ID) {
@@ -321,11 +323,7 @@ public class CookBookStorage {
             while (steps.next()) {
                 String stepDescription = steps.getString("description");
                 String imageURL = steps.getString("link");
-
-                URL url = new URL(imageURL);
-                Log.d(LOG_TAG, imageURL);
-                Bitmap image = BitmapFactory.decodeStream((InputStream)new URL(imageURL).getContent());
-                recipeSteps.add(new Step(stepDescription, image));
+                recipeSteps.add(new Step(stepDescription, imageURL));
             }
 
             stmt.close();
@@ -337,6 +335,23 @@ public class CookBookStorage {
         }
 
         return null;
+    }
+
+    /**
+     * Загрузка картинки шага.
+     * @param step загрузка прямо в поле объекта.
+     */
+    public void downloadStepImage(Step step) {
+        Log.d(LOG_TAG, step.getImageLink());
+        try {
+            Bitmap image = BitmapFactory.decodeStream((InputStream)new URL(step.getImageLink())
+                                        .getContent());
+
+            step.setImage(image);
+        } catch (IOException e) {
+            Log.d(LOG_TAG, "Unable to load step image\ndescription: " + step.getDescription());
+            e.printStackTrace();
+        }
     }
 
     /**

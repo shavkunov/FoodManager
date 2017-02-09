@@ -2,18 +2,18 @@ package ru.spbau.mit.foodmanager;
 
 import android.graphics.Bitmap;
 
-import java.io.Serializable;
-
 public class Step {
     /**
      * Шаг инструкции.
      */
     private String description;
+    private String imageLink;
     private Bitmap image;
 
-    public Step(String description, Bitmap image) {
+    public Step(String description, String imageLink) {
         this.description = description;
-        this.image = image;
+        this.imageLink = imageLink;
+        this.image = null;
     }
 
     public String getDescription() {
@@ -23,4 +23,8 @@ public class Step {
     public Bitmap getImage() {
         return image;
     }
+
+    public void setImage(Bitmap image) { this.image = image; }
+
+    public String getImageLink() { return imageLink; }
 }
