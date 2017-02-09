@@ -161,7 +161,8 @@ public class CookBookStorage {
     private void insertImageStepRelation(ArrayList<Integer> ids, Recipe recipe) throws Exception {
 
         for (int i = 0; i < ids.size(); i++) {
-            String insertRelation = "INSERT INTO Image VALUES (?, ?, ?)";
+            String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
+                                    "VALUES (?, ?, ?)";
 
             Bitmap bitmap = recipe.getSteps().get(i).getImage();
 
@@ -189,10 +190,12 @@ public class CookBookStorage {
         ArrayList<Integer> ids = new ArrayList<>();
 
         for (Step s : recipe.getSteps()) {
-            String insertStep = "INSERT INTO Step VALUES (recipe_ID, description) (" +
-                                recipe.getID() + ", '" + s.getDescription() + "')";
-
-            ids.add(stmt.executeUpdate(insertStep));
+            String insertStep = "INSERT INTO Step(recipe_ID, description) VALUES  (?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(insertStep);
+            preparedStatement.setInt(1, recipe.getID());
+            preparedStatement.setString(2, s.getDescription());
+            ids.add(preparedStatement.executeUpdate());
+            preparedStatement.close();
         }
 
         return ids;
@@ -230,11 +233,14 @@ public class CookBookStorage {
             throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
         for (Ingredient ing : recipe.getIngredients()) {
-            String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description " +
-                                           "VALUES (" + recipe.getID() + ", '"
-                                           + ing.getName() + "')";
+            String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description) " +
+                                           "VALUES (?, ?)";
 
-            ids.add(stmt.executeUpdate(insertIngredientQuery));
+            PreparedStatement preparedStatement = connection.prepareStatement(insertIngredientQuery);
+            preparedStatement.setInt(1, recipe.getID());
+            preparedStatement.setString(2, ing.getName());
+            ids.add(preparedStatement.executeUpdate());
+            preparedStatement.close();
         }
 
         return ids;
