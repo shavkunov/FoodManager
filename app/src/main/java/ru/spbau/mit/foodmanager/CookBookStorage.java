@@ -359,7 +359,8 @@ public class CookBookStorage {
      * @param ID ID рецепта.
      */
     public ArrayList<Ingredient> getRecipeIngredients(int ID) {
-        String ingredientsQuery = "SELECT * FROM Ingredient_to_recipe AS itr " +
+        String ingredientsQuery = "SELECT name, measure, quantity " +
+                                  "FROM Ingredient_to_recipe AS itr " +
                                   "INNER JOIN Ingredient AS ing ON " +
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
@@ -433,7 +434,9 @@ public class CookBookStorage {
 
             ArrayList<Recipe> res = new ArrayList<>();
             while (recipes.next()) {
-                res.add(getRecipe(recipes.getInt("ID")));
+                res.add(new Recipe(recipes.getInt("ID"),
+                        recipes.getString("name"),
+                        recipes.getString("description")));
             }
 
             stmt.close();
@@ -746,7 +749,8 @@ public class CookBookStorage {
      * @return рецепты категории.
      */
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
-        String categoryQuery = "SELECT * FROM Recipe_to_category WHERE category_ID = " + ID;
+        String categoryQuery = "SELECT recipe_ID " +
+                               "FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
             while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
@@ -774,7 +778,7 @@ public class CookBookStorage {
      * @return инстанс класса Category
      */
     public Category getCategoryByID(int ID) {
-        String categoryQuery = "SELECT * FROM Category WHERE ID = " + ID;
+        String categoryQuery = "SELECT name FROM Category WHERE ID = " + ID;
 
         try {
             while (connection == null || connection.isClosed())
@@ -814,7 +818,8 @@ public class CookBookStorage {
             ResultSet category = stmt.executeQuery(categoryQuery);
 
             while (category.next()) {
-                categories.add(getCategoryByID(category.getInt("ID")));
+                categories.add(new Category(category.getInt("ID"),
+                                            category.getString("name"), null));
             }
 
             stmt.close();
@@ -832,7 +837,7 @@ public class CookBookStorage {
      * @return список категорий по типу блюда.
      */
     public LinkedList<Category> getRecipiesTypeOfDish() {
-        String categoryQuery = "SELECT ID FROM Category WHERE is_category_dish = 1";
+        String categoryQuery = "SELECT * FROM Category WHERE is_category_dish = 1";
 
         return getCategoryFromQuery(categoryQuery);
     }
@@ -841,7 +846,7 @@ public class CookBookStorage {
      * @return список категорий по национальной кухне блюда.
      */
     public LinkedList<Category> getRecipiesNationalKitchen() {
-        String categoryQuery = "SELECT ID FROM Category WHERE is_national_kitchen = 1";
+        String categoryQuery = "SELECT * FROM Category WHERE is_national_kitchen = 1";
 
         return getCategoryFromQuery(categoryQuery);
     }
