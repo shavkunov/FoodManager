@@ -23,7 +23,7 @@ public class CookBookActivity extends AppCompatActivity {
     private static final String[] CATEGORY_TYPES =
             {"Тип блюда",
             "Национальные кухни"};
-    private ArrayList<Category> categories;
+    private final ArrayList<Category> categories = new ArrayList<>();
     private CookBookStorage cookbook;
     private GifImageView loaderAnimation;
     private LinearLayout informationLayout;
@@ -42,7 +42,6 @@ public class CookBookActivity extends AppCompatActivity {
         task = getIntent();
         target = task.getIntExtra("Target", TARGET_NO);
         //Init Categories
-        categories = new ArrayList<>();
         cookbook = CookBookStorage.getInstance(this);
         //Group by init
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,

@@ -98,10 +98,11 @@ public class CookBookCategoryActivity extends AppCompatActivity {
             while (recipes == null) {
                 try {
                     if (target != TARGET_FAVOURITES) {
-                        category = CookBookStorage.getInstance(CookBookCategoryActivity.this).getCategoryByID(categoryID);
-                        if (category != null) {
-                            recipes = category.getRecipes();
-                        }
+                        //category = CookBookStorage.getInstance(CookBookCategoryActivity.this).getCategoryByID(categoryID);
+                        recipes = CookBookStorage.getInstance(CookBookCategoryActivity.this).getRecipesOfCategory(categoryID);
+                        //if (category != null) {
+                        //    recipes = category.getRecipes();
+                        //}
                     } else {
                         recipes = CookBookStorage.getInstance(CookBookCategoryActivity.this).getFavorites();
                     }
