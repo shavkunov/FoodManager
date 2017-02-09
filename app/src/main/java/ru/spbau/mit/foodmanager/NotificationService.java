@@ -23,6 +23,7 @@ public class NotificationService extends Service {
     private Calendar calendar = Calendar.getInstance();
     private MenuSettings menuSettings;
     private NotificationSettings notificationSettings;
+    private Thread serviceActionThread;
 
     @Override
     public void onCreate() {
@@ -30,27 +31,31 @@ public class NotificationService extends Service {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationSettings = NotificationSettings.getInstance(this);
         menuSettings = MenuSettings.getInstance(this);
+        serviceActionThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        if (calendarDayToDay(calendar.get(Calendar.DAY_OF_WEEK)) != lastCookDayNotify) {
+                            notifyedToday = false;
+                        }
+                        if (notificationSettings.getShowCookNotifications() && !notifyedToday
+                                && notificationSettings.getShowCookNotifications()) {
+                            sendCookNotification();
+                        }
+                        TimeUnit.SECONDS.sleep(30);
+                    }
+                } catch (Exception e) {
+                    //Finish thread
+                }
+            }
+        });
+        serviceActionThread.start();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        while (true) {
-            try {
-                while (true) {
-                    TimeUnit.SECONDS.sleep(1);
-                    if (calendarDayToDay(calendar.get(Calendar.DAY_OF_WEEK)) != lastCookDayNotify) {
-                        notifyedToday = false;
-                    }
-                    if (notificationSettings.getShowCookNotifications() && !notifyedToday
-                            && notificationSettings.getShowCookNotifications()) {
-                        sendCookNotification();
-                    }
-                }
-            } catch (Exception e) {
-                //Finish Service //Nope
-            }
-        }
-        //return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     /**
@@ -80,6 +85,12 @@ public class NotificationService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        serviceActionThread.interrupt();
     }
 
     private Day calendarDayToDay (int calendarDay) {
