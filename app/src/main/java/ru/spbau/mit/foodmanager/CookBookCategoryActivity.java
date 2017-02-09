@@ -1,14 +1,12 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -95,7 +93,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
             if (target != TARGET_FAVOURITES) {
                 category = CookBookStorage.getInstance(CookBookCategoryActivity.this).getCategoryByID(categoryID);
                 if (category != null) {
-                    recipes = category.getRecipes();
+                    recipes = category.getRecipes(CookBookCategoryActivity.this);
                 }
             } else {
                 recipes = CookBookStorage.getInstance(CookBookCategoryActivity.this).getFavorites();

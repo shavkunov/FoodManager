@@ -763,7 +763,7 @@ public class CookBookStorage {
             if (category.next()) {
                 String description = category.getString("name");
                 // пока картинок категорий у нас нет
-                Category c =  new Category(ID, description, null, context);
+                Category c =  new Category(ID, description, null);
                 stmt.close();
                 return c;
             } else {

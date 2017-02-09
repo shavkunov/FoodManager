@@ -3,20 +3,17 @@ package ru.spbau.mit.foodmanager;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Category {
     private String description;
     private int ID;
     private Bitmap image;
-    private Context context;
 
-    public Category(int ID, String description, Bitmap image, Context context) {
+    public Category(int ID, String description, Bitmap image) {
         this.ID = ID;
         this.description = description;
         this.image = image;
-        this.context = context;
     }
 
     public int getID() {
@@ -27,7 +24,7 @@ public class Category {
         return description;
     }
 
-    public ArrayList<Recipe> getRecipes() {
+    public ArrayList<Recipe> getRecipes(Context context) {
         return CookBookStorage.getInstance(context).getRecipesOfCategory(this.ID);
     }
 
