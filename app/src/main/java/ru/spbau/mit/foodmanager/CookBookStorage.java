@@ -505,46 +505,36 @@ public class CookBookStorage {
     /**
      * Метод ставит лайк пользователя.
      * @param recipe этому рецепту пользователь ставит лайк.
-     * @param state true, тогда поставится лайк, иначе не поставится
      * @return true если операция прошла успешно, иначе false.
      */
-    public boolean setLike(Recipe recipe, boolean state) {
-        Boolean userLike = getUserLike(recipe);
-        if (userLike == null) {
-            return false;
-        }
+    public boolean setLike(Recipe recipe) {
+        try {
+            String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
+                                  userID + "', " + recipe.getID() + ")";
 
-        //состояние не изменилось
-        // пользователь уже поставил лайк и нужно поставить
-        // пользователь не ставил лайк и не нужно ставить.
-        if (userLike == state) {
+            while (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(setLikeQuery);
+
+            stmt.close();
             return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        // пользователь не ставил лайк и надо поставить лайк.
-        if (!userLike && state) {
-            try {
-                String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
-                                      userID + "', " + recipe.getID() + ")";
+        return false;
+    }
 
-                while (connection == null || connection.isClosed())
-                    connection = DriverManager.getConnection(databaseURL, user, password);
-                Statement stmt = connection.createStatement();
-                stmt.executeUpdate(setLikeQuery);
-
-                stmt.close();
-                return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-
-        // пользователь поставил лайк и надо убрать лайк.
+    /**
+     * Метод убирает лайк пользователя. Предполагается, что лайк уже поставлен.
+     * @param recipe убирает лайк у этого рецепта.
+     * @return true, если операция прошла успешно, false иначе.
+     */
+    public boolean setNotLike(Recipe recipe) {
         try {
             String removeLikeQuery = "DELETE FROM Likes WHERE user_ID = '" + userID +
-                                     "' AND recipe_ID = " + recipe.getID();
+                    "' AND recipe_ID = " + recipe.getID();
             while (connection == null || connection.isClosed())
                 connection = DriverManager.getConnection(databaseURL, user, password);
             Statement stmt = connection.createStatement();
