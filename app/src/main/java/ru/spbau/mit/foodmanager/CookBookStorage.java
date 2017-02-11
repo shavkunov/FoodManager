@@ -11,14 +11,10 @@ import com.cloudinary.utils.ObjectUtils;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -121,8 +117,7 @@ public class CookBookStorage {
      */
     public void addRecipeToDatabase(Recipe recipe) {
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
 
@@ -156,6 +151,19 @@ public class CookBookStorage {
     }
 
     /**
+     * Получение connection.
+     */
+    private void refreshConnection() {
+        try {
+            while (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to refresh connection");
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
      * @param ids идентификаторы картинок загруженные в insertSteps.
      */
@@ -169,8 +177,8 @@ public class CookBookStorage {
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-            byte[] bitmapdata = bos.toByteArray();
-            ByteArrayInputStream bs = new ByteArrayInputStream(bitmapdata);
+            byte[] bitmapData = bos.toByteArray();
+            ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
 
             String link = uploadImage(bs);
             PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
@@ -284,8 +292,7 @@ public class CookBookStorage {
                                  "WHERE recipe_ID = " + ID;
 
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet categories = stmt.executeQuery(categoriesQuery);
             ArrayList<Integer> ids = new ArrayList<>();
@@ -314,8 +321,7 @@ public class CookBookStorage {
                             "Step.ID = Image.entity_ID " +
                             "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet steps = stmt.executeQuery(stepsQuery);
             ArrayList<Step> recipeSteps = new ArrayList<>();
@@ -365,8 +371,7 @@ public class CookBookStorage {
                                   "itr.ingredient_ID = ing.ID " +
                                   "WHERE itr.recipe_ID = " + ID;
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
             ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
@@ -396,8 +401,7 @@ public class CookBookStorage {
         String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
 
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet mainData = stmt.executeQuery(recipeQuery);
 
@@ -427,8 +431,7 @@ public class CookBookStorage {
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE " + filter + "%";
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(filterQuery);
 
@@ -457,8 +460,7 @@ public class CookBookStorage {
     public Integer getRecipeLikes(Recipe recipe) {
         String likesQuery = "SELECT COUNT(*) AS total FROM Likes WHERE recipe_ID = " + recipe.getID();
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(likesQuery);
             if (rs.next()) {
@@ -483,8 +485,7 @@ public class CookBookStorage {
                             recipe.getID() + " AND user_ID = '" + userID + "'";
         Log.d(LOG_TAG, likesQuery);
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(likesQuery);
             int like = 0;
@@ -512,11 +513,9 @@ public class CookBookStorage {
             String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
                                   userID + "', " + recipe.getID() + ")";
 
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(setLikeQuery);
-
             stmt.close();
             return true;
         } catch (SQLException e) {
@@ -535,11 +534,9 @@ public class CookBookStorage {
         try {
             String removeLikeQuery = "DELETE FROM Likes WHERE user_ID = '" + userID +
                     "' AND recipe_ID = " + recipe.getID();
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(removeLikeQuery);
-
             stmt.close();
             return true;
         } catch (SQLException e) {
@@ -550,46 +547,48 @@ public class CookBookStorage {
     }
 
     /**
-     * Добавить рецепт в избранное.
+     * Добавить рецепт в избранное, предполагается, что его там нет.
      * @param recipe рецепт, который хотим добавить.
      */
     public void addToFavorites(Recipe recipe)  {
-        if (isRecipeFavorite(recipe)) {
-            return;
-        }
+        String addQuery = "INSERT INTO Favorites(user_ID, recipe_ID) VALUES " +
+                          "('" + userID + "', " + recipe.getID() + ")";
 
-        ArrayList<Integer> ids = getRecipesIDFromFavorites();
-        ids.add(recipe.getID());
-        addIDsToFavorites(ids);
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(addQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Сделать избранным конкретные рецепты.
      * @param ids в избранном хранятся id рецептов.
      */
-    private void addIDsToFavorites(ArrayList<Integer> ids) {
-        File favorites = new File(context.getFilesDir(), favoritesFileName);
+    private void setRecipesIDsAsFavorites(ArrayList<Integer> ids) {
+        clearAllFavorites();
 
-        FileOutputStream outputStream = null;
+        String insertRecipesQuery = "INSERT INTO Favorites(user_ID, recipe_ID) VALUES ";
+
+        for (int i = 0; i < ids.size() - 1; i++) {
+            String value = "('" + userID + "', " + ids.get(i) + "), ";
+            insertRecipesQuery += value;
+        }
+        String lastValue = "('" + userID + "', " + ids.get(ids.size() - 1) + ");";
+        insertRecipesQuery += lastValue;
 
         try {
-            favorites.createNewFile();
-            outputStream = context.openFileOutput(favoritesFileName, Context.MODE_PRIVATE);
-
-            String data = "";
-            if (ids.size() > 0) {
-                data = String.valueOf(ids.get(0));
-                for (int i = 1; i < ids.size(); i++) {
-                    data += " " + ids.get(i);
-                }
-            }
-
-            outputStream.write(data.getBytes());
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(insertRecipesQuery);
+            stmt.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -597,17 +596,31 @@ public class CookBookStorage {
      * @param recipe удаление рецепта из избранного.
      */
     public void removeFromFavorites(Recipe recipe) {
-        ArrayList<Integer> ids = getRecipesIDFromFavorites();
-        ids.remove(recipe.getID());
-        addIDsToFavorites(ids);
+        String removeQuery = "DELETE FROM Favorites WHERE recipe_ID = " + recipe.getID();
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(removeQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Очистка избранного.
      */
     public void clearAllFavorites() {
-        ArrayList<Integer> ids = new ArrayList<>();
-        addIDsToFavorites(ids);
+        String clearFavoritesQuery = "DELETE FROM Favorites WHERE user_ID = '" + userID + "'";
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(clearFavoritesQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -615,29 +628,22 @@ public class CookBookStorage {
      * @return пустой список если избранного нет.
      */
     private ArrayList<Integer> getRecipesIDFromFavorites() {
-        ArrayList<Integer> res = new ArrayList<>();
-
-        File favorites = new File(context.getFilesDir(), favoritesFileName);
-        if (!favorites.exists()) {
-            return res;
-        }
-
+        String favoritesQuery = "SELECT recipe_ID FROM Favorites WHERE user_ID = '" + userID + "'";
+        ArrayList<Integer> ids = new ArrayList<>();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                                context.openFileInput(favoritesFileName)));
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(favoritesQuery);
 
-            String line = br.readLine();
-
-            for (String number : line.split(" ")) {
-                int ID = Integer.parseInt(number);
-                res.add(ID);
+            while (rs.next()) {
+                ids.add(rs.getInt("recipe_ID"));
             }
-        } catch (Exception e) {
+
+        } catch (SQLException e) {
             e.printStackTrace();
-            return res;
         }
 
-        return res;
+        return ids;
     }
 
     /**
@@ -682,8 +688,7 @@ public class CookBookStorage {
                                       " ORDER BY RAND() LIMIT 1";
 
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
 
@@ -742,8 +747,7 @@ public class CookBookStorage {
         String categoryQuery = "SELECT recipe_ID " +
                                "FROM Recipe_to_category WHERE category_ID = " + ID;
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet recipes = stmt.executeQuery(categoryQuery);
 
@@ -771,8 +775,7 @@ public class CookBookStorage {
         String categoryQuery = "SELECT name FROM Category WHERE ID = " + ID;
 
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
             if (category.next()) {
@@ -802,8 +805,7 @@ public class CookBookStorage {
         LinkedList<Category> categories = new LinkedList<>();
 
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet category = stmt.executeQuery(categoryQuery);
 
