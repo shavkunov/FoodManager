@@ -1,7 +1,5 @@
 package ru.spbau.mit.foodmanager;
 
-import android.content.Intent;
-
 import java.util.ArrayList;
 
 /**
@@ -39,7 +37,7 @@ public class DayMenu {
     /**
      * Описывает один прием пищи
      */
-    public static class Mealtime {
+    public class Mealtime {
         private ArrayList<Integer> recipeIDs;
         private String name;
         //Нужно ли время?
