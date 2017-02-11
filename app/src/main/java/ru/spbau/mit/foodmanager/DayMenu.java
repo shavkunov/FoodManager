@@ -29,7 +29,7 @@ public class DayMenu {
     public ArrayList<Integer> getDishes() {
         ArrayList<Integer> result = new ArrayList<>();
         for (Mealtime m : mealtimes) {
-            result.addAll(m.getRecipes());
+            result.addAll(m.getRecipeIDs());
         }
         return result;
     }
@@ -60,7 +60,7 @@ public class DayMenu {
         /**
          * Возвращает список ID блюд приема пищи
          */
-        public ArrayList<Integer> getRecipes() {
+        public ArrayList<Integer> getRecipeIDs() {
             return recipeIDs;
         }
     }
