@@ -91,7 +91,7 @@ public class CookBookStorage {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(databaseURL, user, password);
+            refreshConnection();
         } catch (Exception e) {
             Log.d(LOG_TAG, "Problems with connection");
         }
@@ -209,7 +209,7 @@ public class CookBookStorage {
     }
 
     /**
-     * Получение connection.
+     * Получение соединения с БД, если его нет по какой-то причине.
      */
     private void refreshConnection() {
         try {
