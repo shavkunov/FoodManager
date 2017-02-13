@@ -147,7 +147,7 @@ public class CookBookStorage {
     public String getUserSettings() {
         String query = "SELECT user_settings FROM user_settings WHERE user_ID = '" + userID + "'";
 
-        String userSettings = null;
+        String userSettings = "";
         try {
             refreshConnection();
             Statement stmt = connection.createStatement();
@@ -155,6 +155,9 @@ public class CookBookStorage {
 
             if (rs.next()) {
                 userSettings = rs.getString("user_settings");
+                Log.d(LOG_TAG, userSettings);
+            } else {
+                userSettings = MenuSettings.getInstance(context).saveMenuSettings(context); // !!
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -216,11 +219,14 @@ public class CookBookStorage {
 
     /**
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
-     * @param ids идентификаторы картинок загруженные в insertSteps.
+     * @param ids идентификаторы картинок загруженные в setRecipeSteps.
      */
     private void setRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToInsert recipe)
                                                                       throws Exception {
         for (int i = 0; i < ids.size(); i++) {
+            String deletePreviousRelation = "DELETE FROM Image " +
+                    "WHERE entity_type = 0 AND entity_ID = " + ids.get(i);
+
             String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
                                     "VALUES (?, ?, ?)";
 
@@ -553,6 +559,7 @@ public class CookBookStorage {
             Log.d(LOG_TAG, userID);
             Log.d(LOG_TAG, String.valueOf(recipe.getID()));
             Log.d(LOG_TAG, String.valueOf(like));
+            stmt.close();
             return like == 1;
         } catch (SQLException e) {
             Log.d(LOG_TAG, "Не удалось получить лайк");

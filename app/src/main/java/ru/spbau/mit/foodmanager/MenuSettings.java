@@ -15,7 +15,6 @@ public class MenuSettings implements Serializable {
     private HashMap<Day, DaySettings> settingsByDay;
     private HashMap<Day, Boolean> isCookingDay;
     private static MenuSettings instance;
-    private static final String menuSettingsFilename = "MenuSettings";
 
     private MenuSettings(Context context) {
         settingsByDay = new HashMap<>();
@@ -36,7 +35,7 @@ public class MenuSettings implements Serializable {
     /**
      * Сохраняет instance MenuSettings в БД.
      */
-    public static void saveMenuSettings(Context context) {
+    public static String saveMenuSettings(Context context) {
         try {
             ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteOutputStream);
@@ -45,9 +44,12 @@ public class MenuSettings implements Serializable {
 
             String serializedInstance = objectOutputStream.toString();
             CookBookStorage.getInstance(context).saveUserSettings(serializedInstance);
+            return serializedInstance;
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 
     /**
