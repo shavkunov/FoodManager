@@ -177,17 +177,15 @@ public class CookBookStorage {
         try {
             refreshConnection();
             connection.setAutoCommit(false);
-            Statement stmt = connection.createStatement();
 
-            int recipeID = insertRecipe(stmt, recipe);
+            int recipeID = setRecipeBaseInformation(recipe);
             recipe.setID(recipeID);
-            insertRecipeCategories(stmt, recipe);
-            ArrayList<Integer> ingredientIDs = insertIngredients(recipe);
-            insertRecipeIngredientRelation(stmt, recipe, ingredientIDs);
-            ArrayList<Integer> stepIDs = insertSteps(recipe);
-            insertImageStepRelation(stepIDs, recipe);
+            setRecipeCategories(recipe);
+            ArrayList<Integer> ingredientIDs = setRecipeIngredients(recipe);
+            setRecipeIngredientRelation(recipe, ingredientIDs);
+            ArrayList<Integer> stepIDs = setRecipeSteps(recipe);
+            setRecipeImageStepRelation(stepIDs, recipe);
 
-            stmt.close();
             connection.setAutoCommit(true);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to insert new recipe");
@@ -225,8 +223,8 @@ public class CookBookStorage {
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
      * @param ids идентификаторы картинок загруженные в insertSteps.
      */
-    private void insertImageStepRelation(ArrayList<Integer> ids, RecipeToInsert recipe) throws Exception {
-
+    private void setRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToInsert recipe)
+                                                                      throws Exception {
         for (int i = 0; i < ids.size(); i++) {
             String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
                                     "VALUES (?, ?, ?)";
@@ -239,6 +237,7 @@ public class CookBookStorage {
             ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
 
             String link = uploadImage(bs);
+            refreshConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
             preparedStatement.setInt(1, 0);
             preparedStatement.setInt(2, ids.get(i));
@@ -252,11 +251,12 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return Идентификаторы строк, куда были вставлены шаги.
      */
-    private ArrayList<Integer> insertSteps(RecipeToInsert recipe) throws SQLException {
+    private ArrayList<Integer> setRecipeSteps(RecipeToInsert recipe) throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
 
         for (Step s : recipe.getSteps()) {
             String insertStep = "INSERT INTO Step(recipe_ID, description) VALUES  (?, ?)";
+            refreshConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insertStep);
             preparedStatement.setInt(1, recipe.getID());
             preparedStatement.setString(2, s.getDescription());
@@ -269,13 +269,14 @@ public class CookBookStorage {
 
     /**
      * Вставка нужных записей в таблицу связи Ingredient_to_recipe.
-     * @param stmt Statement в котором выполняется операция.
      * @param recipe рецепт, откуда берутся шагов.
      * @param ingredientIDs идентификаторы строке, где хранятся ингредиенты.
      */
-    private void insertRecipeIngredientRelation(
-            Statement stmt, RecipeToInsert recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
+    private void setRecipeIngredientRelation(
+            RecipeToInsert recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
 
+        refreshConnection();
+        Statement stmt = connection.createStatement();
         // ingredients.size() == ingredientIDs.size()
         for (int i = 0; i < recipe.getIngredients().size(); i++) {
             double quantity = recipe.getIngredients().get(i).getQuantity();
@@ -287,6 +288,7 @@ public class CookBookStorage {
 
             stmt.executeUpdate(insertRelationQuery);
         }
+        stmt.close();
     }
 
     /**
@@ -294,13 +296,14 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return идентификаторы строке, где хранятся ингредиенты.
      */
-    private ArrayList<Integer> insertIngredients(RecipeToInsert recipe)
+    private ArrayList<Integer> setRecipeIngredients(RecipeToInsert recipe)
             throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
         for (Ingredient ing : recipe.getIngredients()) {
             String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description) " +
                                            "VALUES (?, ?)";
 
+            refreshConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(insertIngredientQuery);
             preparedStatement.setInt(1, recipe.getID());
             preparedStatement.setString(2, ing.getName());
@@ -312,31 +315,36 @@ public class CookBookStorage {
     }
 
     /**
-     * Вставка рецепта в таблицу Recipe.
-     * @param stmt Statement в котором выполняется операция.
+     * Вставка основной информации рецепта(name, description)  в таблицу Recipe.
      * @param recipe рецепт, откуда берутся шагов.
      * @return номер строки, куда был вставлен рецепт.
      */
-    private int insertRecipe(Statement stmt, RecipeToInsert recipe) throws SQLException {
+    private int setRecipeBaseInformation(RecipeToInsert recipe) throws SQLException {
+        refreshConnection();
+        Statement stmt = connection.createStatement();
         String insertRecipeQuery = "INSERT INTO Recipe(name, description) " +
                                    "VALUES (" + recipe.getName() + ", '" +
                                    recipe.getDescription() + "')";
 
-        return stmt.executeUpdate(insertRecipeQuery);
+        int res = stmt.executeUpdate(insertRecipeQuery);
+        stmt.close();
+        return res;
     }
 
     /**
      * Вставка категорий рецепта
-     * @param stmt Statement в котором выполняется операция.
      * @param recipe рецепт, откуда берутся шагов.
      */
-    private void insertRecipeCategories(Statement stmt, RecipeToInsert recipe) throws SQLException {
+    private void setRecipeCategories(RecipeToInsert recipe) throws SQLException {
+        refreshConnection();
+        Statement stmt = connection.createStatement();
         for (int categoryID : recipe.getCategoryID()) {
             String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
                                        + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
 
             stmt.executeUpdate(insertCategoryQuery);
         }
+        stmt.close();
     }
 
     /**
