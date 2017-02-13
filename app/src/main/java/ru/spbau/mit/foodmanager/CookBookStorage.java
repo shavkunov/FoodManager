@@ -79,11 +79,6 @@ public class CookBookStorage {
      */
     private Context context;
 
-    /**
-     * Название файла, где будут храниться избранные рецепты пользователя.
-     */
-    private final String favoritesFileName = "Favorites";
-
     private CookBookStorage(Context context) {
         try {
             this.context = context;
