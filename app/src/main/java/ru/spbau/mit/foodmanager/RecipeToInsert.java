@@ -2,6 +2,9 @@ package ru.spbau.mit.foodmanager;
 
 import java.util.ArrayList;
 
+/**
+ * Класс, созданный специально для добавления рецепта в БД.
+ */
 public class RecipeToInsert {
     /** Название рецепта */
     private String name;

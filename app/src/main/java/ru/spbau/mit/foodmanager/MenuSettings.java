@@ -33,6 +33,9 @@ public class MenuSettings implements Serializable {
         }
     }
 
+    /**
+     * Сохраняет instance MenuSettings в БД.
+     */
     public static void saveMenuSettings(Context context) {
         try {
             ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
@@ -41,13 +44,15 @@ public class MenuSettings implements Serializable {
             objectOutputStream.flush();
 
             String serializedInstance = objectOutputStream.toString();
-            CookBookStorage.getInstance(context).deleteUserSettings();
             CookBookStorage.getInstance(context).saveUserSettings(serializedInstance);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Загрузка поля instance из БД.
+     */
     public static void loadMenuSettings(Context context) {
         String serializedInstance = CookBookStorage.getInstance(context).getUserSettings();
         byte bytes[] = serializedInstance.getBytes();

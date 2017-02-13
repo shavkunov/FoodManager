@@ -110,7 +110,10 @@ public class CookBookStorage {
         return instance;
     }
 
-    public void deleteUserSettings() {
+    /**
+     * Удаление пользовательских настроек из БД.
+     */
+    private void deleteUserSettings() {
         String deleteSettingsQuery = "DELETE FROM user_settings WHERE user_ID = '" + userID + "'";
 
         try {
@@ -123,12 +126,17 @@ public class CookBookStorage {
         }
     }
 
+    /**
+     * Сохранение пользовательских настроек в БД.
+     * @param settings настройки хранятся как сериализованный instance MenuSettings в этой строчке.
+     */
     public void saveUserSettings(String settings) {
         String addSettingsQuery = "INSERT INTO user_settings (user_ID, user_settings) VALUES ('" +
                                   userID + "', '" + settings + "')";
 
         try {
             refreshConnection();
+            deleteUserSettings();
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(addSettingsQuery);
             stmt.close();
@@ -137,6 +145,10 @@ public class CookBookStorage {
         }
     }
 
+    /**
+     * Получение пользовательских настроек в БД.
+     * @return settings настройки хранятся как сериализованный instance MenuSettings в этой строчке.
+     */
     public String getUserSettings() {
         String query = "SELECT user_settings FROM user_settings WHERE user_ID = '" + userID + "'";
 
