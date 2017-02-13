@@ -3,6 +3,12 @@ package ru.spbau.mit.foodmanager;
 import java.util.ArrayList;
 
 public class RecipeToInsert {
+    /** Название рецепта */
+    private String name;
+
+    /** Описание рецепта */
+    private String description;
+
     /** ID добавляемого рецепта */
     private int ID;
 
@@ -15,15 +21,29 @@ public class RecipeToInsert {
     /** Ингредиенты необходимые для приготовления блюда */
     private ArrayList<Ingredient> ingredients;
 
-    public RecipeToInsert(int ID) {
+    public RecipeToInsert(int ID, String description, String name) {
         categoryID = null;
         steps = null;
         ingredients = null;
         this.ID = ID;
+        this.description = description;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public int getID() {
         return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public void setIngredients(ArrayList<Ingredient> ingredients) {

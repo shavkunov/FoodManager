@@ -161,7 +161,7 @@ public class CookBookStorage {
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
      */
-    public void addRecipeToDatabase(Recipe recipe) {
+    public void addRecipeToDatabase(RecipeToInsert recipe) {
         try {
             refreshConnection();
             connection.setAutoCommit(false);
@@ -170,9 +170,9 @@ public class CookBookStorage {
             int recipeID = insertRecipe(stmt, recipe);
             recipe.setID(recipeID);
             insertRecipeCategories(stmt, recipe);
-            ArrayList<Integer> ingredientIDs = insertIngredients(stmt, recipe);
+            ArrayList<Integer> ingredientIDs = insertIngredients(recipe);
             insertRecipeIngredientRelation(stmt, recipe, ingredientIDs);
-            ArrayList<Integer> stepIDs = insertSteps(stmt, recipe);
+            ArrayList<Integer> stepIDs = insertSteps(recipe);
             insertImageStepRelation(stepIDs, recipe);
 
             stmt.close();
@@ -237,11 +237,10 @@ public class CookBookStorage {
 
     /**
      * Загрузка описаний шагов в инструкции готовки.
-     * @param stmt Statement в котором выполняется операция.
      * @param recipe рецепт, откуда берутся шагов.
      * @return Идентификаторы строк, куда были вставлены шаги.
      */
-    private ArrayList<Integer> insertSteps(Statement stmt, RecipeToInsert recipe) throws SQLException {
+    private ArrayList<Integer> insertSteps(RecipeToInsert recipe) throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
 
         for (Step s : recipe.getSteps()) {
@@ -280,11 +279,10 @@ public class CookBookStorage {
 
     /**
      * Вставка ингредиентов в таблицу Ingredient.
-     * @param stmt Statement в котором выполняется операция.
      * @param recipe рецепт, откуда берутся шагов.
      * @return идентификаторы строке, где хранятся ингредиенты.
      */
-    private ArrayList<Integer> insertIngredients(Statement stmt, RecipeToInsert recipe)
+    private ArrayList<Integer> insertIngredients(RecipeToInsert recipe)
             throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
         for (Ingredient ing : recipe.getIngredients()) {
@@ -307,7 +305,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return номер строки, куда был вставлен рецепт.
      */
-    private int insertRecipe(Statement stmt, Recipe recipe) throws SQLException {
+    private int insertRecipe(Statement stmt, RecipeToInsert recipe) throws SQLException {
         String insertRecipeQuery = "INSERT INTO Recipe(name, description) " +
                                    "VALUES (" + recipe.getName() + ", '" +
                                    recipe.getDescription() + "')";
