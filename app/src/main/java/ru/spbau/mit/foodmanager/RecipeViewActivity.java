@@ -1,6 +1,7 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -80,12 +81,11 @@ public class RecipeViewActivity extends AppCompatActivity {
         inFavourites = !inFavourites;
     }
     private void showRecipe() {
-        //Header
+        ////Header
         CookBookStorage cookbook = CookBookStorage.getInstance(this);
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
-        ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
-        photoView.setImageBitmap(steps.get(steps.size()-1).getImage());
+        //Categories
         for (final Integer id : categories) {
             Button categoryNameView = new Button(this);
             //TextView categoryNameView = new TextView(this);
@@ -106,16 +106,6 @@ public class RecipeViewActivity extends AppCompatActivity {
         //Body
         TextView descriptionView = (TextView)findViewById(R.id.recipe_body_description);
         TextView ingridientsView = (TextView)findViewById(R.id.recipe_body_ingredients);
-        LinearLayout recipeImages = (LinearLayout)findViewById(R.id.recipe_body_images);
-        int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_WIDTH, getResources().getDisplayMetrics());
-        int heightInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_HEIGHT, getResources().getDisplayMetrics());
-        for (Step step : steps) {
-            ImageView photo = new ImageView(this);
-            photo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            photo.setLayoutParams(new LinearLayout.LayoutParams(widthInPx, heightInPx));
-            photo.setImageBitmap(step.getImage());
-            recipeImages.addView(photo);
-        }
 
         nameView.setText(recipe.getName());
         descriptionView.setText(recipe.getDescription());
@@ -188,6 +178,35 @@ public class RecipeViewActivity extends AppCompatActivity {
                     likeCounter.setText(String.valueOf(cookbook.getRecipeLikes(recipe)));
                 }
             });
+
+            //Image loader
+            final int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_WIDTH, getResources().getDisplayMetrics());
+            final int heightInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_HEIGHT, getResources().getDisplayMetrics());
+            final LinearLayout recipeImages = (LinearLayout)findViewById(R.id.recipe_body_images);
+            for (final Step s : steps) {
+                cookbook.downloadStepImage(s);
+                RecipeViewActivity.this.runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageView photo = new ImageView(RecipeViewActivity.this);
+                                photo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                                photo.setLayoutParams(new LinearLayout.LayoutParams(widthInPx, heightInPx));
+                                photo.setImageBitmap(s.getImage());
+                                recipeImages.addView(photo);
+                            }
+                        }
+                );
+            }
+            RecipeViewActivity.this.runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
+                            photoView.setImageBitmap(steps.get(steps.size()-1).getImage());
+                        }
+                    }
+            );
         }
     }
 }

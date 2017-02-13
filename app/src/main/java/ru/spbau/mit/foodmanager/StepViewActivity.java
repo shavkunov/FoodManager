@@ -46,7 +46,9 @@ public class StepViewActivity extends AppCompatActivity {
         TextView description = (TextView)findViewById(R.id.step_view_step_text);
         description.setText(steps.get(id).getDescription());
         ImageView image = (ImageView)findViewById(R.id.step_view_step_image);
-        image.setImageBitmap(steps.get(id).getImage());
+        if (steps.get(id).getImage() != null) {
+            image.setImageBitmap(steps.get(id).getImage());
+        }
         TextView counter = (TextView)findViewById(R.id.step_view_position);
         counter.setText(((Integer)(id+1)).toString());
     }
@@ -80,9 +82,9 @@ public class StepViewActivity extends AppCompatActivity {
                 }
             });
             steps = null;
+            CookBookStorage cookbook = CookBookStorage.getInstance(StepViewActivity.this);
             while (steps == null) {
                 try {
-                    CookBookStorage cookbook = CookBookStorage.getInstance(StepViewActivity.this);
                     recipe = cookbook.getRecipe(recipeID);
                     steps = cookbook.getRecipeSteps(recipe.getID());
                 }
@@ -99,6 +101,9 @@ public class StepViewActivity extends AppCompatActivity {
                     loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
                 }
             });
+            for (Step s : steps) {
+                cookbook.downloadStepImage(s);
+            }
         }
     }
 }
