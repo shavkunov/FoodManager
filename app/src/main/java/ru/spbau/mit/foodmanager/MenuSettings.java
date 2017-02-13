@@ -34,6 +34,7 @@ public class MenuSettings implements Serializable {
 
     /**
      * Сохраняет instance MenuSettings в БД.
+     * @return возвращает сериализованный instance настроек.
      */
     public static String saveMenuSettings(Context context) {
         try {

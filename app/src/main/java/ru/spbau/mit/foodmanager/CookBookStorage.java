@@ -176,10 +176,10 @@ public class CookBookStorage {
             refreshConnection();
             connection.setAutoCommit(false);
 
-            int recipeID = setRecipeBaseInformation(recipe);
+            int recipeID = insertRecipeBaseInformation(recipe);
             recipe.setID(recipeID);
             setRecipeCategories(recipe);
-            ArrayList<Integer> ingredientIDs = setRecipeIngredients(recipe);
+            ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
             setRecipeIngredientRelation(recipe, ingredientIDs);
             ArrayList<Integer> stepIDs = setRecipeSteps(recipe);
             setRecipeImageStepRelation(stepIDs, recipe);
@@ -297,7 +297,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return идентификаторы строке, где хранятся ингредиенты.
      */
-    private ArrayList<Integer> setRecipeIngredients(RecipeToInsert recipe)
+    private ArrayList<Integer> insertRecipeIngredients(RecipeToInsert recipe)
             throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
         for (Ingredient ing : recipe.getIngredients()) {
@@ -316,11 +316,30 @@ public class CookBookStorage {
     }
 
     /**
+     * У рецепта recipe будут заменены поля name и description в БД.
+     * Рецепту поля необходим валидный ID.
+     */
+    public void setRecipeBaseInformation(RecipeToInsert recipe) {
+        String updateQuery = "UPDATE Recipe SET name = ?, description = ? WHERE ID = ?";
+        try {
+            refreshConnection();
+            PreparedStatement stmt = connection.prepareStatement(updateQuery);
+            stmt.setString(1, recipe.getName());
+            stmt.setString(2, recipe.getDescription());
+            stmt.setInt(3, recipe.getID());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Вставка основной информации рецепта(name, description)  в таблицу Recipe.
      * @param recipe рецепт, откуда берутся шагов.
      * @return номер строки, куда был вставлен рецепт.
      */
-    private int setRecipeBaseInformation(RecipeToInsert recipe) throws SQLException {
+    private int insertRecipeBaseInformation(RecipeToInsert recipe) throws SQLException {
         refreshConnection();
         Statement stmt = connection.createStatement();
         String insertRecipeQuery = "INSERT INTO Recipe(name, description) " +
@@ -333,12 +352,16 @@ public class CookBookStorage {
     }
 
     /**
-     * Вставка категорий рецепта
-     * @param recipe рецепт, откуда берутся шагов.
+     * Присвоение категорий рецепту в БД.
+     * @param recipe рецепт, откуда берутся категории.
      */
-    private void setRecipeCategories(RecipeToInsert recipe) throws SQLException {
+    public void setRecipeCategories(RecipeToInsert recipe) throws SQLException {
         refreshConnection();
         Statement stmt = connection.createStatement();
+        String deletePreviousCategoriesQuery = "DELETE FROM Recipe_to_category " +
+                                               "WHERE recipe_ID = " + recipe.getID();
+
+        stmt.executeUpdate(deletePreviousCategoriesQuery);
         for (int categoryID : recipe.getCategoryID()) {
             String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
                                        + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
