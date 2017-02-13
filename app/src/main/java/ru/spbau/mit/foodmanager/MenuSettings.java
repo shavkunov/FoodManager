@@ -3,10 +3,7 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,28 +33,21 @@ public class MenuSettings implements Serializable {
 
     public static void saveMenuSettings(Context context) {
         try {
-            FileOutputStream output = context.openFileOutput(
-                                      menuSettingsFilename, Context.MODE_PRIVATE);
+            ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteOutputStream);
+            objectOutputStream.writeObject(instance);
+            objectOutputStream.flush();
 
-            ObjectOutputStream outputStream = new ObjectOutputStream(output);
-            outputStream.writeObject(instance);
-
+            String serializedInstance = objectOutputStream.toString();
+            CookBookStorage.getInstance(context).deleteUserSettings();
+            CookBookStorage.getInstance(context).saveUserSettings(serializedInstance);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void loadMenuSettings(Context context) {
-        File settings = new File(context.getFilesDir(), menuSettingsFilename);
-        if (settings.exists()) {
-            try {
-                FileInputStream input = context.openFileInput(menuSettingsFilename);
-                ObjectInputStream inputStream = new ObjectInputStream(input);
-                instance = (MenuSettings) inputStream.readObject();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public static String loadMenuSettings(Context context) {
+        return CookBookStorage.getInstance(context).getUserSettings();
     }
 
     public static MenuSettings getInstance(Context context) {

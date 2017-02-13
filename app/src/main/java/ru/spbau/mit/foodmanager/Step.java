@@ -16,6 +16,12 @@ public class Step {
         this.image = null;
     }
 
+    public Step(String description, Bitmap image) {
+        this.description = description;
+        this.image = image;
+        this.imageLink = null;
+    }
+
     public String getDescription() {
         return description;
     }

@@ -110,6 +110,52 @@ public class CookBookStorage {
         return instance;
     }
 
+    public void deleteUserSettings() {
+        String deleteSettingsQuery = "DELETE FROM user_settings WHERE user_ID = '" + userID + "'";
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteSettingsQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveUserSettings(String settings) {
+        String addSettingsQuery = "INSERT INTO user_settings (user_ID, user_settings) VALUES ('" +
+                                  userID + "', '" + settings + "')";
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(addSettingsQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getUserSettings() {
+        String query = "SELECT user_settings FROM user_settings WHERE user_ID = '" + userID + "'";
+
+        String userSettings = null;
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                userSettings = rs.getString("user_settings");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userSettings;
+    }
+
     /**
      * Добавление рецепта в базу данных на сервере. Если одна из операций вставок провалилась,
      * то рецепт не будет встален полностью.
@@ -167,7 +213,7 @@ public class CookBookStorage {
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
      * @param ids идентификаторы картинок загруженные в insertSteps.
      */
-    private void insertImageStepRelation(ArrayList<Integer> ids, Recipe recipe) throws Exception {
+    private void insertImageStepRelation(ArrayList<Integer> ids, RecipeToInsert recipe) throws Exception {
 
         for (int i = 0; i < ids.size(); i++) {
             String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
@@ -195,7 +241,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return Идентификаторы строк, куда были вставлены шаги.
      */
-    private ArrayList<Integer> insertSteps(Statement stmt, Recipe recipe) throws SQLException {
+    private ArrayList<Integer> insertSteps(Statement stmt, RecipeToInsert recipe) throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
 
         for (Step s : recipe.getSteps()) {
@@ -217,7 +263,7 @@ public class CookBookStorage {
      * @param ingredientIDs идентификаторы строке, где хранятся ингредиенты.
      */
     private void insertRecipeIngredientRelation(
-            Statement stmt, Recipe recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
+            Statement stmt, RecipeToInsert recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
 
         // ingredients.size() == ingredientIDs.size()
         for (int i = 0; i < recipe.getIngredients().size(); i++) {
@@ -238,7 +284,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return идентификаторы строке, где хранятся ингредиенты.
      */
-    private ArrayList<Integer> insertIngredients(Statement stmt, Recipe recipe)
+    private ArrayList<Integer> insertIngredients(Statement stmt, RecipeToInsert recipe)
             throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
         for (Ingredient ing : recipe.getIngredients()) {
@@ -274,7 +320,7 @@ public class CookBookStorage {
      * @param stmt Statement в котором выполняется операция.
      * @param recipe рецепт, откуда берутся шагов.
      */
-    private void insertRecipeCategories(Statement stmt, Recipe recipe) throws SQLException {
+    private void insertRecipeCategories(Statement stmt, RecipeToInsert recipe) throws SQLException {
         for (int categoryID : recipe.getCategoryID()) {
             String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
                                        + "VALUES (" + recipe.getID() + ", " + categoryID + ")";

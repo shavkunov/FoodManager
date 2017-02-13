@@ -62,7 +62,7 @@ public class RecipeViewActivity extends AppCompatActivity {
             likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_on));
         }
         liked = !liked;
-        CookBookStorage.getInstance(this).setLike(recipe, liked);
+        CookBookStorage.getInstance(this).setLike(recipe, liked); // TODO
         likeCounter.setText(String.valueOf(CookBookStorage.getInstance(this).getRecipeLikes(recipe)));
     }
 
