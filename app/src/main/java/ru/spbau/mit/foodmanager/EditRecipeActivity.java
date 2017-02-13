@@ -84,7 +84,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     public void onSaveClick(View v) {
         EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
         EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
-        Recipe result = new Recipe(0, description.getText().toString(), name.getText().toString());
+        RecipeToInsert result = new RecipeToInsert(0, description.getText().toString(), name.getText().toString());
         result.setCategoryID(tags);
         result.setIngredients(ingredients);
         //INISteps

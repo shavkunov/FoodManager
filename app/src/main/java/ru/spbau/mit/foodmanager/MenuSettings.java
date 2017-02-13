@@ -3,9 +3,8 @@ package ru.spbau.mit.foodmanager;
 
 import android.content.Context;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -34,29 +33,35 @@ public class MenuSettings implements Serializable {
         }
     }
 
+    /**
+     * Сохраняет instance MenuSettings в БД.
+     */
     public static void saveMenuSettings(Context context) {
         try {
-            FileOutputStream output = context.openFileOutput(
-                                      menuSettingsFilename, Context.MODE_PRIVATE);
+            ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteOutputStream);
+            objectOutputStream.writeObject(instance);
+            objectOutputStream.flush();
 
-            ObjectOutputStream outputStream = new ObjectOutputStream(output);
-            outputStream.writeObject(instance);
-
+            String serializedInstance = objectOutputStream.toString();
+            CookBookStorage.getInstance(context).saveUserSettings(serializedInstance);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Загрузка поля instance из БД.
+     */
     public static void loadMenuSettings(Context context) {
-        File settings = new File(context.getFilesDir(), menuSettingsFilename);
-        if (settings.exists()) {
-            try {
-                FileInputStream input = context.openFileInput(menuSettingsFilename);
-                ObjectInputStream inputStream = new ObjectInputStream(input);
-                instance = (MenuSettings) inputStream.readObject();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        String serializedInstance = CookBookStorage.getInstance(context).getUserSettings();
+        byte bytes[] = serializedInstance.getBytes();
+        ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream);
+            instance = (MenuSettings) objectInputStream.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

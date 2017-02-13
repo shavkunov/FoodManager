@@ -11,8 +11,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 
 public class MenuViewActivity extends AppCompatActivity {
@@ -66,13 +64,13 @@ public class MenuViewActivity extends AppCompatActivity {
             Integer result = resultContainer.getIntExtra("Result", -1);
             switch (requestCode) {
                 case REQUEST_ADD :
-                    allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipes().add(result);
+                    allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipeIDs().add(result);
                     //TODO upload recipe
                     showRecipes();
                     break;
                 case REQUEST_EDIT :
                     Integer position = resultContainer.getIntExtra("Position", -1);
-                    allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipes().set(position, result);
+                    allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipeIDs().set(position, result);
                     //TODO upload recipe
                     showRecipes();
                     break;
@@ -111,12 +109,12 @@ public class MenuViewActivity extends AppCompatActivity {
                 R.id.menu_day_mealtime_name);
         LinearLayout recipeList = (LinearLayout) mealtimeElement.findViewById(
                 R.id.menu_day_mealtime_dishes);
-        DayMenu.Mealtime mealtime = menu.getMealtimes().get(position);
+        Mealtime mealtime = menu.getMealtimes().get(position);
         ImageButton addDish = (ImageButton) mealtimeElement.findViewById(R.id.menu_day_mealtime_dish_add);
 
 
         mealtimeName.setText(mealtime.getName());
-        for (Integer i = 0; i < mealtime.getRecipes().size(); i++) {
+        for (Integer i = 0; i < mealtime.getRecipeIDs().size(); i++) {
             generateRecipeView(mealtime, i, recipeList, day, position);
         }
         addDish.setOnClickListener(new View.OnClickListener() {
@@ -132,11 +130,11 @@ public class MenuViewActivity extends AppCompatActivity {
         parent.addView(mealtimeElement);
     }
 
-    private void generateRecipeView(final DayMenu.Mealtime mealtime, final Integer position, LinearLayout parent,
+    private void generateRecipeView(final Mealtime mealtime, final Integer position, LinearLayout parent,
                                     final Day day, final Integer mealtimePos) {
         View recipeView = inflater.inflate(R.layout.menu_view_day_menu_meltime_list_element, null);
         TextView recipeName = (TextView) recipeView.findViewById(R.id.menu_day_mealtime_dish_name);
-        final Integer recipeID = mealtime.getRecipes().get(position); //WTF
+        final Integer recipeID = mealtime.getRecipeIDs().get(position); //WTF
         ImageButton editDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_edit);
         ImageButton deleteDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_delete);
 
@@ -152,7 +150,7 @@ public class MenuViewActivity extends AppCompatActivity {
         deleteDish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipes().remove((int)position);
+                allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipeIDs().remove((int)position);
                 Log.d("Try to remove", "Try tot remove");
                 showRecipes(); //We need to do this because positions in other buttons now broken
             }
@@ -193,8 +191,8 @@ public class MenuViewActivity extends AppCompatActivity {
             allDayMenu = menu.getMenu();
             for (DayMenu dm : allDayMenu.values()) {
                 if (dm != null) {
-                    for (DayMenu.Mealtime m : dm.getMealtimes()) {
-                        for (Integer id : m.getRecipes()) {
+                    for (Mealtime m : dm.getMealtimes()) {
+                        for (Integer id : m.getRecipeIDs()) {
                             if (recipes.get(id) == null) {
                                 recipes.put(id, cookbook.getRecipe(id));
                             }

@@ -32,40 +32,8 @@ public class DayMenu implements Serializable{
     public ArrayList<Integer> getDishes() {
         ArrayList<Integer> result = new ArrayList<>();
         for (Mealtime m : mealtimes) {
-            result.addAll(m.getRecipes());
+            result.addAll(m.getRecipeIDs());
         }
         return result;
     }
-
-    /**
-     * Описывает один прием пищи
-     */
-    public static class Mealtime implements Serializable {
-        private ArrayList<Integer> recipeIDs;
-        private String name;
-        //Нужно ли время?
-
-        /**
-         * Задает название и блюда приема пищи
-         */
-        public Mealtime(String name, ArrayList<Integer> recipes) {
-            this.name = name;
-            this.recipeIDs = recipes;
-        }
-
-        /**
-         * Возвращает имя приема пищи
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Возвращает список ID блюд приема пищи
-         */
-        public ArrayList<Integer> getRecipes() {
-            return recipeIDs;
-        }
-    }
-
 }

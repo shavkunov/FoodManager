@@ -95,7 +95,7 @@ public class MenuStorage implements Serializable {
      * то будет использован именно он
      */
     public DayMenu generateDayMenu(DaySettings settings, HashMap<Integer, Integer> recipes, Context context) {
-        ArrayList<DayMenu.Mealtime> dishesForDay = new ArrayList<>();
+        ArrayList<Mealtime> dishesForDay = new ArrayList<>();
         for (DaySettings.MealtimeSettings mealtimeSettings : settings.getMealtimeSettings()) {
             ArrayList<Integer> mealtimeRecipes = new ArrayList<>();
             for (Integer categoryID : mealtimeSettings.dishesCategories()) {
@@ -105,7 +105,7 @@ public class MenuStorage implements Serializable {
                 }
                 mealtimeRecipes.add(recipes.get(categoryID));
             }
-            dishesForDay.add(new DayMenu.Mealtime(mealtimeSettings.getName(), mealtimeRecipes));
+            dishesForDay.add(new Mealtime(mealtimeSettings.getName(), mealtimeRecipes));
         }
         return new DayMenu(dishesForDay);
     }

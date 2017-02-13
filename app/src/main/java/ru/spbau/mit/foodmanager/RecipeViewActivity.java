@@ -60,11 +60,12 @@ public class RecipeViewActivity extends AppCompatActivity {
     public void onLikeClick(View v) {
         if (liked) {
             likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));
+            CookBookStorage.getInstance(this).setNotLike(recipe);
         } else {
             likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_on));
+            CookBookStorage.getInstance(this).setLike(recipe);
         }
         liked = !liked;
-        CookBookStorage.getInstance(this).setLike(recipe, liked);
         likeCounter.setText(String.valueOf(CookBookStorage.getInstance(this).getRecipeLikes(recipe)));
     }
 
