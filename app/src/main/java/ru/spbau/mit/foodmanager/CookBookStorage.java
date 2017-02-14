@@ -171,16 +171,16 @@ public class CookBookStorage {
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
      */
-    public void addRecipeToDatabase(RecipeToInsert recipe) {
+    public void addRecipeToDatabase(RecipeToChange recipe) {
         try {
             refreshConnection();
             connection.setAutoCommit(false);
 
-            int recipeID = insertRecipeBaseInformation(recipe);
+            int recipeID = insertRecipeMainInformation(recipe);
             recipe.setID(recipeID);
             insertRecipeCategories(recipe);
             ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
-            setRecipeIngredientRelation(recipe, ingredientIDs);
+            insertRecipeIngredientRelation(recipe, ingredientIDs);
             ArrayList<Integer> stepIDs = setRecipeSteps(recipe);
             setRecipeImageStepRelation(stepIDs, recipe);
 
@@ -221,7 +221,7 @@ public class CookBookStorage {
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
      * @param ids идентификаторы картинок загруженные в setRecipeSteps.
      */
-    private void setRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToInsert recipe)
+    private void setRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToChange recipe)
                                                                       throws Exception {
         for (int i = 0; i < ids.size(); i++) {
             String deletePreviousRelation = "DELETE FROM Image " +
@@ -252,7 +252,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return Идентификаторы строк, куда были вставлены шаги.
      */
-    private ArrayList<Integer> setRecipeSteps(RecipeToInsert recipe) throws SQLException {
+    private ArrayList<Integer> setRecipeSteps(RecipeToChange recipe) throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
 
         for (Step s : recipe.getSteps()) {
@@ -273,27 +273,85 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @param ingredientIDs идентификаторы строке, где хранятся ингредиенты.
      */
-    private void setRecipeIngredientRelation(
-            RecipeToInsert recipe, ArrayList<Integer> ingredientIDs) throws SQLException {
+    private void insertRecipeIngredientRelation(
+            RecipeToChange recipe, ArrayList<Integer> ingredientIDs) {
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            // ingredients.size() == ingredientIDs.size()
+            for (int i = 0; i < recipe.getIngredients().size(); i++) {
+                double quantity = recipe.getIngredients().get(i).getQuantity();
+                int measureOrdinal = recipe.getIngredients().get(i).getMeasure().ordinal();
+                String insertRelationQuery = "INSERT INTO Ingredient_to_recipe " +
+                        "(Ingredient_ID, recipe_ID, measure, quantity) VALUES " +
+                        "(" + ingredientIDs.get(i) + ", " + recipe.getID() +
+                        ", " + measureOrdinal + ", " + quantity + ")";
 
-        refreshConnection();
-        Statement stmt = connection.createStatement();
-        // ingredients.size() == ingredientIDs.size()
-        for (int i = 0; i < recipe.getIngredients().size(); i++) {
-            double quantity = recipe.getIngredients().get(i).getQuantity();
-            int measureOrdinal = recipe.getIngredients().get(i).getMeasure().ordinal();
-            String insertRelationQuery = "INSERT INTO Ingredient_to_recipe " +
-                                         "(recipe_ID, measure, quantity) VALUES " +
-                                         "(" + ingredientIDs.get(i) + ", " + recipe.getID() +
-                                         ", " + measureOrdinal + ", " + quantity + ")";
-
-            stmt.executeUpdate(insertRelationQuery);
+                stmt.executeUpdate(insertRelationQuery);
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        stmt.close();
     }
 
-    public void changeRecipeIngredients(RecipeToInsert recipe) {
+    private void deleteIngredientToRecipeRelation(RecipeToChange recipe) {
+        String deleteQuery = "DELETE FROM Ingredient_to_recipe WHERE recipe_ID = " + recipe.getID();
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private ArrayList<Integer> getRecipeIngredientIDs(RecipeToChange recipe) {
+        String selectIngredientQuery = "SELECT Ingredient_ID FROM Ingredient_to_recipe " +
+                                       "WHERE recipe_ID = " + recipe.getID();
+
+        ArrayList<Integer> ids = new ArrayList<>();
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(selectIngredientQuery);
+            while(rs.next()) {
+                ids.add(rs.getInt("Ingredient_ID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ids;
+    }
+
+    private void deleteIngredients(ArrayList<Integer> ids) {
+        String deleteQuery = "DELETE FROM Ingredient WHERE ID IN (";
+        for (int i = 0; i < ids.size() - 1; i++) {
+            deleteQuery += ids.get(i) + ", ";
+        }
+        deleteQuery += ids.get(ids.size() - 1) + ")";
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteRecipeIngredients(RecipeToChange recipe) {
+        ArrayList<Integer> ids = getRecipeIngredientIDs(recipe);
+        deleteIngredientToRecipeRelation(recipe);
+        deleteIngredients(ids);
+    }
+
+    public void changeRecipeIngredients(RecipeToChange recipe) {
+        deleteRecipeIngredients(recipe);
+        ArrayList<Integer> newIds = insertRecipeIngredients(recipe);
+        insertRecipeIngredientRelation(recipe, newIds);
     }
 
     /**
@@ -301,19 +359,23 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return идентификаторы строке, где хранятся ингредиенты.
      */
-    private ArrayList<Integer> insertRecipeIngredients(RecipeToInsert recipe)
-            throws SQLException {
+    private ArrayList<Integer> insertRecipeIngredients(RecipeToChange recipe) {
         ArrayList<Integer> ids = new ArrayList<>();
-        for (Ingredient ing : recipe.getIngredients()) {
-            String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description) " +
-                                           "VALUES (?, ?)";
 
-            refreshConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(insertIngredientQuery);
-            preparedStatement.setInt(1, recipe.getID());
-            preparedStatement.setString(2, ing.getName());
-            ids.add(preparedStatement.executeUpdate());
-            preparedStatement.close();
+        try {
+            for (Ingredient ing : recipe.getIngredients()) {
+                String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description) " +
+                        "VALUES (?, ?)";
+
+                refreshConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(insertIngredientQuery);
+                preparedStatement.setInt(1, recipe.getID());
+                preparedStatement.setString(2, ing.getName());
+                ids.add(preparedStatement.executeUpdate());
+                preparedStatement.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return ids;
@@ -323,7 +385,7 @@ public class CookBookStorage {
      * У рецепта recipe будут заменены поля name и description в БД.
      * Рецепту поля необходим валидный ID.
      */
-    public void changeRecipeMainInformation(RecipeToInsert recipe) {
+    public void changeRecipeMainInformation(RecipeToChange recipe) {
         String updateQuery = "UPDATE Recipe SET name = ?, description = ? WHERE ID = ?";
         try {
             refreshConnection();
@@ -343,7 +405,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return номер строки, куда был вставлен рецепт.
      */
-    private int insertRecipeMainInformation(RecipeToInsert recipe) throws SQLException {
+    private int insertRecipeMainInformation(RecipeToChange recipe) throws SQLException {
         refreshConnection();
         Statement stmt = connection.createStatement();
         String insertRecipeQuery = "INSERT INTO Recipe(name, description) " +
@@ -359,7 +421,7 @@ public class CookBookStorage {
      * Удаление рецепта из таблицы Recipe.
      * @param recipe удаление по его ID.
      */
-    private void deleteRecipeMainInformation(RecipeToInsert recipe) {
+    private void deleteRecipeMainInformation(RecipeToChange recipe) {
         try {
             String deleteQuery = "DELETE FROM Recipe WHERE ID = " + recipe.getID();
             refreshConnection();
@@ -377,7 +439,7 @@ public class CookBookStorage {
      * всегда будет 2 SQL запроса, а этот метод делает их только при необходимости.
      * @param recipe у этого рецепта изменятся категории в БД.
      */
-    public void changeRecipeCategories(RecipeToInsert recipe) {
+    public void changeRecipeCategories(RecipeToChange recipe) {
         deleteRecipeCategories(recipe);
         insertRecipeCategories(recipe);
     }
@@ -385,7 +447,7 @@ public class CookBookStorage {
     /**
      * Удаление категорий рецепта. Рецепт должен иметь валидный ID.
      */
-    private void deleteRecipeCategories(RecipeToInsert recipe) {
+    private void deleteRecipeCategories(RecipeToChange recipe) {
         try {
             refreshConnection();
             Statement stmt = connection.createStatement();
@@ -402,7 +464,7 @@ public class CookBookStorage {
      * Вставка категорий рецепта в БД.
      * @param recipe рецепт, откуда берутся категории.
      */
-    private void insertRecipeCategories(RecipeToInsert recipe) {
+    private void insertRecipeCategories(RecipeToChange recipe) {
         try {
             refreshConnection();
             Statement stmt = connection.createStatement();
