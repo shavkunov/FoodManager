@@ -157,7 +157,8 @@ public class CookBookStorage {
                 userSettings = rs.getString("user_settings");
                 Log.d(LOG_TAG, userSettings);
             } else {
-                userSettings = MenuSettings.getInstance(context).saveMenuSettings(context); // !!
+                // !!
+                userSettings = MenuSettings.getInstance(context).saveMenuSettings(context);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -181,8 +182,8 @@ public class CookBookStorage {
             insertRecipeCategories(recipe);
             ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
             insertRecipeIngredientRelation(recipe, ingredientIDs);
-            ArrayList<Integer> stepIDs = setRecipeSteps(recipe);
-            setRecipeImageStepRelation(stepIDs, recipe);
+            ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
+            insertRecipeImageStepRelation(stepIDs, recipe);
 
             connection.setAutoCommit(true);
         } catch (Exception e) {
@@ -219,14 +220,11 @@ public class CookBookStorage {
 
     /**
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
-     * @param ids идентификаторы картинок загруженные в setRecipeSteps.
+     * @param ids идентификаторы картинок загруженные в insertRecipeSteps.
      */
-    private void setRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToChange recipe)
+    private void insertRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToChange recipe)
                                                                       throws Exception {
         for (int i = 0; i < ids.size(); i++) {
-            String deletePreviousRelation = "DELETE FROM Image " +
-                    "WHERE entity_type = 0 AND entity_ID = " + ids.get(i);
-
             String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
                                     "VALUES (?, ?, ?)";
 
@@ -252,7 +250,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return Идентификаторы строк, куда были вставлены шаги.
      */
-    private ArrayList<Integer> setRecipeSteps(RecipeToChange recipe) throws SQLException {
+    private ArrayList<Integer> insertRecipeSteps(RecipeToChange recipe) throws SQLException {
         ArrayList<Integer> ids = new ArrayList<>();
 
         for (Step s : recipe.getSteps()) {
@@ -266,6 +264,74 @@ public class CookBookStorage {
         }
 
         return ids;
+    }
+
+    /**
+     * Получение идентификаторов шагов рецепта.
+     * @param recipe у рецепта должен быть валидный ID
+     * @return ID шагов, принадлежащие рецепту.
+     */
+    private ArrayList<Integer> getRecipeStepIDs(RecipeToChange recipe) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        try {
+            String getStepsQuery = "SELECT ID FROM Step WHERE recipe_ID = " + recipe.getID();
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(getStepsQuery);
+            while (rs.next()) {
+                ids.add(rs.getInt("ID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ids;
+    }
+
+    /**
+     * Удаление шагов рецепта из таблицы Step.
+     * @param recipe у рецепта должен быть валидный ID.
+     */
+    private void deleteRecipeSteps(RecipeToChange recipe) {
+        try {
+            String deleteStepsQuery = "DELETE FROM Step WHERE recipe_ID = " + recipe.getID();
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteStepsQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Удаление картинок шагов рецепта.
+     * @param ids идентификаторы картинок.
+     */
+    private void deleteRecipeImageStepRelation(ArrayList<Integer> ids) {
+        String deleteImagesQuery = "DELETE FROM Image WHERE entity_type = 0 AND entity_ID IN (";
+        for (int i = 0; i < ids.size() - 1; i++) {
+            deleteImagesQuery += ids.get(i) + ", ";
+        }
+        deleteImagesQuery += ids.get(ids.size() - 1) + ")";
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteImagesQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Изменение шагов рецепта в БД.
+     * @param recipe шаги этого рецепта станут хранится в БД.
+     */
+    public void changeRecipeSteps(RecipeToChange recipe) {
+        ArrayList<Integer> ids = getRecipeStepIDs(recipe);
+        deleteRecipeSteps(recipe);
+        deleteRecipeImageStepRelation(ids);
     }
 
     /**
@@ -325,7 +391,7 @@ public class CookBookStorage {
             refreshConnection();
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(selectIngredientQuery);
-            while(rs.next()) {
+            while (rs.next()) {
                 ids.add(rs.getInt("Ingredient_ID"));
             }
         } catch (SQLException e) {
