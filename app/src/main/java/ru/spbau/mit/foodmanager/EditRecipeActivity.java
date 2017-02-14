@@ -52,6 +52,7 @@ public class EditRecipeActivity extends AppCompatActivity {
             tags = cookbook.getRecipeCategories(recipeID);
             name.setText(recipe.getName());
             description.setText(recipe.getDescription());
+            showRecipeData();
         }
     }
 
@@ -73,22 +74,9 @@ public class EditRecipeActivity extends AppCompatActivity {
                     uriSteps = (ArrayList<UriStep>) resultContainer.getSerializableExtra("UriSteps");
                     break;
                 case REQUEST_PICK_CATEGORY:
-                    final LinearLayout tagsLayout = (LinearLayout) findViewById(R.id.edit_recipe_header_tags);
-                    final View newTag = ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                            .inflate(R.layout.edit_recipe_tag, null);
-                    TextView newTagName = (TextView) newTag.findViewById(R.id.edit_recipe_tag_name);
-                    ImageButton newTagDelete = (ImageButton) newTag.findViewById(R.id.edit_recipe_delete_tag);
                     final Integer category = resultContainer.getIntExtra("Result", -1);
                     tags.add(category);
-                    newTagName.setText(CookBookStorage.getInstance(this).getCategoryByID(category).getDescription());
-                    newTagDelete.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            tagsLayout.removeView(newTag);
-                            tags.remove(category);
-                        }
-                    });
-                    tagsLayout.addView(newTag);
+                    addTagToView(category);
                     break;
             }
         }
@@ -133,68 +121,8 @@ public class EditRecipeActivity extends AppCompatActivity {
     //Finished
     public void onAddIngredientClick(View v) {
         final Ingredient newIngredient = new Ingredient("", Measure.gr, 0.0);
-        final LinearLayout ingredientsLayout = (LinearLayout) findViewById(R.id.edit_recipe_body_ingredients);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //Create ingredient view
-        final View view = inflater.inflate(R.layout.edit_recipe_ingredient, null);
-        EditText ingredientNameView = (EditText) view.findViewById(R.id.edit_recipe_ingredient_name);
-        EditText ingredientCountView = (EditText) view.findViewById(R.id.edit_recipe_ingredient_count);
-        LinearLayout ingredientCountLayout = (LinearLayout) view.findViewById(R.id.edit_recipe_ingredient_count_layout);
-        Spinner ingredientMeasureView = (Spinner) view.findViewById(R.id.edit_recipe_ingredient_measure);
-        ImageButton delete = (ImageButton) view.findViewById(R.id.edit_recipe_ingredient_delete);
-        //Change name
-        ingredientNameView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                newIngredient.setName(charSequence.toString());
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {}
-        });
-        //Change count
-        ingredientCountView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() != 0) {
-                    newIngredient.setQuantity(Double.parseDouble(charSequence.toString()));
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {}
-        });
-        //Change measurement
-        ArrayList<String> measurementNames = new ArrayList<>();
-        for (Measure m : Measure.values()) {
-            measurementNames.add(Ingredient.getMeasureName(m));
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_dropdown_item, measurementNames);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ingredientMeasureView.setAdapter(adapter);
-        ingredientMeasureView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                newIngredient.setMeasure(Measure.values()[i]);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
-        //remove ingredient
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ingredientsLayout.removeView(view);
-                ingredients.remove(newIngredient);
-            }
-        });
-        //add to ingredient list
         ingredients.add(newIngredient);
-        ingredientsLayout.addView(view);
+        addIngredientToView(newIngredient);
     }
 
     //We have no separated pic of recipe yet
@@ -236,5 +164,98 @@ public class EditRecipeActivity extends AppCompatActivity {
         public void setDescription(String s) {
             description = s;
         }
+    }
+
+    public void showRecipeData() {
+        for (Integer i : tags) {
+            addTagToView(i);
+        }
+        for (Ingredient i : ingredients) {
+            addIngredientToView(i);
+        }
+    }
+
+    private void addTagToView(final Integer category) {
+        final LinearLayout tagsLayout = (LinearLayout) findViewById(R.id.edit_recipe_header_tags);
+        final View newTag = ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.edit_recipe_tag, null);
+        TextView newTagName = (TextView) newTag.findViewById(R.id.edit_recipe_tag_name);
+        ImageButton newTagDelete = (ImageButton) newTag.findViewById(R.id.edit_recipe_delete_tag);
+
+        newTagName.setText(CookBookStorage.getInstance(this).getCategoryByID(category).getDescription());
+        newTagDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tagsLayout.removeView(newTag);
+                tags.remove(category);
+            }
+        });
+        tagsLayout.addView(newTag);
+    }
+
+    private void addIngredientToView(final Ingredient newIngredient) {
+        final LinearLayout ingredientsLayout = (LinearLayout) findViewById(R.id.edit_recipe_body_ingredients);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //Create ingredient view
+        final View view = inflater.inflate(R.layout.edit_recipe_ingredient, null);
+        EditText ingredientNameView = (EditText) view.findViewById(R.id.edit_recipe_ingredient_name);
+        EditText ingredientCountView = (EditText) view.findViewById(R.id.edit_recipe_ingredient_count);
+        LinearLayout ingredientCountLayout = (LinearLayout) view.findViewById(R.id.edit_recipe_ingredient_count_layout);
+        Spinner ingredientMeasureView = (Spinner) view.findViewById(R.id.edit_recipe_ingredient_measure);
+        ImageButton delete = (ImageButton) view.findViewById(R.id.edit_recipe_ingredient_delete);
+        //Change name
+        ingredientNameView.setText(newIngredient.getName());
+        ingredientNameView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                newIngredient.setName(charSequence.toString());
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        //Change count
+        ingredientCountView.setText(new Double(newIngredient.getQuantity()).toString());
+        ingredientCountView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() != 0) {
+                    newIngredient.setQuantity(Double.parseDouble(charSequence.toString()));
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        //Change measurement
+        ArrayList<String> measurementNames = new ArrayList<>();
+        for (Measure m : Measure.values()) {
+            measurementNames.add(Ingredient.getMeasureName(m));
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, measurementNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ingredientMeasureView.setAdapter(adapter);
+        ingredientMeasureView.setSelection(newIngredient.getMeasure().ordinal());
+        ingredientMeasureView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                newIngredient.setMeasure(Measure.values()[i]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+        //remove ingredient
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ingredientsLayout.removeView(view);
+                ingredients.remove(newIngredient);
+            }
+        });
+        ingredientsLayout.addView(view);
     }
 }
