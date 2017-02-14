@@ -295,6 +295,10 @@ public class CookBookStorage {
         }
     }
 
+    /**
+     * Удаление ингредиентов рецепта из таблицы Ingredient_to_recipe
+     * @param recipe рецепт должен иметь валидный ID.
+     */
     private void deleteIngredientToRecipeRelation(RecipeToChange recipe) {
         String deleteQuery = "DELETE FROM Ingredient_to_recipe WHERE recipe_ID = " + recipe.getID();
         try {
@@ -307,6 +311,11 @@ public class CookBookStorage {
         }
     }
 
+    /**
+     * Получение идентификаторов ингредиентов рецепта.
+     * @param recipe рецепт должен иметь валидный ID.
+     * @return id всех ингредиентов, принадлежащих рецепту.
+     */
     private ArrayList<Integer> getRecipeIngredientIDs(RecipeToChange recipe) {
         String selectIngredientQuery = "SELECT Ingredient_ID FROM Ingredient_to_recipe " +
                                        "WHERE recipe_ID = " + recipe.getID();
@@ -326,7 +335,11 @@ public class CookBookStorage {
         return ids;
     }
 
-    private void deleteIngredients(ArrayList<Integer> ids) {
+    /**
+     * Удаление ингредиентов из таблицы Ingredient.
+     * @param ids идентификаторы ингредиентов.
+     */
+    private void deleteRecipeIngredientsFromIngredient(ArrayList<Integer> ids) {
         String deleteQuery = "DELETE FROM Ingredient WHERE ID IN (";
         for (int i = 0; i < ids.size() - 1; i++) {
             deleteQuery += ids.get(i) + ", ";
@@ -342,12 +355,20 @@ public class CookBookStorage {
         }
     }
 
+    /**
+     * Удаление ингредиентов у рецепта.
+     * @param recipe рецепт должен иметь также иметь валидный ID
+     */
     private void deleteRecipeIngredients(RecipeToChange recipe) {
         ArrayList<Integer> ids = getRecipeIngredientIDs(recipe);
         deleteIngredientToRecipeRelation(recipe);
-        deleteIngredients(ids);
+        deleteRecipeIngredientsFromIngredient(ids);
     }
 
+    /**
+     * Изменение ингредиентов у рецепта.
+     * @param recipe рецепт должен иметь также иметь валидный ID
+     */
     public void changeRecipeIngredients(RecipeToChange recipe) {
         deleteRecipeIngredients(recipe);
         ArrayList<Integer> newIds = insertRecipeIngredients(recipe);
