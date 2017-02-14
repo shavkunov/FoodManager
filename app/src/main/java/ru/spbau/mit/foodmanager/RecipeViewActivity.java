@@ -183,7 +183,7 @@ public class RecipeViewActivity extends AppCompatActivity {
             //Image loader
             final int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_WIDTH, getResources().getDisplayMetrics());
             final int heightInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_HEIGHT, getResources().getDisplayMetrics());
-0            final LinearLayout recipeImages = (LinearLayout)findViewById(R.id.recipe_body_images);
+            final LinearLayout recipeImages = (LinearLayout)findViewById(R.id.recipe_body_images);
             for (final Step s : steps) {
                 cookbook.downloadStepImage(s);
                 RecipeViewActivity.this.runOnUiThread(

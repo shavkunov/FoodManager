@@ -27,6 +27,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     private final static int REQUEST_PICK_IMAGE = 0;
     private final static int REQUEST_EDIT_STEPS = 1;
     private final static int REQUEST_PICK_CATEGORY = 2;
+    private int recipeID;
     private ArrayList<UriStep> uriSteps;
     private ArrayList<Ingredient> ingredients;
     private ArrayList<Integer> tags;
@@ -35,9 +36,23 @@ public class EditRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_recipe);
+        recipeID = getIntent().getIntExtra("RecipeID", 0);
         ingredients = new ArrayList<>();
         uriSteps = new ArrayList<>();
         tags = new ArrayList<>();
+        if (recipeID != 0) {
+            EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
+            EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
+            CookBookStorage cookbook = CookBookStorage.getInstance(this);
+            Recipe recipe = cookbook.getRecipe(recipeID);
+            ingredients = cookbook.getRecipeIngredients(recipeID);
+            for (Step s : cookbook.getRecipeSteps(recipeID)) {
+                uriSteps.add(new UriStep(s));
+            }
+            tags = cookbook.getRecipeCategories(recipeID);
+            name.setText(recipe.getName());
+            description.setText(recipe.getDescription());
+        }
     }
 
     @Override
@@ -82,7 +97,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     public void onSaveClick(View v) {
         EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
         EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
-        RecipeToChange result = new RecipeToChange(0, description.getText().toString(), name.getText().toString());
+        RecipeToChange result = new RecipeToChange(recipeID, description.getText().toString(), name.getText().toString());
         result.setCategoryID(tags);
         result.setIngredients(ingredients);
         //INISteps
@@ -101,7 +116,11 @@ public class EditRecipeActivity extends AppCompatActivity {
         }
         result.setSteps(steps);
         //TODO Another Thread
-        CookBookStorage.getInstance(this).addRecipeToDatabase(result);
+        if (recipeID == 0) {
+            CookBookStorage.getInstance(this).addRecipeToDatabase(result);
+        } else {
+            CookBookStorage.getInstance(this).changeRecipe(result);
+        }
         finish();
     }
 
@@ -200,6 +219,10 @@ public class EditRecipeActivity extends AppCompatActivity {
         private Uri imageUri;
 
         public UriStep() {}
+        public UriStep(Step s) {
+            description = s.getDescription();
+            imageUri = Uri.parse(s.getImageLink());
+        }
         public Uri getImageUri() {
             return imageUri;
         }
