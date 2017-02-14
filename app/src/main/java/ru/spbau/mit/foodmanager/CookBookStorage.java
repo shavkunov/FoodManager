@@ -94,6 +94,10 @@ public class CookBookStorage {
 
     // --------------------------------change-----------------------------------
 
+    public void changeRecipe(RecipeToChange recipe) {
+
+    }
+
     /**
      * Изменение шагов рецепта в БД.
      * @param recipe шаги этого рецепта станут хранится в БД.
@@ -331,6 +335,10 @@ public class CookBookStorage {
 
     // --------------------------------delete-----------------------------------
 
+    public void deleteRecipe(RecipeToChange recipe) {
+
+    }
+
     /**
      * Удаление пользовательских настроек из БД.
      */
@@ -496,6 +504,37 @@ public class CookBookStorage {
     // -----------------------------геттеры-------------------------------
 
     /**
+     * Получение рецепта по его уникальному идентификатору.
+     */
+    public Recipe getRecipe(int ID) {
+        String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet mainData = stmt.executeQuery(recipeQuery);
+
+            String recipeName = null;
+            String recipeDescription = null;
+            if (mainData.next()) {
+                recipeName = mainData.getString("name");
+                recipeDescription = mainData.getString("description");
+            } else {
+                return null;
+            }
+
+            stmt.close();
+            return new Recipe(ID, recipeDescription, recipeName);
+
+        } catch (SQLException e) {
+            Log.d(LOG_TAG, "Unable to get recipe main information");
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
      * Получение категорий, к которым принадлежит рецепт.
      * @param ID ID рецепта.
      */
@@ -583,37 +622,6 @@ public class CookBookStorage {
 
         } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to get recipe steps");
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    /**
-     * Получение рецепта по его уникальному идентификатору.
-     */
-    public Recipe getRecipe(int ID) {
-        String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
-
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet mainData = stmt.executeQuery(recipeQuery);
-
-            String recipeName = null;
-            String recipeDescription = null;
-            if (mainData.next()) {
-                recipeName = mainData.getString("name");
-                recipeDescription = mainData.getString("description");
-            } else {
-                return null;
-            }
-
-            stmt.close();
-            return new Recipe(ID, recipeDescription, recipeName);
-
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get recipe main information");
             e.printStackTrace();
         }
 
@@ -944,7 +952,7 @@ public class CookBookStorage {
      * Получение списка категорий по типу блюда.
      * @return список категорий по типу блюда.
      */
-    public LinkedList<Category> getRecipiesTypeOfDish() {
+    public LinkedList<Category> getRecipesTypeOfDish() {
         String categoryQuery = "SELECT * FROM Category WHERE is_category_dish = 1";
 
         return getCategoryFromQuery(categoryQuery);
@@ -954,7 +962,7 @@ public class CookBookStorage {
      * Получение списка категорий по национальной кухне блюда.
      * @return список категорий по национальной кухне блюда.
      */
-    public LinkedList<Category> getRecipiesNationalKitchen() {
+    public LinkedList<Category> getRecipesNationalKitchen() {
         String categoryQuery = "SELECT * FROM Category WHERE is_national_kitchen = 1";
 
         return getCategoryFromQuery(categoryQuery);
