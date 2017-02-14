@@ -178,7 +178,7 @@ public class CookBookStorage {
 
             int recipeID = insertRecipeBaseInformation(recipe);
             recipe.setID(recipeID);
-            setRecipeCategories(recipe);
+            insertRecipeCategories(recipe);
             ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
             setRecipeIngredientRelation(recipe, ingredientIDs);
             ArrayList<Integer> stepIDs = setRecipeSteps(recipe);
@@ -292,6 +292,10 @@ public class CookBookStorage {
         stmt.close();
     }
 
+    public void changeRecipeIngredients(RecipeToInsert recipe) {
+
+    }
+
     /**
      * Вставка ингредиентов в таблицу Ingredient.
      * @param recipe рецепт, откуда берутся шагов.
@@ -319,7 +323,7 @@ public class CookBookStorage {
      * У рецепта recipe будут заменены поля name и description в БД.
      * Рецепту поля необходим валидный ID.
      */
-    public void setRecipeBaseInformation(RecipeToInsert recipe) {
+    public void changeRecipeMainInformation(RecipeToInsert recipe) {
         String updateQuery = "UPDATE Recipe SET name = ?, description = ? WHERE ID = ?";
         try {
             refreshConnection();
@@ -339,7 +343,7 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return номер строки, куда был вставлен рецепт.
      */
-    private int insertRecipeBaseInformation(RecipeToInsert recipe) throws SQLException {
+    private int insertRecipeMainInformation(RecipeToInsert recipe) throws SQLException {
         refreshConnection();
         Statement stmt = connection.createStatement();
         String insertRecipeQuery = "INSERT INTO Recipe(name, description) " +
@@ -352,23 +356,67 @@ public class CookBookStorage {
     }
 
     /**
-     * Присвоение категорий рецепту в БД.
+     * Удаление рецепта из таблицы Recipe.
+     * @param recipe удаление по его ID.
+     */
+    private void deleteRecipeMainInformation(RecipeToInsert recipe) {
+        try {
+            String deleteQuery = "DELETE FROM Recipe WHERE ID = " + recipe.getID();
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Изменение категорий рецепта. У рецепта должен быть валидный ID.
+     * В принципе, реализация могла быть только методом insertRecipeCategories, но тогда
+     * всегда будет 2 SQL запроса, а этот метод делает их только при необходимости.
+     * @param recipe у этого рецепта изменятся категории в БД.
+     */
+    public void changeRecipeCategories(RecipeToInsert recipe) {
+        deleteRecipeCategories(recipe);
+        insertRecipeCategories(recipe);
+    }
+
+    /**
+     * Удаление категорий рецепта. Рецепт должен иметь валидный ID.
+     */
+    private void deleteRecipeCategories(RecipeToInsert recipe) {
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            String deletePreviousCategoriesQuery = "DELETE FROM Recipe_to_category " +
+                                                   "WHERE recipe_ID = " + recipe.getID();
+
+            stmt.executeUpdate(deletePreviousCategoriesQuery);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Вставка категорий рецепта в БД.
      * @param recipe рецепт, откуда берутся категории.
      */
-    public void setRecipeCategories(RecipeToInsert recipe) throws SQLException {
-        refreshConnection();
-        Statement stmt = connection.createStatement();
-        String deletePreviousCategoriesQuery = "DELETE FROM Recipe_to_category " +
-                                               "WHERE recipe_ID = " + recipe.getID();
+    private void insertRecipeCategories(RecipeToInsert recipe) {
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            for (int categoryID : recipe.getCategoryID()) {
+                String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
+                                           + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
 
-        stmt.executeUpdate(deletePreviousCategoriesQuery);
-        for (int categoryID : recipe.getCategoryID()) {
-            String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
-                                       + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
+                stmt.executeUpdate(insertCategoryQuery);
+            }
 
-            stmt.executeUpdate(insertCategoryQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        stmt.close();
     }
 
     /**
