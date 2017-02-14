@@ -3,9 +3,9 @@ package ru.spbau.mit.foodmanager;
 import java.util.ArrayList;
 
 /**
- * Класс, созданный специально для добавления рецепта в БД.
+ * Класс, созданный специально для добавления и удаления рецепта в БД.
  */
-public class RecipeToInsert {
+public class RecipeToChange {
     /** Название рецепта */
     private String name;
 
@@ -24,7 +24,7 @@ public class RecipeToInsert {
     /** Ингредиенты необходимые для приготовления блюда */
     private ArrayList<Ingredient> ingredients;
 
-    public RecipeToInsert(int ID, String description, String name) {
+    public RecipeToChange(int ID, String description, String name) {
         categoryID = null;
         steps = null;
         ingredients = null;
@@ -37,9 +37,13 @@ public class RecipeToInsert {
         return name;
     }
 
+    public void setName(String name) { this.name = name; }
+
     public String getDescription() {
         return description;
     }
+
+    public void setDescription(String description) { this.description = description; }
 
     public int getID() {
         return ID;

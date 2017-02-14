@@ -141,10 +141,10 @@ public class CookBookActivity extends AppCompatActivity {
                 try {
                     switch (groupingBy) {
                         case GROUPINGBY_TYPE_OF_DISH:
-                            categories.addAll(cookbook.getRecipiesTypeOfDish());
+                            categories.addAll(cookbook.getRecipesTypeOfDish());
                             break;
                         case GROUPINGBY_NATIONAL_KITCHEN:
-                            categories.addAll(cookbook.getRecipiesNationalKitchen());
+                            categories.addAll(cookbook.getRecipesNationalKitchen());
                             break;
                     }
                 } catch (Throwable e) {

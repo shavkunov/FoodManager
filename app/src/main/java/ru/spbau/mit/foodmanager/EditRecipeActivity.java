@@ -15,13 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 
 //TODO Add, Delete and Edit tags
@@ -84,7 +82,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     public void onSaveClick(View v) {
         EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
         EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
-        RecipeToInsert result = new RecipeToInsert(0, description.getText().toString(), name.getText().toString());
+        RecipeToChange result = new RecipeToChange(0, description.getText().toString(), name.getText().toString());
         result.setCategoryID(tags);
         result.setIngredients(ingredients);
         //INISteps
