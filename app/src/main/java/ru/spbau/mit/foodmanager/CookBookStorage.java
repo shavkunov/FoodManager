@@ -162,6 +162,7 @@ public class CookBookStorage {
 
             int recipeID = insertRecipeMainInformation(recipe);
             recipe.setID(recipeID);
+            insertUserRecipeRelation(recipe);
             insertRecipeCategories(recipe);
             ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
             insertRecipeIngredientRelation(recipe, ingredientIDs);
@@ -176,6 +177,23 @@ public class CookBookStorage {
     }
 
     /**
+     * Связывание рецепта и пользователя.
+     */
+    public void insertUserRecipeRelation(RecipeToChange recipe) {
+        String insertQuery = "INSERT INTO User_to_recipe VALUES ("
+                            + recipe.getID() + ", '" + userID + "')";
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(insertQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
      * @param ids идентификаторы картинок загруженные в insertRecipeSteps.
      */
@@ -183,7 +201,7 @@ public class CookBookStorage {
             throws Exception {
         for (int i = 0; i < ids.size(); i++) {
             String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
-                    "VALUES (?, ?, ?)";
+                                    "VALUES (?, ?, ?)";
 
             Bitmap bitmap = recipe.getSteps().get(i).getImage();
 
@@ -1146,5 +1164,26 @@ public class CookBookStorage {
         }
 
         return null;
+    }
+
+    /**
+     * Является ли текущий пользователь владельцем рецепта.
+     * @param recipe рецепт, который хотим проверить
+     * @return true если recipe принадлежить пользователь и false иначе.
+     */
+    public boolean isUserOwnRecipe(Recipe recipe) {
+        String selectQuery = "SELECT EXISTS(SELECT 1 FROM User_to_recipe WHERE recipe_ID = "
+                             + recipe.getID() + " AND user_ID = '" + userID + "')";
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(selectQuery);
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
