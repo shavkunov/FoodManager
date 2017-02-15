@@ -370,8 +370,20 @@ public class CookBookStorage {
 
     // --------------------------------delete-----------------------------------
 
+    /**
+     * Удаление рецепта из БД.
+     */
     public void deleteRecipe(RecipeToChange recipe) {
-
+        deleteRecipeMainInformation(recipe);
+        deleteUserRecipeRelation(recipe);
+        deleteRecipeCategories(recipe);
+        deleteRecipeIngredients(recipe);
+        deleteIngredientToRecipeRelation(recipe);
+        deleteRecipeSteps(recipe);
+        ArrayList<Integer> stepIDs = getRecipeStepIDs(recipe);
+        deleteRecipeImageStepRelation(stepIDs);
+        setNotLike(recipe.getID());
+        removeFromFavorites(recipe.getID());
     }
 
     /**
@@ -408,7 +420,7 @@ public class CookBookStorage {
 
     /**
      * Удаление картинок шагов рецепта.
-     * @param ids идентификаторы картинок.
+     * @param ids идентификаторы шагов.
      */
     private void deleteRecipeImageStepRelation(ArrayList<Integer> ids) {
         String deleteImagesQuery = "DELETE FROM Image WHERE entity_type = 0 AND entity_ID IN (";
@@ -522,14 +534,30 @@ public class CookBookStorage {
 
     /**
      * Удаление рецепта из избранного.
-     * @param recipe удаление рецепта из избранного.
+     * @param recipeID ID рецепта.
      */
-    public void removeFromFavorites(Recipe recipe) {
-        String removeQuery = "DELETE FROM Favorites WHERE recipe_ID = " + recipe.getID();
+    public void removeFromFavorites(int recipeID) {
+        String removeQuery = "DELETE FROM Favorites WHERE recipe_ID = " + recipeID;
         try {
             refreshConnection();
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(removeQuery);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Удаление связи между рецептов и пользователем.
+     */
+    private void deleteUserRecipeRelation(RecipeToChange recipe) {
+        String deleteQuery = "DELETE FROM User_to_recipe WHERE recipe_ID = " + recipe.getID();
+
+        try {
+            refreshConnection();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(deleteQuery);
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1069,13 +1097,13 @@ public class CookBookStorage {
 
     /**
      * Метод ставит лайк пользователя.
-     * @param recipe этому рецепту пользователь ставит лайк.
+     * @param recipeID ID рецепта.
      * @return true если операция прошла успешно, иначе false.
      */
-    public boolean setLike(Recipe recipe) {
+    public boolean setLike(int recipeID) {
         try {
             String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
-                    userID + "', " + recipe.getID() + ")";
+                    userID + "', " + recipeID + ")";
 
             refreshConnection();
             Statement stmt = connection.createStatement();
@@ -1090,14 +1118,14 @@ public class CookBookStorage {
     }
 
     /**
-     * Метод убирает лайк пользователя. Предполагается, что лайк уже поставлен.
-     * @param recipe убирает лайк у этого рецепта.
+     * Метод убирает лайк пользователя.
+     * @param recipeID ID рецепта.
      * @return true, если операция прошла успешно, false иначе.
      */
-    public boolean setNotLike(Recipe recipe) {
+    public boolean setNotLike(int recipeID) {
         try {
             String removeLikeQuery = "DELETE FROM Likes WHERE user_ID = '" + userID +
-                    "' AND recipe_ID = " + recipe.getID();
+                    "' AND recipe_ID = " + recipeID;
             refreshConnection();
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(removeLikeQuery);

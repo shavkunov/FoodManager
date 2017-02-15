@@ -1,10 +1,9 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -61,10 +60,10 @@ public class RecipeViewActivity extends AppCompatActivity {
     public void onLikeClick(View v) {
         if (liked) {
             likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));
-            CookBookStorage.getInstance(this).setNotLike(recipe);
+            CookBookStorage.getInstance(this).setNotLike(recipe.getID());
         } else {
             likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_on));
-            CookBookStorage.getInstance(this).setLike(recipe);
+            CookBookStorage.getInstance(this).setLike(recipe.getID());
         }
         liked = !liked;
         likeCounter.setText(String.valueOf(CookBookStorage.getInstance(this).getRecipeLikes(recipe)));
@@ -73,7 +72,7 @@ public class RecipeViewActivity extends AppCompatActivity {
     public void onFavoriteClick(View v) {
         if (inFavourites) {
             favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_off));
-            CookBookStorage.getInstance(this).removeFromFavorites(recipe);
+            CookBookStorage.getInstance(this).removeFromFavorites(recipe.getID());
         } else {
             favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
             CookBookStorage.getInstance(this).addToFavorites(recipe);
