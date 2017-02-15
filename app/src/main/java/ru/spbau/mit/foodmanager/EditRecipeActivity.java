@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,8 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 //TODO Add, Delete and Edit tags
 public class EditRecipeActivity extends AppCompatActivity {
@@ -115,6 +122,14 @@ public class EditRecipeActivity extends AppCompatActivity {
     public void onStepsClick(View v) {
         Intent task = new Intent(this, EditStepActivity.class);
         task.putExtra("UriSteps", uriSteps);
+        try {
+            ObjectOutputStream test = new ObjectOutputStream(new ByteArrayOutputStream());
+            test.writeObject(uriSteps);
+            Log.d("STEP CLICK", test.toString());
+        }
+        catch (Exception e) {
+            Log.d("STEP BOOM", e.toString());
+        }
         startActivityForResult(task, REQUEST_EDIT_STEPS);
     }
 
@@ -142,20 +157,20 @@ public class EditRecipeActivity extends AppCompatActivity {
         startActivityForResult(task, REQUEST_PICK_CATEGORY);
     }
 
-    public static class UriStep {
+    public static class UriStep implements Serializable {
         private String description;
-        private Uri imageUri;
+        private String imageUri;
 
         public UriStep() {}
         public UriStep(Step s) {
             description = s.getDescription();
-            imageUri = Uri.parse(s.getImageLink());
+            imageUri = s.getImageLink();
         }
         public Uri getImageUri() {
-            return imageUri;
+            return Uri.parse(imageUri);
         }
         public void setImageUri(Uri uri) {
-            imageUri = uri;
+            imageUri = uri.toString();
         }
 
         public String getDescription() {
