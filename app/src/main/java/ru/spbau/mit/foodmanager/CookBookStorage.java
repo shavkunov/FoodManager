@@ -95,7 +95,10 @@ public class CookBookStorage {
     // --------------------------------change-----------------------------------
 
     public void changeRecipe(RecipeToChange recipe) {
-
+        changeRecipeMainInformation(recipe);
+        changeRecipeCategories(recipe);
+        changeRecipeIngredients(recipe);
+        changeRecipeSteps(recipe);
     }
 
     /**
