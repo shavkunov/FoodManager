@@ -94,6 +94,11 @@ public class CookBookStorage {
 
     // --------------------------------change-----------------------------------
 
+    /**
+     * Изменение информации о рецепте. Можно было изменить рецепт, удалив его и добавив новый,
+     * но использование этого метода эффективнее в количестве SQL запросов.
+     * @param recipe информация этого рецепта будет помещена в БД.
+     */
     public void changeRecipe(RecipeToChange recipe) {
         changeRecipeMainInformation(recipe);
         changeRecipeCategories(recipe);
@@ -106,9 +111,11 @@ public class CookBookStorage {
      * @param recipe шаги этого рецепта станут хранится в БД.
      */
     public void changeRecipeSteps(RecipeToChange recipe) {
-        ArrayList<Integer> ids = getRecipeStepIDs(recipe);
+        ArrayList<Integer> recipeIDs = getRecipeStepIDs(recipe);
         deleteRecipeSteps(recipe);
-        deleteRecipeImageStepRelation(ids);
+        deleteRecipeImageStepRelation(recipeIDs);
+        ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
+        insertRecipeImageStepRelation(stepIDs, recipe);
     }
 
     /**
@@ -198,28 +205,31 @@ public class CookBookStorage {
 
     /**
      * Вставка в таблицу Image изображений из инструкции приготовления блюда.
-     * @param ids идентификаторы картинок загруженные в insertRecipeSteps.
+     * @param ids идентификаторы шагов загруженные в insertRecipeSteps.
      */
-    private void insertRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToChange recipe)
-            throws Exception {
-        for (int i = 0; i < ids.size(); i++) {
-            String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
-                                    "VALUES (?, ?, ?)";
+    private void insertRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToChange recipe) {
+        try {
+            for (int i = 0; i < ids.size(); i++) {
+                String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
+                        "VALUES (?, ?, ?)";
 
-            Bitmap bitmap = recipe.getSteps().get(i).getImage();
+                Bitmap bitmap = recipe.getSteps().get(i).getImage();
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-            byte[] bitmapData = bos.toByteArray();
-            ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+                byte[] bitmapData = bos.toByteArray();
+                ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
 
-            String link = uploadImage(bs);
-            refreshConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
-            preparedStatement.setInt(1, 0);
-            preparedStatement.setInt(2, ids.get(i));
-            preparedStatement.setString(3, link);
-            preparedStatement.execute();
+                String link = uploadImage(bs);
+                refreshConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
+                preparedStatement.setInt(1, 0);
+                preparedStatement.setInt(2, ids.get(i));
+                preparedStatement.setString(3, link);
+                preparedStatement.execute();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -228,17 +238,21 @@ public class CookBookStorage {
      * @param recipe рецепт, откуда берутся шагов.
      * @return Идентификаторы строк, куда были вставлены шаги.
      */
-    private ArrayList<Integer> insertRecipeSteps(RecipeToChange recipe) throws SQLException {
+    private ArrayList<Integer> insertRecipeSteps(RecipeToChange recipe) {
         ArrayList<Integer> ids = new ArrayList<>();
 
-        for (Step s : recipe.getSteps()) {
-            String insertStep = "INSERT INTO Step(recipe_ID, description) VALUES  (?, ?)";
-            refreshConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(insertStep);
-            preparedStatement.setInt(1, recipe.getID());
-            preparedStatement.setString(2, s.getDescription());
-            ids.add(preparedStatement.executeUpdate());
-            preparedStatement.close();
+        try {
+            for (Step s : recipe.getSteps()) {
+                String insertStep = "INSERT INTO Step(recipe_ID, description) VALUES  (?, ?)";
+                refreshConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(insertStep);
+                preparedStatement.setInt(1, recipe.getID());
+                preparedStatement.setString(2, s.getDescription());
+                ids.add(preparedStatement.executeUpdate());
+                preparedStatement.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return ids;
@@ -247,7 +261,7 @@ public class CookBookStorage {
     /**
      * Вставка нужных записей в таблицу связи Ingredient_to_recipe.
      * @param recipe рецепт, откуда берутся шагов.
-     * @param ingredientIDs идентификаторы строке, где хранятся ингредиенты.
+     * @param ingredientIDs идентификаторы строк, где хранятся ингредиенты.
      */
     private void insertRecipeIngredientRelation(
             RecipeToChange recipe, ArrayList<Integer> ingredientIDs) {
@@ -274,7 +288,7 @@ public class CookBookStorage {
     /**
      * Вставка ингредиентов в таблицу Ingredient.
      * @param recipe рецепт, откуда берутся шагов.
-     * @return идентификаторы строке, где хранятся ингредиенты.
+     * @return идентификаторы строк, где хранятся ингредиенты.
      */
     private ArrayList<Integer> insertRecipeIngredients(RecipeToChange recipe) {
         ArrayList<Integer> ids = new ArrayList<>();
