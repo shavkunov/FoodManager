@@ -87,7 +87,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
             SearchRecipeActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.VISIBLE);
+                    //loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -98,7 +98,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
             SearchRecipeActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    loaderAnimation.setVisibility(View.INVISIBLE);
+                    //loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipes();
                     loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                 }

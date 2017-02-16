@@ -15,8 +15,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        CookBookStorage.getInstance(this);
-        startService(new Intent(this, NotificationService.class));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                CookBookStorage.getInstance(this);
+                startService(new Intent(MainActivity.this, NotificationService.class));
+            }
+        }).start();
     }
 
     public void onOpenCookBookClick(View view) {
