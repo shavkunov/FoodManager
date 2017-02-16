@@ -20,12 +20,13 @@ public class SearchRecipeActivity extends AppCompatActivity {
     private Intent task;
     private GifImageView loaderAnimation;
     private ListView recipesList;
+    private Thread searchingThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_recipe);
-        EditText searchText = (EditText)findViewById(R.id.search_text);
+        final EditText searchText = (EditText)findViewById(R.id.search_text);
 
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
@@ -43,7 +44,11 @@ public class SearchRecipeActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                new Thread(new ContentLoader(editable.toString())).start();
+                if (searchingThread != null) {
+                    searchingThread.interrupt();
+                }
+                searchingThread = new Thread(new ContentLoader(editable.toString()));
+                searchingThread.start();
             }
         });
     }

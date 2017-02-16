@@ -17,12 +17,15 @@
             android:id="@+id/search_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="end">
             <ImageButton
                 android:onClick="onSearchClick"
                 android:src="@drawable/edit"
                 android:layout_width="@dimen/imbtn_size"
-                android:layout_height="@dimen/imbtn_size" />
+                android:layout_height="@dimen/imbtn_size"
+                android:scaleType="centerInside"
+                android:background="@color/colorTransparent" />
         </LinearLayout>
         <ListView
             android:id="@+id/cook_book_category_list"
