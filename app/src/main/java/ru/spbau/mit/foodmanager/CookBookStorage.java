@@ -1072,16 +1072,24 @@ public class CookBookStorage {
         return jsonObject.getString("url");
     }
 
+    private void getConnection() throws Exception {
+        if (connection == null || connection.isClosed()) {
+            connection = DriverManager.getConnection(databaseURL, user, password);
+        }
+    }
+
     /**
      * Получение соединения с БД, если его нет по какой-то причине.
+     * Я не уверен, что правильно это делаю. !!!!
      */
     private void refreshConnection() {
         try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
-        } catch (SQLException e) {
+            getConnection();
+        } catch (Exception e) {
             Log.d(LOG_TAG, "Unable to refresh connection");
-            e.printStackTrace();
+            refreshConnection();
+
+            //e.printStackTrace();
         }
     }
 
