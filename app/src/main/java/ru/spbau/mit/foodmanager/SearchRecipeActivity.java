@@ -85,14 +85,10 @@ public class SearchRecipeActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.VISIBLE);
                 }
             });
+
             recipes = null;
             while (recipes == null) {
-                try {
-                    recipes = CookBookStorage.getInstance(SearchRecipeActivity.this).getRecipesByFilter(searchFilter);
-                }
-                catch (Throwable e) {
-                    //Repeat
-                }
+                recipes = CookBookStorage.getInstance(SearchRecipeActivity.this).getRecipesByFilter(searchFilter);
             }
             SearchRecipeActivity.this.runOnUiThread(new Runnable() {
                 @Override

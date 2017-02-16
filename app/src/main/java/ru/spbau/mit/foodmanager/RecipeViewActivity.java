@@ -106,6 +106,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
         //Categories
+        categoryList.removeAllViews();
         for (final Integer id : categories) {
             Button categoryNameView = new Button(this);
             //TextView categoryNameView = new TextView(this);
