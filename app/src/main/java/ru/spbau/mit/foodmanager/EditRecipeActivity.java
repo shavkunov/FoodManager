@@ -111,10 +111,20 @@ public class EditRecipeActivity extends AppCompatActivity {
         }
         result.setSteps(steps);
         //TODO Another Thread
-        if (recipeID == 0) {
-            CookBookStorage.getInstance(this).addRecipeToDatabase(result);
-        } else {
-            CookBookStorage.getInstance(this).changeRecipe(result);
+        boolean complete = false;
+        while (!complete) {
+            try {
+                if (recipeID == 0) {
+                    CookBookStorage.getInstance(this).addRecipeToDatabase(result);
+                } else {
+                    CookBookStorage.getInstance(this).changeRecipe(result);
+
+                }
+                complete = true;
+            }
+            catch (Exception e) {
+                //Repeat
+            }
         }
         finish();
     }
