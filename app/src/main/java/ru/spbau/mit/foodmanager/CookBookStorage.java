@@ -98,12 +98,16 @@ public class CookBookStorage {
      * Изменение информации о рецепте. Можно было изменить рецепт, удалив его и добавив новый,
      * но использование этого метода эффективнее в количестве SQL запросов.
      * @param recipe информация этого рецепта будет помещена в БД.
+     * @throws Exception если есть проблемы с соединением.
      */
-    public void changeRecipe(RecipeToChange recipe) {
+    public void changeRecipe(RecipeToChange recipe) throws Exception {
+        refreshConnection();
+        connection.setAutoCommit(false);
         changeRecipeMainInformation(recipe);
         changeRecipeCategories(recipe);
         changeRecipeIngredients(recipe);
         changeRecipeSteps(recipe);
+        connection.setAutoCommit(true);
     }
 
     /**
@@ -372,8 +376,11 @@ public class CookBookStorage {
 
     /**
      * Удаление рецепта из БД.
+     * @throws Exception если есть проблемы с соединением.
      */
-    public void deleteRecipe(RecipeToChange recipe) {
+    public void deleteRecipe(RecipeToChange recipe) throws Exception {
+        refreshConnection();
+        connection.setAutoCommit(false);
         deleteRecipeMainInformation(recipe);
         deleteUserRecipeRelation(recipe);
         deleteRecipeCategories(recipe);
@@ -384,6 +391,7 @@ public class CookBookStorage {
         deleteRecipeImageStepRelation(stepIDs);
         setNotLike(recipe.getID());
         removeFromFavorites(recipe.getID());
+        connection.setAutoCommit(true);
     }
 
     /**
