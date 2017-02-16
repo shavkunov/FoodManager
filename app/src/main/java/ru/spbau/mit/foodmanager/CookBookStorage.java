@@ -712,8 +712,8 @@ public class CookBookStorage {
             ArrayList<Recipe> res = new ArrayList<>();
             while (recipes.next()) {
                 res.add(new Recipe(recipes.getInt("ID"),
-                        recipes.getString("name"),
-                        recipes.getString("description")));
+                        recipes.getString("description"),
+                        recipes.getString("name")));
             }
 
             stmt.close();
