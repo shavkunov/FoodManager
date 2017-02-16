@@ -26,7 +26,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
         setContentView(R.layout.cook_book_category);
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+        loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         informationLayout = (ListView) findViewById(R.id.cook_book_category_list);
         //Task init
@@ -130,7 +130,7 @@ public class CookBookCategoryActivity extends AppCompatActivity {
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
                     showRecipies();
-                    loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+                    loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                 }
             });
         }
