@@ -32,6 +32,7 @@ public class NotificationSettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         NotificationSettings.saveNotificationSettings(this);
     }
 
