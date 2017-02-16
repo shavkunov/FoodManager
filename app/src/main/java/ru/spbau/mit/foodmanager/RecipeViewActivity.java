@@ -26,6 +26,8 @@ public class RecipeViewActivity extends AppCompatActivity {
     private LinearLayout informationLayout;
     private ImageButton likeBtn;
     private ImageButton favoriteBtn;
+    private ImageButton deleteBtn;
+    private ImageButton editBtn;
     private TextView likeCounter;
     private boolean liked;
     private boolean inFavourites;
@@ -108,6 +110,13 @@ public class RecipeViewActivity extends AppCompatActivity {
         CookBookStorage cookbook = CookBookStorage.getInstance(this);
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
+        //Check user permissions
+        deleteBtn = (ImageButton) findViewById(R.id.recipe_delete);
+        editBtn = (ImageButton) findViewById(R.id.recipe_edit);
+        if (cookbook.isUserOwnRecipe(recipe)) {
+            deleteBtn.setVisibility(View.INVISIBLE);
+            editBtn.setVisibility(View.INVISIBLE);
+        }
         //Categories
         categoryList.removeAllViews();
         for (final Integer id : categories) {
