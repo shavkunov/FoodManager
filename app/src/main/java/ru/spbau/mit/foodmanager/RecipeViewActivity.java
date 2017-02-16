@@ -73,7 +73,16 @@ public class RecipeViewActivity extends AppCompatActivity {
     }
 
     public void onDeleteClick(View v) {
-        CookBookStorage.getInstance(this).deleteRecipe(new RecipeToChange(recipe.getID(), "", ""));
+        boolean complete = false;
+        while(!complete) {
+            try {
+                CookBookStorage.getInstance(this).deleteRecipe(new RecipeToChange(recipe.getID(), "", ""));
+                complete = true;
+            }
+            catch (Exception e) {
+                //Repeat
+            }
+        }
         finish();
     }
 
