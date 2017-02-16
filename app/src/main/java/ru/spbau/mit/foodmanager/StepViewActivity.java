@@ -101,8 +101,21 @@ public class StepViewActivity extends AppCompatActivity {
                     loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                 }
             });
-            for (Step s : steps) {
+            int i = 0;
+            for (final Step s : steps) {
                 cookbook.downloadStepImage(s);
+                if (i == stepPosition) {
+                    StepViewActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageView image = (ImageView)findViewById(R.id.step_view_step_image);
+                            if (s.getImage() != null) {
+                                image.setImageBitmap(s.getImage());
+                            }
+                        }
+                    });
+                }
+                i++;
             }
         }
     }
