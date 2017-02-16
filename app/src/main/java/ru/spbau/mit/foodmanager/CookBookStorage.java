@@ -294,7 +294,7 @@ public class CookBookStorage {
 
         try {
             for (Ingredient ing : recipe.getIngredients()) {
-                String insertIngredientQuery = "INSERT INTO Ingredient (recipe_ID, description) " +
+                String insertIngredientQuery = "INSERT INTO Ingredient (ID, name) " +
                         "VALUES (?, ?)";
 
                 refreshConnection();

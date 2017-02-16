@@ -32,6 +32,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
         loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        loaderAnimation.setVisibility(View.INVISIBLE);
         recipesList = (ListView) findViewById(R.id.search_recipes_list);
         task = getIntent();
 

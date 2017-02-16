@@ -1,13 +1,9 @@
 package ru.spbau.mit.foodmanager;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                CookBookStorage.getInstance(this);
+                CookBookStorage.getInstance(MainActivity.this);
                 startService(new Intent(MainActivity.this, NotificationService.class));
             }
         }).start();
