@@ -22,7 +22,7 @@
             android:gravity="end">
             <ImageButton
                 android:onClick="onSearchClick"
-                android:src="@drawable/edit"
+                android:src="@drawable/search"
                 android:layout_width="@dimen/imbtn_size"
                 android:layout_height="@dimen/imbtn_size"
                 android:scaleType="centerInside"
