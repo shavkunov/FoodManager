@@ -110,13 +110,6 @@ public class RecipeViewActivity extends AppCompatActivity {
         CookBookStorage cookbook = CookBookStorage.getInstance(this);
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
-        //Check user permissions
-        deleteBtn = (ImageButton) findViewById(R.id.recipe_delete);
-        editBtn = (ImageButton) findViewById(R.id.recipe_edit);
-        if (cookbook.isUserOwnRecipe(recipe)) {
-            deleteBtn.setVisibility(View.INVISIBLE);
-            editBtn.setVisibility(View.INVISIBLE);
-        }
         //Categories
         categoryList.removeAllViews();
         for (final Integer id : categories) {
@@ -192,10 +185,18 @@ public class RecipeViewActivity extends AppCompatActivity {
                     //Repeat
                 }
             }
+            final boolean userPermission = cookbook.isUserOwnRecipe(recipe);
             RecipeViewActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     showRecipe();
+                    //Check user permissions
+                    deleteBtn = (ImageButton) findViewById(R.id.recipe_delete);
+                    editBtn = (ImageButton) findViewById(R.id.recipe_edit);
+                    if (userPermission) {
+                        deleteBtn.setVisibility(View.INVISIBLE);
+                        editBtn.setVisibility(View.INVISIBLE);
+                    }
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
                     loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());

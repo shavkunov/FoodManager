@@ -13,12 +13,13 @@ public class LoaderAnimationSelector {
 
     static {
         loaderResources = new ArrayList<>();
-        loaderResources.add(R.drawable.loading_animation);
-        loaderResources.add(R.drawable.loading_animation2);
-        loaderResources.add(R.drawable.loading_animation3);
-        loaderResources.add(R.drawable.loading_animation4);
-        loaderResources.add(R.drawable.loading_animation7);
-        loaderResources.add(R.drawable.loading_animation6);
+        loaderResources.add(R.drawable.loader);
+        //loaderResources.add(R.drawable.loading_animation);
+        //loaderResources.add(R.drawable.loading_animation2);
+        //loaderResources.add(R.drawable.loading_animation3);
+        //loaderResources.add(R.drawable.loading_animation4);
+        //loaderResources.add(R.drawable.loading_animation7);
+        //loaderResources.add(R.drawable.loading_animation6);
     }
 
     /**
