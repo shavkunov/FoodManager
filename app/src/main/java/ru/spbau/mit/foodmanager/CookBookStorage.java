@@ -698,7 +698,10 @@ public class CookBookStorage {
      * Получение списка рецептов по фильтру, т.е. по префиксу.
      */
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
-        String filterQuery = "SELECT * FROM Recipe WHERE name LIKE '" + filter + "'%";
+        filter = filter.toLowerCase();
+        filter = filter.substring(0, 1).toUpperCase() + filter.substring(1);
+        Log.d(LOG_TAG, filter);
+        String filterQuery = "SELECT * FROM Recipe WHERE name LIKE '" + filter + "%'";
         try {
             refreshConnection();
             Statement stmt = connection.createStatement();
