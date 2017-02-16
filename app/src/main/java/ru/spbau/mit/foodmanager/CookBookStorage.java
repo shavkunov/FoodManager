@@ -699,7 +699,9 @@ public class CookBookStorage {
      */
     public ArrayList<Recipe> getRecipesByFilter(String filter) {
         filter = filter.toLowerCase();
-        filter = filter.substring(0, 1).toUpperCase() + filter.substring(1);
+        if (filter.length() > 0) {
+            filter = filter.substring(0, 1).toUpperCase() + filter.substring(1);
+        }
         Log.d(LOG_TAG, filter);
         String filterQuery = "SELECT * FROM Recipe WHERE name LIKE '" + filter + "%'";
         try {
