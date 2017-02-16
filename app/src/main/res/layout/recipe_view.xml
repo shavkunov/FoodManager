@@ -65,6 +65,9 @@
                 android:background="@color/colorTransparent"
                 android:src="@drawable/favourite_off"
                 android:onClick="onFavoriteClick"/>
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
             <ImageButton
                 android:id="@+id/recipe_like"
                 android:layout_width="@dimen/imbtn_size"
@@ -77,15 +80,37 @@
                 android:id="@+id/recipe_like_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <View
-                android:layout_width="35dp"
-                android:layout_height="35dp"></View>
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent"/>
             <Button
                 android:id="@+id/recipe_goto_stepbystep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/recipe_goto_stepbystep_str"
                 android:onClick="onCookClick"/>
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+            <ImageButton
+                android:id="@+id/recipe_edit"
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
+                android:scaleType="centerInside"
+                android:background="@color/colorTransparent"
+                android:src="@drawable/edit"
+                android:onClick="onEditClick"/>
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="match_parent" />
+            <ImageButton
+                android:id="@+id/recipe_delete"
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size"
+                android:scaleType="centerInside"
+                android:background="@color/colorTransparent"
+                android:src="@drawable/delete"
+                android:onClick="onDeleteClick"/>
             <!-- TODO: redesign buttons -->
         </LinearLayout>
         <!-- Recipe Description -->

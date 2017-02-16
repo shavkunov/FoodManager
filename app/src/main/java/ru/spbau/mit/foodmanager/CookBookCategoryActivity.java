@@ -38,6 +38,25 @@ public class CookBookCategoryActivity extends AppCompatActivity {
         //category = CookBookStorage.getInstance().getCategoryByID(task.getIntExtra("Category", -1));
     }
 
+    public void onActivityResult(int requestCode, int errorCode, Intent resultContainer) {
+        if (errorCode == RESULT_OK) {
+            if (target == CookBookActivity.TARGET_RECIPE) {
+                setResult(RESULT_OK, resultContainer);
+                finish();
+            } else {
+                int recipeID = resultContainer.getIntExtra("Result", 0);
+                Intent intent = new Intent(this, RecipeViewActivity.class);
+                intent.putExtra("Recipe", recipeID);
+                startActivity(intent);
+            }
+        }
+    }
+
+    public void onSearchClick(View v) {
+        Intent intent = new Intent(this, SearchRecipeActivity.class);
+        startActivityForResult(intent, target);
+    }
+
     private void showRecipies() {
         Log.d("ShowRecipies", "Show");
         ListView listView = (ListView) findViewById(R.id.cook_book_category_list);

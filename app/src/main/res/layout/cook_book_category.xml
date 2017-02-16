@@ -9,12 +9,28 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.spbau.mit.foodmanager.CookBookCategoryActivity">
-    <ListView
-        android:id="@+id/cook_book_category_list"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/search_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:onClick="onSearchClick"
+                android:src="@drawable/edit"
+                android:layout_width="@dimen/imbtn_size"
+                android:layout_height="@dimen/imbtn_size" />
+        </LinearLayout>
+        <ListView
+            android:id="@+id/cook_book_category_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </ListView>
+        </ListView>
+    </LinearLayout>
     <ru.spbau.mit.foodmanager.GifImageView
         android:id="@+id/loader_animation_view"
         android:layout_width="wrap_content"

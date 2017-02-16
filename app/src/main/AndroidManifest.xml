@@ -44,7 +44,8 @@
 
         <activity android:name=".NotificationSettingsActivity" />
         <activity android:name=".EditRecipeActivity" />
-        <activity android:name=".EditStepActivity"></activity>
+        <activity android:name=".EditStepActivity" />
+        <activity android:name=".SearchRecipeActivity" android:theme="@style/TransparentTheme" />
     </application>
 
 </manifest>

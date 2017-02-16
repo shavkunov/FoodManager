@@ -136,7 +136,11 @@ public class EditStepActivity extends AppCompatActivity {
                     image.setImageBitmap(
                             MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriSteps.get(id).getImageUri()));
                 } catch (IOException e) {
-                    //This will never happen
+                    Step s = new Step(
+                            uriSteps.get(id).getDescription(),
+                            uriSteps.get(id).getImageUri().toString());
+                    CookBookStorage.getInstance(this).downloadStepImage(s);
+                    image.setImageBitmap(s.getImage());
                 }
             } else {
                 //TODO upload image

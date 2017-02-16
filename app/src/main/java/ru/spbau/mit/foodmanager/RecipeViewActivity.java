@@ -49,12 +49,32 @@ public class RecipeViewActivity extends AppCompatActivity {
         ContentLoader contentLoader = new ContentLoader(intent.getIntExtra("Recipe", -1));
         Thread loader = new Thread(contentLoader);
         loader.start();
-   }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
+        ContentLoader contentLoader = new ContentLoader(intent.getIntExtra("Recipe", -1));
+        Thread loader = new Thread(contentLoader);
+        loader.start();
+    }
 
     public void onCookClick(View v) {
         Intent intent = new Intent(this, StepViewActivity.class);
         intent.putExtra("Recipe", recipe.getID());
         startActivity(intent);
+    }
+
+    public void onEditClick(View v) {
+        Intent intent = new Intent(this, EditRecipeActivity.class);
+        intent.putExtra("RecipeID", recipe.getID());
+        startActivity(intent);
+    }
+
+    public void onDeleteClick(View v) {
+        CookBookStorage.getInstance(this).deleteRecipe(new RecipeToChange(recipe.getID(), "", ""));
+        finish();
     }
 
     public void onLikeClick(View v) {
@@ -85,6 +105,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
         //Categories
+        categoryList.removeAllViews();
         for (final Integer id : categories) {
             Button categoryNameView = new Button(this);
             //TextView categoryNameView = new TextView(this);
@@ -152,6 +173,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                             inFavourites = true;
                         }
                     }
+                    loadingComplete = true;
                 }
                 catch (Throwable e) {
                     //Repeat

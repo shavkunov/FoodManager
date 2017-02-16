@@ -76,10 +76,22 @@ public class CookBookActivity extends AppCompatActivity {
         });
     }
 
+    public void onSearchClick(View v) {
+        Intent intent = new Intent(this, SearchRecipeActivity.class);
+        startActivityForResult(intent, target);
+    }
+
     public void onActivityResult(int requestCode, int errorCode, Intent resultContainer) {
         if (errorCode == RESULT_OK) {
-            setResult(RESULT_OK, resultContainer);
-            finish();
+            if (target == TARGET_RECIPE) {
+                setResult(RESULT_OK, resultContainer);
+                finish();
+            } else {
+                int recipeID = resultContainer.getIntExtra("Result", 0);
+                Intent intent = new Intent(this, RecipeViewActivity.class);
+                intent.putExtra("Recipe", recipeID);
+                startActivity(intent);
+            }
         }
     }
 
