@@ -169,25 +169,20 @@ public class CookBookStorage {
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
      */
-    public void addRecipeToDatabase(RecipeToChange recipe) {
-        try {
-            refreshConnection();
-            connection.setAutoCommit(false);
+    public void addRecipeToDatabase(RecipeToChange recipe) throws Exception {
+        refreshConnection();
+        connection.setAutoCommit(false);
 
-            int recipeID = insertRecipeMainInformation(recipe);
-            recipe.setID(recipeID);
-            insertUserRecipeRelation(recipe);
-            insertRecipeCategories(recipe);
-            ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
-            insertRecipeIngredientRelation(recipe, ingredientIDs);
-            ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
-            insertRecipeImageStepRelation(stepIDs, recipe);
+        int recipeID = insertRecipeMainInformation(recipe);
+        recipe.setID(recipeID);
+        insertUserRecipeRelation(recipe);
+        insertRecipeCategories(recipe);
+        ArrayList<Integer> ingredientIDs = insertRecipeIngredients(recipe);
+        insertRecipeIngredientRelation(recipe, ingredientIDs);
+        ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
+        insertRecipeImageStepRelation(stepIDs, recipe);
 
-            connection.setAutoCommit(true);
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to insert new recipe");
-            e.printStackTrace();
-        }
+        connection.setAutoCommit(true);
     }
 
     /**
