@@ -8,12 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 /**
  * Настройки сервера нотификации
  */
 
-public class NotificationSettings {
+public class NotificationSettings implements Serializable {
     private Boolean showCookNotifications;
     private long timeOfDayBeginCookNotifications;
     private long timeOfDayEndCookNotifications;
