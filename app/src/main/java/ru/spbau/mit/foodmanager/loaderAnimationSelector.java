@@ -7,7 +7,7 @@ import java.util.Random;
  * Generates number of resource for loader animations
  */
 
-public class loaderAnimationSelector {
+public class LoaderAnimationSelector {
     private static ArrayList<Integer> loaderResources;
     private static Random random = new Random();
 

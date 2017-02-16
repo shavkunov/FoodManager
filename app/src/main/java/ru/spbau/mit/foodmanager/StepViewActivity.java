@@ -23,7 +23,7 @@ public class StepViewActivity extends AppCompatActivity {
         setContentView(R.layout.step_view);
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+        loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init Task
@@ -98,7 +98,7 @@ public class StepViewActivity extends AppCompatActivity {
                     showRecipe();
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
-                    loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+                    loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                 }
             });
             for (Step s : steps) {

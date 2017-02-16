@@ -37,18 +37,13 @@ public class RecipeViewActivity extends AppCompatActivity {
 
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+        loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init like & selected btn
         likeBtn = (ImageButton) findViewById(R.id.recipe_like);
         likeCounter = (TextView) findViewById(R.id.recipe_like_count);
         favoriteBtn = (ImageButton) findViewById(R.id.recipe_add_to_favorites);
-        //Init Task
-        Intent intent = getIntent();
-        ContentLoader contentLoader = new ContentLoader(intent.getIntExtra("Recipe", -1));
-        Thread loader = new Thread(contentLoader);
-        loader.start();
     }
 
     @Override
@@ -194,7 +189,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     showRecipe();
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
-                    loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+                    loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                     if (!liked) {
                         likeBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.like_off));
                     } else {
@@ -213,6 +208,14 @@ public class RecipeViewActivity extends AppCompatActivity {
             final int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_WIDTH, getResources().getDisplayMetrics());
             final int heightInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_HEIGHT, getResources().getDisplayMetrics());
             final LinearLayout recipeImages = (LinearLayout)findViewById(R.id.recipe_body_images);
+            RecipeViewActivity.this.runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            recipeImages.removeAllViews();
+                        }
+                    }
+            );
             for (final Step s : steps) {
                 cookbook.downloadStepImage(s);
                 RecipeViewActivity.this.runOnUiThread(

@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -21,16 +20,17 @@ public class SearchRecipeActivity extends AppCompatActivity {
     private Intent task;
     private GifImageView loaderAnimation;
     private ListView recipesList;
+    private Thread searchingThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_recipe);
-        EditText searchText = (EditText)findViewById(R.id.search_text);
+        final EditText searchText = (EditText)findViewById(R.id.search_text);
 
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+        loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         recipesList = (ListView) findViewById(R.id.search_recipes_list);
 
@@ -44,7 +44,11 @@ public class SearchRecipeActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                new Thread(new ContentLoader(editable.toString())).start();
+                if (searchingThread != null) {
+                    searchingThread.interrupt();
+                }
+                searchingThread = new Thread(new ContentLoader(editable.toString()));
+                searchingThread.start();
             }
         });
     }
@@ -95,7 +99,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
                 public void run() {
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     showRecipes();
-                    loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+                    loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                 }
             });
         }

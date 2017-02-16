@@ -38,7 +38,7 @@ public class ShoppingListActivity extends AppCompatActivity {
         setContentView(R.layout.shopping_list);
         //Init loaderAnimation
         loaderAnimation = (GifImageView) findViewById(R.id.loader_animation_view);
-        loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+        loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         informationLayout = (LinearLayout) findViewById(R.id.information_layout);
         //Init cookbook
@@ -205,7 +205,7 @@ public class ShoppingListActivity extends AppCompatActivity {
                     showIngredients();
                     loaderAnimation.setVisibility(View.INVISIBLE);
                     informationLayout.setVisibility(View.VISIBLE);
-                    loaderAnimation.setGifImageResource(loaderAnimationSelector.getRandomLoaderResource());
+                    loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
                 }
             });
         }
