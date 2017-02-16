@@ -789,8 +789,7 @@ public class CookBookStorage {
                 userSettings = rs.getString("user_settings");
                 Log.d(LOG_TAG, userSettings);
             } else {
-                // !!
-                userSettings = MenuSettings.getInstance(context).saveMenuSettings(context);
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();

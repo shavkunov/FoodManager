@@ -2,6 +2,7 @@ package ru.spbau.mit.foodmanager;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +59,9 @@ public class MenuSettings implements Serializable {
      */
     public static void loadMenuSettings(Context context) {
         String serializedInstance = CookBookStorage.getInstance(context).getUserSettings();
+        if (serializedInstance == null) {
+            return;
+        }
         byte bytes[] = serializedInstance.getBytes();
         ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
         try {
@@ -69,6 +73,7 @@ public class MenuSettings implements Serializable {
     }
 
     public static MenuSettings getInstance(Context context) {
+        Log.d("MenuSettings", "getInstance");
         loadMenuSettings(context);
 
         if (instance == null) {
