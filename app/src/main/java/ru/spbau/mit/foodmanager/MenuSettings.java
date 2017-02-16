@@ -60,6 +60,7 @@ public class MenuSettings implements Serializable {
     public static void loadMenuSettings(Context context) {
         String serializedInstance = CookBookStorage.getInstance(context).getUserSettings();
         if (serializedInstance == null) {
+            instance = null;
             return;
         }
         byte bytes[] = serializedInstance.getBytes();
