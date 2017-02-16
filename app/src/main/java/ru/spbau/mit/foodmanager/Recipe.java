@@ -16,7 +16,7 @@ public class Recipe implements Serializable {
     /** Содержит идентификаторы категорий, к которым принадлежит блюдо */
     private ArrayList<Integer> categoryID;
 
-    public Recipe(int ID, String description, String name) {
+    public Recipe(int ID, String name, String description) {
         this.ID = ID;
         this.description = description;
         this.name = name;
