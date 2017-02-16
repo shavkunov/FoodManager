@@ -33,6 +33,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
         loaderAnimation.setGifImageResource(LoaderAnimationSelector.getRandomLoaderResource());
         loaderAnimation.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         recipesList = (ListView) findViewById(R.id.search_recipes_list);
+        task = getIntent();
 
 
         searchText.addTextChangedListener(new TextWatcher() {
