@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_DIVIDER = " - ";
@@ -22,6 +23,8 @@ public class RecipeViewActivity extends AppCompatActivity {
     private Recipe recipe;
     private ArrayList<Step> steps;
     private ArrayList<Integer> categories;
+    private ArrayList<Ingredient> ingredients;
+    private HashMap<Integer, String> categoryDescriptions;
     private GifImageView loaderAnimation;
     private LinearLayout informationLayout;
     private ImageButton likeBtn;
@@ -29,6 +32,7 @@ public class RecipeViewActivity extends AppCompatActivity {
     private ImageButton deleteBtn;
     private ImageButton editBtn;
     private TextView likeCounter;
+    private int likeCount;
     private boolean liked;
     private boolean inFavourites;
 
@@ -107,7 +111,6 @@ public class RecipeViewActivity extends AppCompatActivity {
     }
     private void showRecipe() {
         ////Header
-        CookBookStorage cookbook = CookBookStorage.getInstance(this);
         TextView nameView = (TextView)findViewById(R.id.recipe_header_name);
         LinearLayout categoryList = (LinearLayout)findViewById(R.id.recipe_header_tags);
         //Categories
@@ -117,7 +120,7 @@ public class RecipeViewActivity extends AppCompatActivity {
             //TextView categoryNameView = new TextView(this);
             categoryNameView.setBackgroundColor(0x00_00_00_00);
             categoryNameView.setTextAppearance(this, R.style.RecipeView_CategoryShowStyle); //I can't found another method
-            categoryNameView.setText(cookbook.getCategoryByID(id).getDescription());
+            categoryNameView.setText(categoryDescriptions.get(id));
             categoryNameView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -136,7 +139,7 @@ public class RecipeViewActivity extends AppCompatActivity {
         nameView.setText(recipe.getName());
         descriptionView.setText(recipe.getDescription());
         StringBuilder ingredientList = new StringBuilder();
-        for (Ingredient i : cookbook.getRecipeIngredients(recipe.getID())) {
+        for (Ingredient i : ingredients) {
             if (i.getQuantity() >= 0.0) {
                 ingredientList = ingredientList.append(INGRIDIENT_LIST_DIVIDER + i.getName() +
                         INGRIDIENT_LIST_COUNT_DIVIDER + i.getQuantity() + " " +
@@ -179,6 +182,12 @@ public class RecipeViewActivity extends AppCompatActivity {
                             inFavourites = true;
                         }
                     }
+                    ingredients = cookbook.getRecipeIngredients(recipeID);
+                    likeCount = cookbook.getRecipeLikes(recipe);
+                    categoryDescriptions = new HashMap<>();
+                    for (Integer id : categories) {
+                        categoryDescriptions.put(id, cookbook.getCategoryByID(id).getDescription());
+                    }
                     loadingComplete = true;
                 }
                 catch (Throwable e) {
@@ -210,7 +219,7 @@ public class RecipeViewActivity extends AppCompatActivity {
                     } else {
                         favoriteBtn.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.favourite_on));
                     }
-                    likeCounter.setText(String.valueOf(cookbook.getRecipeLikes(recipe)));
+                    likeCounter.setText(String.valueOf(likeCount));
                 }
             });
 

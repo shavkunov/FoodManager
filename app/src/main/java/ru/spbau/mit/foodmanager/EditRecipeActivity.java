@@ -206,8 +206,11 @@ public class EditRecipeActivity extends AppCompatActivity {
                 .inflate(R.layout.edit_recipe_tag, null);
         TextView newTagName = (TextView) newTag.findViewById(R.id.edit_recipe_tag_name);
         ImageButton newTagDelete = (ImageButton) newTag.findViewById(R.id.edit_recipe_delete_tag);
-
-        newTagName.setText(CookBookStorage.getInstance(this).getCategoryByID(category).getDescription());
+        Category newCategory = null;
+        while (newCategory == null) {
+            newCategory = CookBookStorage.getInstance(this).getCategoryByID(category);
+        }
+        newTagName.setText(newCategory.getDescription());
         newTagDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
