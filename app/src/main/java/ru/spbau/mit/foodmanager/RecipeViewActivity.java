@@ -20,6 +20,7 @@ public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_COUNT_DIVIDER = "        ";
     private static final int IMAGES_WIDTH = 200; //dp
     private static final int IMAGES_HEIGHT = 150; //dp
+    private static final int CATEGORY_NAME_PADDING = 12; //dp
     private Recipe recipe;
     private ArrayList<Step> steps;
     private ArrayList<Integer> categories;
@@ -116,7 +117,9 @@ public class RecipeViewActivity extends AppCompatActivity {
         //Categories
         categoryList.removeAllViews();
         for (final Integer id : categories) {
-            Button categoryNameView = new Button(this);
+            LinearLayout categoryNameLayout = new LinearLayout(this);
+            categoryNameLayout.setPadding(dpToPix(CATEGORY_NAME_PADDING), 0, 0, 0);
+            TextView categoryNameView = new TextView(this);
             //TextView categoryNameView = new TextView(this);
             categoryNameView.setBackgroundColor(0x00_00_00_00);
             categoryNameView.setTextAppearance(this, R.style.RecipeView_CategoryShowStyle); //I can't found another method
@@ -129,7 +132,8 @@ public class RecipeViewActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
-            categoryList.addView(categoryNameView);
+            categoryNameLayout.addView(categoryNameView);
+            categoryList.addView(categoryNameLayout);
         }
 
         //Body
@@ -151,6 +155,10 @@ public class RecipeViewActivity extends AppCompatActivity {
             }
         }
         ingridientsView.setText(ingredientList.toString());
+    }
+
+    private int dpToPix(int value) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics());
     }
 
     public class ContentLoader implements Runnable {
@@ -224,8 +232,8 @@ public class RecipeViewActivity extends AppCompatActivity {
             });
 
             //Image loader
-            final int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_WIDTH, getResources().getDisplayMetrics());
-            final int heightInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, IMAGES_HEIGHT, getResources().getDisplayMetrics());
+            final int widthInPx = dpToPix(IMAGES_WIDTH);
+            final int heightInPx = dpToPix(IMAGES_HEIGHT);
             final LinearLayout recipeImages = (LinearLayout)findViewById(R.id.recipe_body_images);
             RecipeViewActivity.this.runOnUiThread(
                     new Runnable() {

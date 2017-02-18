@@ -22,7 +22,8 @@
             <!-- Recipe Header -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center">
                 <ImageView
                     android:id="@+id/step_view_recipe_image"
                     android:layout_width="wrap_content"
@@ -31,69 +32,11 @@
                 <TextView
                     android:id="@+id/step_view_recipe_name"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <!-- Control buttons -->
-            <LinearLayout
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageButton
-                    android:id="@+id/step_view_previous"
-                    android:layout_width="@dimen/imbtn_size"
-                    android:layout_height="@dimen/imbtn_size"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/previous"
-                    android:background="@color/colorTransparent"
-                    android:onClick="onPrevBtnClick"/>
-                <!--<Button
-                    android:id="@+id/step_view_recipe"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/step_view_recipe_str"/>-->
-                <ImageButton
-                    android:id="@+id/step_view_next"
-                    android:layout_width="@dimen/imbtn_size"
-                    android:layout_height="@dimen/imbtn_size"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/next"
-                    android:background="@color/colorTransparent"
-                    android:onClick="onNextBtnClick"/>
+                    android:textSize="17sp"
+                    android:textStyle="bold"/>
             </LinearLayout>
-            <!-- Step counter -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:paddingLeft="16dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/step_view_count1_str"/>
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:id="@+id/step_view_position"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/step_view_count2_str"/>
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:id="@+id/step_view_step_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+
         </LinearLayout>
         <!-- Step description -->
         <ScrollView
@@ -115,7 +58,73 @@
                     android:scaleType="centerInside"/>
             </LinearLayout>
         </ScrollView>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/imbtn_size_big" />
     </LinearLayout>
+    <!-- Control buttons -->
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <ImageButton
+            android:id="@+id/step_view_previous"
+            android:layout_width="@dimen/imbtn_size_big"
+            android:layout_height="@dimen/imbtn_size_big"
+            android:scaleType="centerInside"
+            android:src="@drawable/previous"
+            android:background="@color/colorTransparent"
+            android:onClick="onPrevBtnClick"/>
+
+        <!-- Step counter -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/step_view_count1_str"/>
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/step_view_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/step_view_count2_str"/>
+            <View
+                android:layout_width="8dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:id="@+id/step_view_step_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <!--<Button
+            android:id="@+id/step_view_recipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/step_view_recipe_str"/>-->
+        <ImageButton
+            android:id="@+id/step_view_next"
+            android:layout_width="@dimen/imbtn_size_big"
+            android:layout_height="@dimen/imbtn_size_big"
+            android:scaleType="centerInside"
+            android:src="@drawable/next"
+            android:background="@color/colorTransparent"
+            android:onClick="onNextBtnClick"/>
+    </LinearLayout>
+    <!-- loader animation -->
     <ru.spbau.mit.foodmanager.GifImageView
         android:id="@+id/loader_animation_view"
         android:layout_width="wrap_content"

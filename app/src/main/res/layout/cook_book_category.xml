@@ -13,26 +13,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <LinearLayout
-            android:id="@+id/search_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end">
-            <ImageButton
-                android:onClick="onSearchClick"
-                android:src="@drawable/search"
-                android:layout_width="@dimen/imbtn_size"
-                android:layout_height="@dimen/imbtn_size"
-                android:scaleType="centerInside"
-                android:background="@color/colorTransparent" />
-        </LinearLayout>
         <ListView
             android:id="@+id/cook_book_category_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         </ListView>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/search_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:gravity="end"
+        android:background="@color/colorTransparent">
+        <ImageButton
+            android:onClick="onSearchClick"
+            android:src="@drawable/search"
+            android:layout_width="@dimen/imbtn_size_big"
+            android:layout_height="@dimen/imbtn_size_big"
+            android:scaleType="centerInside"
+            android:background="@color/colorTransparent"/>
     </LinearLayout>
     <ru.spbau.mit.foodmanager.GifImageView
         android:id="@+id/loader_animation_view"
