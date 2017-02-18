@@ -3,7 +3,7 @@
     <string name="cookbook">Книга Рецептов</string>
     <string name="menu">Меню на неделю</string>
     <string name="shoppinglist">Список покупок</string>
-    <string name="settings">Настройки всего и вся</string>
+    <string name="settings">Настройки</string>
     <string name="recipe_body_description_str">Описание:</string>
     <string name="recipe_body_ingredients_str">Вам нужны следующие продукты:</string>
     <string name="recipe_body_instruments_str">А также:</string>
