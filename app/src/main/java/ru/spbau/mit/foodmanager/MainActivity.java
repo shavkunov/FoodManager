@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                CookBookStorage.getInstance(MainActivity.this);
+                while (CookBookStorage.getInstance(MainActivity.this) == null);
                 startService(new Intent(MainActivity.this, NotificationService.class));
             }
         }).start();

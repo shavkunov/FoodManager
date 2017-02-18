@@ -26,7 +26,7 @@
                 android:scaleType="centerInside" />
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center">
                 <TextView
@@ -38,8 +38,9 @@
                     android:textStyle="bold"/>
                 <HorizontalScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center">
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:paddingLeft="8dp">
                     <LinearLayout
                         android:id="@+id/recipe_header_tags"
                         android:layout_width="wrap_content"
