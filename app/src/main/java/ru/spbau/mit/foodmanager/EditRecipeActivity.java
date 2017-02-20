@@ -81,7 +81,7 @@ public class EditRecipeActivity extends AppCompatActivity {
                     uriSteps = (ArrayList<UriStep>) resultContainer.getSerializableExtra("UriSteps");
                     break;
                 case REQUEST_PICK_CATEGORY:
-                    final Integer category = resultContainer.getIntExtra("Result", -1);
+                    final Integer category = resultContainer.getIntExtra("Result", 0);
                     tags.add(category);
                     addTagToView(category);
                     break;
@@ -228,7 +228,6 @@ public class EditRecipeActivity extends AppCompatActivity {
         final View view = inflater.inflate(R.layout.edit_recipe_ingredient, null);
         EditText ingredientNameView = (EditText) view.findViewById(R.id.edit_recipe_ingredient_name);
         EditText ingredientCountView = (EditText) view.findViewById(R.id.edit_recipe_ingredient_count);
-        LinearLayout ingredientCountLayout = (LinearLayout) view.findViewById(R.id.edit_recipe_ingredient_count_layout);
         Spinner ingredientMeasureView = (Spinner) view.findViewById(R.id.edit_recipe_ingredient_measure);
         ImageButton delete = (ImageButton) view.findViewById(R.id.edit_recipe_ingredient_delete);
         //Change name
