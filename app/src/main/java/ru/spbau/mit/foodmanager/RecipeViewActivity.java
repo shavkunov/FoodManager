@@ -18,8 +18,8 @@ import java.util.HashMap;
 public class RecipeViewActivity extends AppCompatActivity {
     private static final String INGRIDIENT_LIST_DIVIDER = " - ";
     private static final String INGRIDIENT_LIST_COUNT_DIVIDER = "        ";
-    private static final int IMAGES_WIDTH = 200; //dp
-    private static final int IMAGES_HEIGHT = 150; //dp
+    private static final int IMAGES_WIDTH = 300; //dp
+    private static final int IMAGES_HEIGHT = 200; //dp
     private static final int CATEGORY_NAME_PADDING = 12; //dp
     private Recipe recipe;
     private ArrayList<Step> steps;
@@ -251,7 +251,9 @@ public class RecipeViewActivity extends AppCompatActivity {
                             public void run() {
                                 ImageView photo = new ImageView(RecipeViewActivity.this);
                                 photo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                                photo.setLayoutParams(new LinearLayout.LayoutParams(widthInPx, heightInPx));
+                                photo.setLayoutParams(new LinearLayout.LayoutParams(
+                                        Math.min(widthInPx, s.getImage().getWidth()),
+                                        Math.min(heightInPx, s.getImage().getHeight())));
                                 photo.setImageBitmap(s.getImage());
                                 recipeImages.addView(photo);
                             }

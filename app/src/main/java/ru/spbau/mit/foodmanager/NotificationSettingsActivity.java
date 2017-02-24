@@ -20,7 +20,6 @@ public class NotificationSettingsActivity extends AppCompatActivity {
         settings = NotificationSettings.getInstance(this);
         Switch switchCookNotify = (Switch) findViewById(R.id.notification_settings_toggle_cook_notify);
         showTimes();
-        //TODO Нормальный формат времени
         switchCookNotify.setChecked(settings.getShowCookNotifications());
         switchCookNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -41,15 +40,32 @@ public class NotificationSettingsActivity extends AppCompatActivity {
         TextView cookNotifyFromMinutes = (TextView) findViewById(R.id.notification_settings_time_cook_notify_from_minutes);
         TextView cookNotifyToHours = (TextView) findViewById(R.id.notification_settings_time_cook_notify_to_hours);
         TextView cookNotifyToMinutes = (TextView) findViewById(R.id.notification_settings_time_cook_notify_to_minutes);
-        cookNotifyFromHours.setText(((Long)settings.getHourOfDayBeginCookNotifications()).toString());
-        cookNotifyToHours.setText(((Long)settings.getHourOfDayEndCookNotifications()).toString());
-        cookNotifyFromMinutes.setText(((Long)settings.getMinuteOfDayBeginCookNotifications()).toString());
-        cookNotifyToMinutes.setText(((Long)settings.getMinuteOfDayEndCookNotifications()).toString());
+        String s;
+        s = ((Long)settings.getHourOfDayBeginCookNotifications()).toString();
+        if (s.length() < 2) {
+            s = "0".concat(s);
+        }
+        cookNotifyFromHours.setText(s);
+        s = ((Long)settings.getHourOfDayEndCookNotifications()).toString();
+        if (s.length() < 2) {
+            s = "0".concat(s);
+        }
+        cookNotifyToHours.setText(s);
+        s = ((Long)settings.getMinuteOfDayBeginCookNotifications()).toString();
+        if (s.length() < 2) {
+            s = "0".concat(s);
+        }
+        cookNotifyFromMinutes.setText(s);
+        s = ((Long)settings.getMinuteOfDayEndCookNotifications()).toString();
+        if (s.length() < 2) {
+            s = "0".concat(s);
+        }
+        cookNotifyToMinutes.setText(s);
     }
 
     public void onCookNotifyTimeFromEditClick(View v) {
-        final TextView cookNotifyFromHours = (TextView) findViewById(R.id.notification_settings_time_cook_notify_from_hours);
-        final TextView cookNotifyFromMinutes = (TextView) findViewById(R.id.notification_settings_time_cook_notify_from_minutes);
+        //final TextView cookNotifyFromHours = (TextView) findViewById(R.id.notification_settings_time_cook_notify_from_hours);
+        //final TextView cookNotifyFromMinutes = (TextView) findViewById(R.id.notification_settings_time_cook_notify_from_minutes);
         TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
@@ -63,8 +79,8 @@ public class NotificationSettingsActivity extends AppCompatActivity {
     }
 
     public void onCookNotifyTimeToEditClick(View v) {
-        final TextView cookNotifyToHours = (TextView) findViewById(R.id.notification_settings_time_cook_notify_to_hours);
-        final TextView cookNotifyToMinutes = (TextView) findViewById(R.id.notification_settings_time_cook_notify_to_minutes);
+        //final TextView cookNotifyToHours = (TextView) findViewById(R.id.notification_settings_time_cook_notify_to_hours);
+        //final TextView cookNotifyToMinutes = (TextView) findViewById(R.id.notification_settings_time_cook_notify_to_minutes);
         TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {

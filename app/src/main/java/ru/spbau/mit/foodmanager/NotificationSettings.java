@@ -59,7 +59,7 @@ public class NotificationSettings implements Serializable {
     }
 
     private NotificationSettings() {
-        showCookNotifications= true;
+        showCookNotifications = false;
         timeOfDayBeginCookNotifications = 0;
         timeOfDayEndCookNotifications = Calendar.getInstance().get(Calendar.MILLISECONDS_IN_DAY);
     }

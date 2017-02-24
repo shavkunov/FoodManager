@@ -57,7 +57,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
             <ImageButton
                 android:id="@+id/recipe_add_to_favorites"
                 android:layout_width="@dimen/imbtn_size"

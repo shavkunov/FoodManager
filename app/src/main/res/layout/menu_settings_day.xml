@@ -33,7 +33,8 @@
             android:textStyle="bold"
             android:layout_toLeftOf="@id/menu_settings_day_is_cookingday"
             android:layout_toStartOf="@id/menu_settings_day_is_cookingday"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:paddingRight="12sp"/>
     </RelativeLayout>
     <LinearLayout
         android:id="@+id/menu_settings_day_mealtimes"

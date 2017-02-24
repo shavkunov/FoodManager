@@ -65,7 +65,7 @@ public class SearchRecipeActivity extends AppCompatActivity {
         }
         Log.d("names", ((Integer)names.size()).toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, names);
+                R.layout.search_recipe_element, names);
         recipesList.setAdapter(adapter);
         recipesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
