@@ -53,6 +53,7 @@ public class CookBookStorage {
     private static final String removeFromFavoritesCommand = "/removeFromFavorites";
     private static final String saveUserSettingsCommand = "/saveUserSettings";
     private static final String getRandomDishCommand = "/getRandomDishOfCategory";
+    private static final String isUserOwnRecipeCommand = "/ownRecipe";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -1224,7 +1225,7 @@ public class CookBookStorage {
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             try {
                 HttpURLConnection connection = openHttpURLConnectionForServerCommand(
-                        saveUserSettingsCommand);
+                                                                           getRandomDishCommand);
                 ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
                 output.writeInt(categoryID);
                 output.flush();
@@ -1254,19 +1255,34 @@ public class CookBookStorage {
      * @return true если recipe принадлежить пользователь и false иначе.
      */
     public boolean isUserOwnRecipe(Recipe recipe) {
-        String selectQuery = "SELECT EXISTS(SELECT 1 FROM User_to_recipe WHERE recipe_ID = "
-                             + recipe.getID() + " AND user_ID = '" + userID + "')";
+        boolean answer = false;
 
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(selectQuery);
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                                                         isUserOwnRecipeCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipe.getID());
+                output.writeObject(userID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                answer = input.readBoolean();
+                input.close();
+
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось проверить принадлежность рецепта");
+                e.printStackTrace();
+            }
         }
 
-        return false;
+        return answer;
     }
 
     private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
