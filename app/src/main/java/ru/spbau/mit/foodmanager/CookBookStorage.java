@@ -46,6 +46,7 @@ public class CookBookStorage {
     private static final String getFavoritesCommand = "/getFavorites";
     private static final String getRecipesOfCategoryCommand = "/getRecipesOfCategory";
     private static final String getCategoryByIDCommand = "/getCategoryByID";
+    private static final String getCategoriesListCommand = "/getCategoriesList";
     private static final String setUserLikeCommand = "/setLike";
     private static final String setUserNotLikeCommand = "/setNotLike";
     private static final String addToFavoritesCommand = "/addToFavorites";
@@ -1022,30 +1023,41 @@ public class CookBookStorage {
 
     /**
      * Получение списка категорий.
-     * @param categoryQuery запрос к БД какие именно категории нужно получить.
+     * @param categoryType тип категорий, который хотим получить.
      * @return Linked List категорий, полученных из запроса.
      */
-    private LinkedList<Category> getCategoryFromQuery(String categoryQuery) {
+    private LinkedList<Category> getCategoryByType(String categoryType) {
         LinkedList<Category> categories = new LinkedList<>();
 
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet category = stmt.executeQuery(categoryQuery);
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                                                       getCategoriesListCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeObject(categoryType);
+                output.flush();
+                output.close();
 
-            while (category.next()) {
-                categories.add(new Category(category.getInt("ID"),
-                                            category.getString("name"), null));
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                ArrayList<Integer> ids = (ArrayList<Integer>) input.readObject();
+                ArrayList<String> names = (ArrayList<String>) input.readObject();
+                for (int i = 0; i < ids.size(); i++) {
+                    categories.add(new Category(ids.get(i), names.get(i), null));
+                }
+
+                input.close();
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось получить список категорий");
+                e.printStackTrace();
             }
-
-            stmt.close();
-            return categories;
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get categories");
-            e.printStackTrace();
         }
 
-        return null;
+        return categories;
     }
 
     /**
@@ -1053,9 +1065,9 @@ public class CookBookStorage {
      * @return список категорий по типу блюда.
      */
     public LinkedList<Category> getRecipesTypeOfDish() {
-        String categoryQuery = "SELECT * FROM Category WHERE is_category_dish = 1";
+        String categoryType = "category_dish";
 
-        return getCategoryFromQuery(categoryQuery);
+        return getCategoryByType(categoryType);
     }
 
     /**
@@ -1063,9 +1075,9 @@ public class CookBookStorage {
      * @return список категорий по национальной кухне блюда.
      */
     public LinkedList<Category> getRecipesNationalKitchen() {
-        String categoryQuery = "SELECT * FROM Category WHERE is_national_kitchen = 1";
+        String categoryType = "national_kitchen";
 
-        return getCategoryFromQuery(categoryQuery);
+        return getCategoryByType(categoryType);
     }
 
     //----------------------------------rest-------------------------------
