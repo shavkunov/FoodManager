@@ -40,6 +40,9 @@ public class CookBookStorage {
     private static final String getRecipeCommand = "/getRecipe";
     private static final String getRecipeCategoriesCommand = "/getRecipeCategories";
     private static final String getRecipeIngredientsCommand = "/getRecipeIngredients";
+    private static final String getRecipeStepsCommand = "/getRecipeSteps";
+    private static final String getRecipesByFilterCommand = "/getRecipesByFilter";
+    private static final String getUserSettings = "/getUserSettings";
     public static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -685,30 +688,36 @@ public class CookBookStorage {
      * @param ID ID рецепта.
      */
     public ArrayList<Step> getRecipeSteps(int ID) {
-        String stepsQuery = "SELECT * FROM Step INNER JOIN Image ON " +
-                "Step.ID = Image.entity_ID " +
-                "WHERE Step.recipe_ID = " + ID + " AND Image.entity_type = 0";
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet steps = stmt.executeQuery(stepsQuery);
-            ArrayList<Step> recipeSteps = new ArrayList<>();
+        ArrayList<Step> recipeSteps = new ArrayList<>();
 
-            while (steps.next()) {
-                String stepDescription = steps.getString("description");
-                String imageURL = steps.getString("link");
-                recipeSteps.add(new Step(stepDescription, imageURL));
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(getRecipeStepsCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(ID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                ArrayList<ArrayList<String>> stepsData = (ArrayList<ArrayList<String>>) input.readObject();
+
+                for (ArrayList<String> data : stepsData) {
+                    String stepDescription = data.get(0);
+                    String imageURL = data.get(1);
+                    recipeSteps.add(new Step(stepDescription, imageURL));
+                }
+
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            stmt.close();
-            return recipeSteps;
-
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to get recipe steps");
-            e.printStackTrace();
         }
 
-        return null;
+        return recipeSteps;
     }
 
     /**
