@@ -42,7 +42,7 @@ public class CookBookStorage {
     private static final String getRecipeIngredientsCommand = "/getRecipeIngredients";
     private static final String getRecipeStepsCommand = "/getRecipeSteps";
     private static final String getRecipesByFilterCommand = "/getRecipesByFilter";
-    private static final String getUserSettings = "/getUserSettings";
+    private static final String getUserSettingsCommand = "/getUserSettings";
     public static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -809,22 +809,27 @@ public class CookBookStorage {
      * @return settings настройки хранятся как сериализованный instance MenuSettings в этой строчке.
      */
     public String getUserSettings() {
-        String query = "SELECT user_settings FROM user_settings WHERE user_ID = '" + userID + "'";
-
         String userSettings = "";
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                        getUserSettingsCommand);
 
-            if (rs.next()) {
-                userSettings = rs.getString("user_settings");
-                Log.d(LOG_TAG, userSettings);
-            } else {
-                return null;
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeObject(userID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                userSettings = (String) input.readObject();
+                input.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return userSettings;
