@@ -52,6 +52,7 @@ public class CookBookStorage {
     private static final String addToFavoritesCommand = "/addToFavorites";
     private static final String removeFromFavoritesCommand = "/removeFromFavorites";
     private static final String saveUserSettingsCommand = "/saveUserSettings";
+    private static final String getRandomDishCommand = "/getRandomDishOfCategory";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -1124,6 +1125,7 @@ public class CookBookStorage {
     }
 
     /**
+     *
      * Получение соединения с БД, если его нет по какой-то причине.
      * Я не уверен, что правильно это делаю. !!!!
      */
@@ -1217,28 +1219,33 @@ public class CookBookStorage {
      * Выбор случайного блюда категории.
      */
     public Recipe chooseRandomDishFromCategory(int categoryID) {
-        String getRandomRecipeQuery = "SELECT recipe_ID FROM Recipe_to_category " +
-                "WHERE category_ID = " + categoryID +
-                " ORDER BY RAND() LIMIT 1";
+        Recipe recipe = null;
 
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet recipe = stmt.executeQuery(getRandomRecipeQuery);
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                        saveUserSettingsCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(categoryID);
+                output.flush();
+                output.close();
 
-            int recipeID = 0;
-            if (recipe.next()) {
-                recipeID = recipe.getInt("recipe_ID");
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                recipe = (Recipe) input.readObject();
+                input.close();
+
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось получить случайный рецепт категории");
+                e.printStackTrace();
             }
-
-            stmt.close();
-            return getRecipe(recipeID);
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get random dish");
-            e.printStackTrace();
         }
 
-        return null;
+        return recipe;
     }
 
     /**
