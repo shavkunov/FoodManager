@@ -26,10 +26,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Хранилище всех рецептов. Singleton. В этом классе слишком много методов, которые можно отнести
@@ -50,7 +48,9 @@ public class CookBookStorage {
     private static final String getCategoryByIDCommand = "/getCategoryByID";
     private static final String setUserLikeCommand = "/setLike";
     private static final String setUserNotLikeCommand = "/setNotLike";
-    public static final int port = 48800; // free random port;
+    private static final String addToFavoritesCommand = "/addToFavorites";
+    private static final String removeFromFavoritesCommand = "/removeFromFavorites";
+    private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
     private static final int MAX_ATTEMPTS = 3;
@@ -376,16 +376,23 @@ public class CookBookStorage {
      * @param recipe рецепт, который хотим добавить.
      */
     public void addToFavorites(Recipe recipe)  {
-        String addQuery = "INSERT INTO Favorites(user_ID, recipe_ID) VALUES " +
-                "('" + userID + "', " + recipe.getID() + ")";
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                               addToFavoritesCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipe.getID());
+                output.writeObject(userID);
+                output.flush();
+                output.close();
 
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(addQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -542,34 +549,27 @@ public class CookBookStorage {
     }
 
     /**
-     * Очистка избранного.
-     */
-    public void clearAllFavorites() {
-        String clearFavoritesQuery = "DELETE FROM Favorites WHERE user_ID = '" + userID + "'";
-
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(clearFavoritesQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Удаление рецепта из избранного.
      * @param recipeID ID рецепта.
      */
     public void removeFromFavorites(int recipeID) {
-        String removeQuery = "DELETE FROM Favorites WHERE recipe_ID = " + recipeID;
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(removeQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                               removeFromFavoritesCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipeID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось убрать рецепт из избранного");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -921,72 +921,35 @@ public class CookBookStorage {
     }
 
     /**
-     * Получение рецептов в виде их идентификаторов из избранного.
-     * @return пустой список если избранного нет.
-     */
-    private ArrayList<Integer> getRecipesIDFromFavorites() {
-        String favoritesQuery = "SELECT recipe_ID FROM Favorites WHERE user_ID = '" + userID + "'";
-        ArrayList<Integer> ids = new ArrayList<>();
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(favoritesQuery);
-
-            while (rs.next()) {
-                ids.add(rs.getInt("recipe_ID"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return ids;
-    }
-
-    /**
      * Получение избранных рецептов.
      * @return пустой список если в избранном пусто.
      */
     public ArrayList<Recipe> getFavorites() {
-        ArrayList<Integer> ids = getRecipesIDFromFavorites();
-        ArrayList<Recipe> res = new ArrayList<>();
+        ArrayList<Recipe> favorites = new ArrayList<>();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                                                            getFavoritesCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeObject(userID);
+                output.flush();
+                output.close();
 
-        for (int ID : ids) {
-            res.add(getRecipe(ID));
-        }
-
-        return res;
-    }
-
-    /**
-     * Получение рецепта, который одновременно принадлежит некоторым категориям.
-     * @param ids id категорий, к которым должен принадлежать рецепт.
-     * @return рецепт или null если такого нет.
-     */
-    public Recipe getRecipeFromCategoriesIntersect(ArrayList<Integer> ids) {
-        ArrayList<Recipe> recipesFromFirstCategory = getRecipesOfCategory(ids.get(0));
-        ArrayList<Recipe> selectedRecipes = new ArrayList<>();
-
-        HashMap<Integer, Integer> hm = new HashMap<>();
-        for (int i = 1; i < ids.size(); i++) {
-            hm.put(ids.get(i), 1);
-        }
-        for (Recipe r : recipesFromFirstCategory) {
-            int size = ids.size();
-            for (Integer ID : r.getCategoryID()) {
-                if (hm.containsKey(ID)) {
-                    size--;
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
                 }
-            }
 
-            if (size == 0) {
-                selectedRecipes.add(r);
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                favorites = (ArrayList<Recipe>) input.readObject();
+                input.close();
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось получить избранное");
+                e.printStackTrace();
             }
         }
 
-        Random randomGenerator = new Random();
-        int index = randomGenerator.nextInt(selectedRecipes.size());
-        return selectedRecipes.get(index);
+        return favorites;
     }
 
     /**
@@ -1217,51 +1180,6 @@ public class CookBookStorage {
         }
 
         return false;
-    }
-
-    /**
-     * Сделать избранным конкретные рецепты.
-     * @param ids в избранном хранятся id рецептов.
-     */
-    private void setRecipesIDsAsFavorites(ArrayList<Integer> ids) {
-        clearAllFavorites();
-
-        String insertRecipesQuery = "INSERT INTO Favorites(user_ID, recipe_ID) VALUES ";
-
-        for (int i = 0; i < ids.size() - 1; i++) {
-            String value = "('" + userID + "', " + ids.get(i) + "), ";
-            insertRecipesQuery += value;
-        }
-        String lastValue = "('" + userID + "', " + ids.get(ids.size() - 1) + ");";
-        insertRecipesQuery += lastValue;
-
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(insertRecipesQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Проверка на наличие рецепта в избранном.
-     * @param recipe есть ли этот рецепт в избранном
-     * @return true если рецепт есть, иначе false.
-     */
-    private boolean isRecipeFavorite(Recipe recipe) {
-        ArrayList<Integer> ids = getRecipesIDFromFavorites();
-
-        boolean answer = false;
-        for (int ID : ids) {
-            if (recipe.getID() == ID) {
-                answer = true;
-            }
-        }
-
-        return answer;
     }
 
     /**
