@@ -38,10 +38,11 @@ import java.util.Random;
 public class CookBookStorage {
     public static final String LOCAL_IP = "192.168.211.199"; // my local IP address
     private static final String getRecipeCommand = "/getRecipe";
+    private static final String getRecipeCategoriesCommand = "/getRecipeCategories";
     public static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
-    private static final int LOAD_REQUEST_MAX_ATTEMPTS = 5;
+    private static final int MAX_ATTEMPTS = 3;
 
     /**
      * Инстанс класса CookBookStorage.
@@ -586,8 +587,7 @@ public class CookBookStorage {
         Recipe recipe = null;
 
         try {
-            for (int attempt = 0; attempt < LOAD_REQUEST_MAX_ATTEMPTS; attempt++) {
-                Log.d(LOG_TAG, "" + attempt);
+            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
                 final HttpURLConnection connection =
                         openHttpURLConnectionForServerCommand(getRecipeCommand);
 
@@ -619,27 +619,31 @@ public class CookBookStorage {
      * @param ID ID рецепта.
      */
     public ArrayList<Integer> getRecipeCategories(int ID) {
-        String categoriesQuery = "SELECT category_ID FROM Recipe_to_category " +
-                "WHERE recipe_ID = " + ID;
-
+        ArrayList<Integer> ids = null;
         try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet categories = stmt.executeQuery(categoriesQuery);
-            ArrayList<Integer> ids = new ArrayList<>();
+            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                final HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                                     getRecipeCategoriesCommand);
 
-            while (categories.next()) {
-                ids.add(categories.getInt("category_ID"));
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(ID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                ids = (ArrayList<Integer>) input.readObject();
+                break;
             }
-
-            stmt.close();
-            return ids;
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get categories of recipe");
+        } catch (Exception e) {
             e.printStackTrace();
+            Log.d(LOG_TAG, "Unable to get categories of recipe");
         }
 
-        return null;
+        return ids;
     }
 
     /**
