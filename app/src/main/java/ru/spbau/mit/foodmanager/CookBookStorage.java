@@ -39,6 +39,7 @@ public class CookBookStorage {
     public static final String LOCAL_IP = "192.168.211.199"; // my local IP address
     private static final String getRecipeCommand = "/getRecipe";
     private static final String getRecipeCategoriesCommand = "/getRecipeCategories";
+    private static final String getRecipeIngredientsCommand = "/getRecipeIngredients";
     public static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -601,13 +602,12 @@ public class CookBookStorage {
                 }
 
                 ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
-                String recipeDescription = (String) input.readObject();
-                String recipeName = (String) input.readObject();
-                recipe = new Recipe(ID, recipeDescription, recipeName);
+                recipe = (Recipe) input.readObject();
                 input.close();
                 break;
             }
         } catch (Exception e) {
+            Log.d(LOG_TAG, "Unable to get recipe");
             e.printStackTrace();
         }
 
@@ -651,33 +651,32 @@ public class CookBookStorage {
      * @param ID ID рецепта.
      */
     public ArrayList<Ingredient> getRecipeIngredients(int ID) {
-        String ingredientsQuery = "SELECT name, measure, quantity " +
-                "FROM Ingredient_to_recipe AS itr " +
-                "INNER JOIN Ingredient AS ing ON " +
-                "itr.ingredient_ID = ing.ID " +
-                "WHERE itr.recipe_ID = " + ID;
+        ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
+
         try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet ingredients = stmt.executeQuery(ingredientsQuery);
-            ArrayList<Ingredient> recipeIngredients = new ArrayList<>();
+            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                final HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                        getRecipeIngredientsCommand);
 
-            while (ingredients.next()) {
-                String name = ingredients.getString("name");
-                Measure measure = Measure.values()[ingredients.getInt("measure")];
-                double quantity = ingredients.getDouble("quantity");
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(ID);
+                output.flush();
+                output.close();
 
-                recipeIngredients.add(new Ingredient(name, measure, quantity));
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                recipeIngredients = (ArrayList<Ingredient>) input.readObject();
+
+                break;
             }
-
-            stmt.close();
-            return recipeIngredients;
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get recipe ingredients");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return recipeIngredients;
     }
 
     /**
