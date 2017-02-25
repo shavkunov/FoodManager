@@ -51,6 +51,7 @@ public class CookBookStorage {
     private static final String setUserNotLikeCommand = "/setNotLike";
     private static final String addToFavoritesCommand = "/addToFavorites";
     private static final String removeFromFavoritesCommand = "/removeFromFavorites";
+    private static final String saveUserSettingsCommand = "/saveUserSettings";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -1087,17 +1088,25 @@ public class CookBookStorage {
      * @param settings настройки хранятся как сериализованный instance MenuSettings в этой строчке.
      */
     public void saveUserSettings(String settings) {
-        String addSettingsQuery = "INSERT INTO user_settings (user_ID, user_settings) VALUES ('" +
-                userID + "', '" + settings + "')";
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                        saveUserSettingsCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeObject(userID);
+                output.writeObject(settings);
+                output.flush();
+                output.close();
 
-        try {
-            refreshConnection();
-            deleteUserSettings();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(addSettingsQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось сохранить настройки");
+                e.printStackTrace();
+            }
         }
     }
 
