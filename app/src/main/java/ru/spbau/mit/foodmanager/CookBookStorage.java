@@ -958,26 +958,31 @@ public class CookBookStorage {
      * @return рецепты категории.
      */
     public ArrayList<Recipe> getRecipesOfCategory(int ID) {
-        String categoryQuery = "SELECT recipe_ID " +
-                               "FROM Recipe_to_category WHERE category_ID = " + ID;
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet recipes = stmt.executeQuery(categoryQuery);
+        ArrayList<Recipe> recipes = new ArrayList<>();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                                                    getRecipesOfCategoryCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(ID);
+                output.flush();
+                output.close();
 
-            ArrayList<Recipe> res = new ArrayList<>();
-            while (recipes.next()) {
-                res.add(getRecipe(recipes.getInt("recipe_ID")));
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                recipes = (ArrayList<Recipe>) input.readObject();
+                input.close();
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось получить рецепты категории");
+                e.printStackTrace();
             }
-
-            stmt.close();
-            return res;
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get recipes of category");
-            e.printStackTrace();
         }
 
-        return null;
+        return recipes;
     }
 
     /**
@@ -986,28 +991,33 @@ public class CookBookStorage {
      * @return инстанс класса Category
      */
     public Category getCategoryByID(int ID) {
-        String categoryQuery = "SELECT name FROM Category WHERE ID = " + ID;
+        Category category = null;
 
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet category = stmt.executeQuery(categoryQuery);
-            if (category.next()) {
-                String description = category.getString("name");
-                // пока картинок категорий у нас нет
-                Category c =  new Category(ID, description, null);
-                stmt.close();
-                return c;
-            } else {
-                stmt.close();
-                return null;
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                        getCategoryByIDCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(ID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                String categoryName = (String) input.readObject();
+                category = new Category(ID, categoryName, null);
+                input.close();
+                break;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось получить категорию");
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get category");
-            e.printStackTrace();
         }
 
-        return null;
+        return category;
     }
 
     /**
