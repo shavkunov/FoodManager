@@ -692,7 +692,8 @@ public class CookBookStorage {
 
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             try {
-                HttpURLConnection connection = openHttpURLConnectionForServerCommand(getRecipeStepsCommand);
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                               getRecipeStepsCommand);
                 ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
                 output.writeInt(ID);
                 output.flush();
@@ -703,7 +704,8 @@ public class CookBookStorage {
                 }
 
                 ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
-                ArrayList<ArrayList<String>> stepsData = (ArrayList<ArrayList<String>>) input.readObject();
+                ArrayList<ArrayList<String>> stepsData = (ArrayList<ArrayList<String>>)
+                                                         input.readObject();
 
                 for (ArrayList<String> data : stepsData) {
                     String stepDescription = data.get(0);
@@ -728,28 +730,32 @@ public class CookBookStorage {
         if (filter.length() > 0) {
             filter = filter.substring(0, 1).toUpperCase() + filter.substring(1);
         }
-        Log.d(LOG_TAG, filter);
-        String filterQuery = "SELECT * FROM Recipe WHERE name LIKE '" + filter + "%'";
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet recipes = stmt.executeQuery(filterQuery);
 
-            ArrayList<Recipe> res = new ArrayList<>();
-            while (recipes.next()) {
-                res.add(new Recipe(recipes.getInt("ID"),
-                        recipes.getString("description"),
-                        recipes.getString("name")));
+        ArrayList<Recipe> res = new ArrayList<>();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                        getRecipesByFilterCommand);
+
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeObject(filter);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                res = (ArrayList<Recipe>) input.readObject();
+
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Unable to filter recipes");
+                e.printStackTrace();
             }
-
-            stmt.close();
-            return res;
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to filter recipes");
-            e.printStackTrace();
         }
 
-        return null;
+        return res;
     }
 
     /**
