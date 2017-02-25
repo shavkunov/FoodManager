@@ -48,6 +48,8 @@ public class CookBookStorage {
     private static final String getFavoritesCommand = "/getFavorites";
     private static final String getRecipesOfCategoryCommand = "/getRecipesOfCategory";
     private static final String getCategoryByIDCommand = "/getCategoryByID";
+    private static final String setUserLikeCommand = "/setLike";
+    private static final String setUserNotLikeCommand = "/setNotLike";
     public static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -859,16 +861,26 @@ public class CookBookStorage {
      * @return null если не удалось соединится с сервером, иначе количество лайков.
      */
     public Integer getRecipeLikes(Recipe recipe) {
-        String likesQuery = "SELECT COUNT(*) AS total FROM Likes WHERE recipe_ID = " + recipe.getID();
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(likesQuery);
-            if (rs.next()) {
-                return rs.getInt("total");
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                                                getRecipeLikesCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipe.getID());
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                int likes = input.readInt();
+                input.close();
+                return likes;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return null;
@@ -1154,17 +1166,24 @@ public class CookBookStorage {
      * @return true если операция прошла успешно, иначе false.
      */
     public boolean setLike(int recipeID) {
-        try {
-            String setLikeQuery = "INSERT INTO Likes(user_ID, recipe_ID) VALUES ('" +
-                    userID + "', " + recipeID + ")";
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(setUserLikeCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipeID);
+                output.writeObject(userID);
+                output.flush();
+                output.close();
 
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(setLikeQuery);
-            stmt.close();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                return true;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось поставить лайк");
+                e.printStackTrace();
+            }
         }
 
         return false;
@@ -1176,16 +1195,25 @@ public class CookBookStorage {
      * @return true, если операция прошла успешно, false иначе.
      */
     public boolean setNotLike(int recipeID) {
-        try {
-            String removeLikeQuery = "DELETE FROM Likes WHERE user_ID = '" + userID +
-                    "' AND recipe_ID = " + recipeID;
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(removeLikeQuery);
-            stmt.close();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(
+                                               setUserNotLikeCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipeID);
+                output.writeObject(userID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                return true;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось убрать лайк");
+                e.printStackTrace();
+            }
         }
 
         return false;
