@@ -15,6 +15,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,6 +36,13 @@ import java.util.Random;
  * к другим классам. Будет изменено после рефакторинга.
  */
 public class CookBookStorage {
+    public static final String LOCAL_IP = "192.168.211.199"; // my local IP address
+    private static final String getRecipeCommand = "/getRecipe";
+    public static final int port = 48800; // free random port;
+    private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
+    private static final int HTTP_READ_TIMEOUT_MS = 2000;
+    private static final int LOAD_REQUEST_MAX_ATTEMPTS = 5;
+
     /**
      * Инстанс класса CookBookStorage.
      */
@@ -573,31 +583,35 @@ public class CookBookStorage {
      * Получение рецепта по его уникальному идентификатору.
      */
     public Recipe getRecipe(int ID) {
-        String recipeQuery = "SELECT name, description FROM Recipe WHERE ID = " + ID;
+        Recipe recipe = null;
 
         try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet mainData = stmt.executeQuery(recipeQuery);
+            for (int attempt = 0; attempt < LOAD_REQUEST_MAX_ATTEMPTS; attempt++) {
+                Log.d(LOG_TAG, "" + attempt);
+                final HttpURLConnection connection =
+                        openHttpURLConnectionForServerCommand(getRecipeCommand);
 
-            String recipeName = null;
-            String recipeDescription = null;
-            if (mainData.next()) {
-                recipeName = mainData.getString("name");
-                recipeDescription = mainData.getString("description");
-            } else {
-                return null;
+                ObjectOutputStream stream = new ObjectOutputStream(connection.getOutputStream());
+                stream.writeInt(ID);
+                stream.flush();
+                stream.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                String recipeDescription = (String) input.readObject();
+                String recipeName = (String) input.readObject();
+                recipe = new Recipe(ID, recipeDescription, recipeName);
+                input.close();
+                break;
             }
-
-            stmt.close();
-            return new Recipe(ID, recipeDescription, recipeName);
-
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to get recipe main information");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return recipe;
     }
 
     /**
@@ -1072,24 +1086,17 @@ public class CookBookStorage {
         return jsonObject.getString("url");
     }
 
-    private void getConnection() throws Exception {
-        if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(databaseURL, user, password);
-        }
-    }
-
     /**
      * Получение соединения с БД, если его нет по какой-то причине.
      * Я не уверен, что правильно это делаю. !!!!
      */
     private void refreshConnection() {
         try {
-            getConnection();
-        } catch (Exception e) {
+            while (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(databaseURL, user, password);
+        } catch (SQLException e) {
             Log.d(LOG_TAG, "Unable to refresh connection");
-            refreshConnection();
-
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -1245,5 +1252,20 @@ public class CookBookStorage {
         }
 
         return false;
+    }
+
+    private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
+        final String urlString =
+                "http://" + LOCAL_IP + ':' + port + command;
+
+        final URL url = new URL(urlString);
+
+        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS);
+        connection.setReadTimeout(HTTP_READ_TIMEOUT_MS);
+
+        return connection;
     }
 }
