@@ -16,7 +16,7 @@ public class RecipeToChange {
     private int ID;
 
     /** Содержит идентификаторы категорий, к которым принадлежит блюдо */
-    private ArrayList<Integer> categoryID;
+    private ArrayList<Integer> categoryIDs;
 
     /** Пошаговая инструкция готовки блюда */
     private ArrayList<Step> steps;
@@ -25,7 +25,7 @@ public class RecipeToChange {
     private ArrayList<Ingredient> ingredients;
 
     public RecipeToChange(int ID, String description, String name) {
-        categoryID = null;
+        categoryIDs = null;
         steps = null;
         ingredients = null;
         this.ID = ID;
@@ -61,12 +61,12 @@ public class RecipeToChange {
         return ingredients;
     }
 
-    public void setCategoryID(ArrayList<Integer> categoryID) {
-        this.categoryID = categoryID;
+    public void setCategoryIDs(ArrayList<Integer> categoryIDs) {
+        this.categoryIDs = categoryIDs;
     }
 
-    public ArrayList<Integer> getCategoryID() {
-        return categoryID;
+    public ArrayList<Integer> getCategoryIDs() {
+        return categoryIDs;
     }
 
     public void setSteps(ArrayList<Step> steps) {

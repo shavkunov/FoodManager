@@ -23,11 +23,8 @@ import android.widget.TextView;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 //TODO Add, Delete and Edit tags
 public class EditRecipeActivity extends AppCompatActivity {
@@ -93,7 +90,7 @@ public class EditRecipeActivity extends AppCompatActivity {
         EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
         EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
         RecipeToChange result = new RecipeToChange(recipeID, description.getText().toString(), name.getText().toString());
-        result.setCategoryID(tags);
+        result.setCategoryIDs(tags);
         result.setIngredients(ingredients);
         //INISteps
         ArrayList<Step> steps = new ArrayList<>();
@@ -115,7 +112,7 @@ public class EditRecipeActivity extends AppCompatActivity {
         while (!complete) {
             try {
                 if (recipeID == 0) {
-                    CookBookStorage.getInstance(this).addRecipeToDatabase(result);
+                    CookBookStorage.getInstance(this).insertRecipe(result);
                 } else {
                     CookBookStorage.getInstance(this).changeRecipe(result);
 
