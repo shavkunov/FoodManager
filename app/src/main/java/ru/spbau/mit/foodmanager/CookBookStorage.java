@@ -43,6 +43,11 @@ public class CookBookStorage {
     private static final String getRecipeStepsCommand = "/getRecipeSteps";
     private static final String getRecipesByFilterCommand = "/getRecipesByFilter";
     private static final String getUserSettingsCommand = "/getUserSettings";
+    private static final String getUserLikeCommand = "/getUserLike";
+    private static final String getRecipeLikesCommand = "/getRecipeLikes";
+    private static final String getFavoritesCommand = "/getFavorites";
+    private static final String getRecipesOfCategoryCommand = "/getRecipesOfCategory";
+    private static final String getCategoryByIDCommand = "/getCategoryByID";
     public static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -877,24 +882,27 @@ public class CookBookStorage {
      * соединиться с сервером.
      */
     public Boolean getUserLike(Recipe recipe) {
-        String likesQuery = "SELECT COUNT(*) AS total FROM Likes WHERE recipe_ID = " +
-                recipe.getID() + " AND user_ID = '" + userID + "'";
-        Log.d(LOG_TAG, likesQuery);
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(likesQuery);
-            int like = 0;
-            if (rs.next())
-                like = rs.getInt("total");
-            Log.d(LOG_TAG, userID);
-            Log.d(LOG_TAG, String.valueOf(recipe.getID()));
-            Log.d(LOG_TAG, String.valueOf(like));
-            stmt.close();
-            return like == 1;
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Не удалось получить лайк");
-            e.printStackTrace();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                HttpURLConnection connection = openHttpURLConnectionForServerCommand(getUserLikeCommand);
+                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+                output.writeInt(recipe.getID());
+                output.writeObject(userID);
+                output.flush();
+                output.close();
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+                int like = input.readInt();
+                input.close();
+                return like == 1;
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Не удалось получить лайк");
+                e.printStackTrace();
+            }
         }
 
         return null;
@@ -1278,8 +1286,7 @@ public class CookBookStorage {
     }
 
     private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
-        final String urlString =
-                "http://" + LOCAL_IP + ':' + port + command;
+        final String urlString = "http://" + LOCAL_IP + ':' + port + command;
 
         final URL url = new URL(urlString);
 
