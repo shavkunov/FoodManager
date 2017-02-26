@@ -10,7 +10,6 @@ import com.cloudinary.utils.ObjectUtils;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,28 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static ru.spbau.mit.foodmanager.Commands.*;
+import static ru.spbau.mit.foodmanager.Commands.addToFavoritesCommand;
+import static ru.spbau.mit.foodmanager.Commands.changeRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.deleteRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.getCategoriesListCommand;
+import static ru.spbau.mit.foodmanager.Commands.getCategoryByIDCommand;
+import static ru.spbau.mit.foodmanager.Commands.getFavoritesCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRandomDishCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeCategoriesCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeIngredientsCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeLikesCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeStepsCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipesByFilterCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipesOfCategoryCommand;
+import static ru.spbau.mit.foodmanager.Commands.getUserLikeCommand;
+import static ru.spbau.mit.foodmanager.Commands.getUserSettingsCommand;
+import static ru.spbau.mit.foodmanager.Commands.insertRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.isUserOwnRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.removeFromFavoritesCommand;
+import static ru.spbau.mit.foodmanager.Commands.saveUserSettingsCommand;
+import static ru.spbau.mit.foodmanager.Commands.setUserLikeCommand;
+import static ru.spbau.mit.foodmanager.Commands.setUserNotLikeCommand;
 
 /**
  * Хранилище всех рецептов. Singleton. В этом классе слишком много методов, которые можно отнести
@@ -115,7 +135,7 @@ public class CookBookStorage {
         output.writeObject(recipe.getIngredients());
 
         ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<ByteArrayInputStream> transformedImages = new ArrayList<>();
+        ArrayList<byte []> transformedImages = new ArrayList<>();
         for (Step step : recipe.getSteps()) {
             descriptions.add(step.getDescription());
             transformedImages.add(convertImage(step.getImage()));
@@ -133,13 +153,11 @@ public class CookBookStorage {
         return connection;
     }
 
-    private ByteArrayInputStream convertImage(Bitmap bitmap) {
+    private byte[] convertImage(Bitmap bitmap) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
         byte[] bitmapData = bos.toByteArray();
-        ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
-
-        return bs;
+        return bitmapData;
     }
 
     /**
@@ -211,7 +229,7 @@ public class CookBookStorage {
             }
         }
     }
-    
+
     /**
      * Получение рецепта по его уникальному идентификатору.
      */
