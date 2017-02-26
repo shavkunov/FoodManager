@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +21,7 @@ public class NotificationService extends Service {
     private NotificationManager notificationManager;
     private static Day lastCookDayNotify;
     private static Boolean notifyedToday;
+    private static Boolean serviceStopped;
     private Calendar calendar = Calendar.getInstance();
     private MenuSettings menuSettings;
     private NotificationSettings notificationSettings;
@@ -28,25 +30,25 @@ public class NotificationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        serviceStopped = false;
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationSettings = NotificationSettings.getInstance(this);
         menuSettings = MenuSettings.getInstance(this);
         serviceActionThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    while (true) {
+                while (!serviceStopped) {
+                    try {
                         if (calendarDayToDay(calendar.get(Calendar.DAY_OF_WEEK)) != lastCookDayNotify) {
                             notifyedToday = false;
                         }
-                        if (notificationSettings.getShowCookNotifications() && !notifyedToday
-                                && notificationSettings.getShowCookNotifications()) {
+                        if (notificationSettings.getShowCookNotifications() && !notifyedToday) {
                             sendCookNotification();
                         }
                         TimeUnit.SECONDS.sleep(30);
+                    } catch (Exception e) {
+                        //Finish thread
                     }
-                } catch (Exception e) {
-                    //Finish thread
                 }
             }
         });
@@ -55,6 +57,9 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (serviceActionThread.isInterrupted()) {
+            serviceActionThread.start();
+        }
         return START_STICKY;
     }
 
@@ -62,10 +67,12 @@ public class NotificationService extends Service {
      * Проверяет, нужно ли послать оповещение о времени готовить или нет
      */
     private void sendCookNotification() {
+        Log.d("NOTIFICATIONS", "Checkpoint0");
         long timeOfDay = System.currentTimeMillis() % calendar.get(Calendar.MILLISECONDS_IN_DAY);
         long notificationTimeBegin = notificationSettings.getTimeOfDayBeginCookNotifications();
         long notificationTimeEnd = notificationSettings.getTimeOfDayEndCookNotifications();
         Day day = calendarDayToDay(calendar.get(Calendar.DAY_OF_WEEK));
+        Log.d("NOTIFICATIONS", "Checkpoint1");
         if (timeOfDay > notificationTimeBegin &&
                 timeOfDay < notificationTimeEnd &&
                 menuSettings.isCookingDay(day)) {
@@ -80,6 +87,7 @@ public class NotificationService extends Service {
             lastCookDayNotify = day; //TODO делать нормальную проверку, т.к. если только один день  готовки, то все плохо.
             notifyedToday = true;
         }
+        Log.d("NOTIFICATIONS", "Checkpoint2");
     }
 
     @Override
@@ -90,6 +98,7 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        serviceStopped = true;
         serviceActionThread.interrupt();
     }
 

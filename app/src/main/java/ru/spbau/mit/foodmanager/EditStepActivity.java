@@ -1,6 +1,8 @@
 package ru.spbau.mit.foodmanager;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -73,14 +75,23 @@ public class EditStepActivity extends AppCompatActivity {
     }
 
     public void onDeleteClick(View v) {
-        uriSteps.remove((int)stepPosition);
         if (stepPosition > 0) {
+            uriSteps.remove((int)stepPosition);
             stepPosition--;
         }
         showStep(stepPosition);
     }
 
     public void onImageClick(View v) {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MainActivity.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
         getIntent.setType("image/*");
         Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -144,7 +155,7 @@ public class EditStepActivity extends AppCompatActivity {
                 }
             } else {
                 //TODO upload image
-                image.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.add));
+                image.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.add_image));
             }
             TextView counter = (TextView) findViewById(R.id.edit_step_position);
             counter.setText(((Integer) (id + 1)).toString());

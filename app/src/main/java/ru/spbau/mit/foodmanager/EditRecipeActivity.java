@@ -115,7 +115,6 @@ public class EditRecipeActivity extends AppCompatActivity {
                     CookBookStorage.getInstance(this).insertRecipe(result);
                 } else {
                     CookBookStorage.getInstance(this).changeRecipe(result);
-
                 }
                 complete = true;
             }
@@ -174,10 +173,18 @@ public class EditRecipeActivity extends AppCompatActivity {
             imageUri = s.getImageLink();
         }
         public Uri getImageUri() {
-            return Uri.parse(imageUri);
+            if (imageUri != null) {
+                return Uri.parse(imageUri);
+            } else {
+                return null;
+            }
         }
         public void setImageUri(Uri uri) {
-            imageUri = uri.toString();
+            if (uri != null) {
+                imageUri = uri.toString();
+            } else {
+                imageUri = null;
+            }
         }
 
         public String getDescription() {
