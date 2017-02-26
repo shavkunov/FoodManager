@@ -43,14 +43,16 @@ public class StepViewActivity extends AppCompatActivity {
     }
 
     private void showStep(int id) {
-        TextView description = (TextView)findViewById(R.id.step_view_step_text);
-        description.setText(steps.get(id).getDescription());
-        ImageView image = (ImageView)findViewById(R.id.step_view_step_image);
-        if (steps.get(id).getImage() != null) {
-            image.setImageBitmap(steps.get(id).getImage());
+        if (steps.size() > id) {
+            TextView description = (TextView) findViewById(R.id.step_view_step_text);
+            description.setText(steps.get(id).getDescription());
+            ImageView image = (ImageView) findViewById(R.id.step_view_step_image);
+            if (steps.get(id).getImage() != null) {
+                image.setImageBitmap(steps.get(id).getImage());
+            }
+            TextView counter = (TextView) findViewById(R.id.step_view_position);
+            counter.setText(((Integer) (id + 1)).toString());
         }
-        TextView counter = (TextView)findViewById(R.id.step_view_position);
-        counter.setText(((Integer)(id+1)).toString());
     }
 
     public void onNextBtnClick(View v) {

@@ -1,7 +1,9 @@
 package ru.spbau.mit.foodmanager;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -102,6 +104,15 @@ public class EditRecipeActivity extends AppCompatActivity {
                     String descr = uriStep.getDescription();
                     Bitmap image;
                     try {
+                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    MainActivity.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        }
+                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
                         image = MediaStore.Images.Media.getBitmap(
                                 EditRecipeActivity.this.getContentResolver(), uriStep.getImageUri());
                     } catch (IOException e) {

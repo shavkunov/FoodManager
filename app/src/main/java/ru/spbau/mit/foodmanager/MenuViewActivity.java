@@ -137,7 +137,7 @@ public class MenuViewActivity extends AppCompatActivity {
         final Integer recipeID = mealtime.getRecipeIDs().get(position); //WTF
         ImageButton editDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_edit);
         ImageButton deleteDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_delete);
-
+        Log.d("RECIPEVIEW", recipeID.toString());
         recipeName.setText(recipes.get(recipeID).getName());
         recipeName.setOnClickListener(new View.OnClickListener() {
             @Override
