@@ -49,7 +49,8 @@ import static ru.spbau.mit.foodmanager.Commands.setUserNotLikeCommand;
  * к другим классам. Будет изменено после рефакторинга.
  */
 public class CookBookStorage {
-    public static final String SERVER_IP = "138.68.91.54";
+    private static final String CLOUD_SERVER_IP = "138.68.91.54";
+    private static final String LOCAL_SERVER_IP = "192.168.211.199";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -860,7 +861,7 @@ public class CookBookStorage {
     }
 
     private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
-        final String urlString = "http://" + SERVER_IP + ':' + port + command;
+        final String urlString = "http://" + LOCAL_SERVER_IP + ':' + port + command;
 
         final URL url = new URL(urlString);
 
