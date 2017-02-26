@@ -10,6 +10,7 @@ import com.cloudinary.utils.ObjectUtils;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,7 +125,7 @@ public class CookBookStorage {
         }
     }
 
-    private HttpURLConnection storeRecipeInformation(RecipeToChange recipe, String command) throws IOException {
+    private HttpURLConnection storeRecipeInformation(RecipeToChange recipe, String command) throws Exception {
         final HttpURLConnection connection =
                 openHttpURLConnectionForServerCommand(command);
 
@@ -136,16 +137,16 @@ public class CookBookStorage {
         output.writeObject(recipe.getIngredients());
 
         ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<byte []> transformedImages = new ArrayList<>();
+        ArrayList<String> links = new ArrayList<>();
         if (recipe.getSteps() != null) {
             for (Step step : recipe.getSteps()) {
                 descriptions.add(step.getDescription());
-                transformedImages.add(convertImage(step.getImage()));
+                links.add(uploadImage(step.getImage()));
             }
         }
 
         output.writeObject(descriptions);
-        output.writeObject(transformedImages);
+        output.writeObject(links);
 
         if (command.equals(deleteRecipeCommand) || command.equals(changeRecipeCommand)) {
             output.writeInt(recipe.getID());
@@ -156,11 +157,25 @@ public class CookBookStorage {
         return connection;
     }
 
-    private byte[] convertImage(Bitmap bitmap) {
+    /**
+     * Загрузка изображения.
+     * @param bitmap изображение.
+     * @return онлайн ссылка на изображение в сервисе cloudinary
+     */
+    private String uploadImage(Bitmap bitmap) throws Exception {
+        InputStream imageIn = convertImage(bitmap);
+        Cloudinary cloudinary = new Cloudinary(CLOUDINARY_URL);
+        Map result = cloudinary.uploader().upload(imageIn, ObjectUtils.emptyMap());
+        JSONObject jsonObject = new JSONObject(result);
+
+        return jsonObject.getString("url");
+    }
+
+    private ByteArrayInputStream convertImage(Bitmap bitmap) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
         byte[] bitmapData = bos.toByteArray();
-        return bitmapData;
+        return new ByteArrayInputStream(bitmapData);
     }
 
     /**
@@ -702,19 +717,6 @@ public class CookBookStorage {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Загрузка изображения.
-     * @param imageIn изображение.
-     * @return онлайн ссылка на изображение в сервисе cloudinary
-     */
-    private String uploadImage(InputStream imageIn) throws Exception {
-        Cloudinary cloudinary = new Cloudinary(CLOUDINARY_URL);
-        Map result = cloudinary.uploader().upload(imageIn, ObjectUtils.emptyMap());
-        JSONObject jsonObject = new JSONObject(result);
-
-        return jsonObject.getString("url");
     }
 
     /**
