@@ -49,6 +49,7 @@ public class CookBookStorage {
     private static final String isUserOwnRecipeCommand = "/ownRecipe";
     private static final String insertRecipeCommand = "/insertRecipe";
     private static final String deleteRecipeCommand = "/deleteRecipe";
+    private static final String changeRecipeCommand = "/changeRecipe";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -71,21 +72,6 @@ public class CookBookStorage {
     private final String CLOUDINARY_URL = "cloudinary://285162791646134:yGqzM1FdReQ8uPa1taEUZihoNgI@dxc952wrd";
 
     /**
-     * Ссылка на базу данных на сервисе gearhost.
-     */
-    private final String databaseURL = "jdbc:mysql://mysql1.gear.host:3306/foodmanagertest";
-
-    /**
-     * Пользователь базы данных.
-     */
-    private String user = "foodmanagertest";
-
-    /**
-     * Пароль от базы данных.
-     */
-    private final String password = "Wc22_0f_0TA2";
-
-    /**
      * ID пользователя.
      */
     private String userID;
@@ -104,68 +90,24 @@ public class CookBookStorage {
      * Изменение информации о рецепте. Можно было изменить рецепт, удалив его и добавив новый,
      * но использование этого метода эффективнее в количестве SQL запросов.
      * @param recipe информация этого рецепта будет помещена в БД.
-     * @throws Exception если есть проблемы с соединением.
      */
-    public void changeRecipe(RecipeToChange recipe) throws Exception {
-        //refreshConnection();
-        //connection.setAutoCommit(false);
-        changeRecipeMainInformation(recipe);
-        changeRecipeCategories(recipe);
-        changeRecipeIngredients(recipe);
-        changeRecipeSteps(recipe);
-        //connection.setAutoCommit(true);
-    }
-
-    /**
-     * Изменение шагов рецепта в БД.
-     * @param recipe шаги этого рецепта станут хранится в БД.
-     */
-    public void changeRecipeSteps(RecipeToChange recipe) {
-        //ArrayList<Integer> recipeIDs = getRecipeStepIDs(recipe);
-        //deleteRecipeSteps(recipe);
-        //deleteRecipeImageStepRelation(recipeIDs);
-        //ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
-        //insertRecipeImageStepRelation(stepIDs, recipe);
-    }
-
-    /**
-     * Изменение ингредиентов у рецепта.
-     * @param recipe рецепт должен иметь также иметь валидный ID
-     */
-    public void changeRecipeIngredients(RecipeToChange recipe) {
-        //deleteRecipeIngredients(recipe);
-        //ArrayList<Integer> newIds = insertRecipeIngredients(recipe);
-        //insertRecipeIngredientRelation(recipe, newIds);
-    }
-
-    /**
-     * У рецепта recipe будут заменены поля name и description в БД.
-     * Рецепту поля необходим валидный ID.
-     */
-    public void changeRecipeMainInformation(RecipeToChange recipe) {
-        /*String updateQuery = "UPDATE Recipe SET name = ?, description = ? WHERE ID = ?";
+    public void changeRecipe(RecipeToChange recipe) {
         try {
-            PreparedStatement stmt = connection.prepareStatement(updateQuery);
-            stmt.setString(1, recipe.getName());
-            stmt.setString(2, recipe.getDescription());
-            stmt.setInt(3, recipe.getID());
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException e) {
+            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                HttpURLConnection connection = storeRecipeInformation(recipe, changeRecipeCommand);
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
+
+                break;
+            }
+        } catch (Exception e) {
+            Log.d(LOG_TAG, "Unable to insert recipe");
             e.printStackTrace();
-        }*/
+        }
     }
 
-    /**
-     * Изменение категорий рецепта. У рецепта должен быть валидный ID.
-     * В принципе, реализация могла быть только методом insertRecipeCategories, но тогда
-     * всегда будет 2 SQL запроса, а этот метод делает их только при необходимости.
-     * @param recipe у этого рецепта изменятся категории в БД.
-     */
-    public void changeRecipeCategories(RecipeToChange recipe) {
-        //deleteRecipeCategories(recipe);
-        //insertRecipeCategories(recipe);
-    }
 
     // --------------------------------insert-----------------------------------
 
@@ -212,7 +154,7 @@ public class CookBookStorage {
         output.writeObject(descriptions);
         output.writeObject(transformedImages);
 
-        if (command.equals(deleteRecipeCommand)) {
+        if (command.equals(deleteRecipeCommand) || command.equals(changeRecipeCommand)) {
             output.writeInt(recipe.getID());
         }
         output.flush();
