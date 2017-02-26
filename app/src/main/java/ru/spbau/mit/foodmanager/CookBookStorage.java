@@ -863,7 +863,7 @@ public class CookBookStorage {
     }
 
     private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
-        final String urlString = "http://" + CLOUD_SERVER_IPa + ':' + port + command;
+        final String urlString = "http://" + CLOUD_SERVER_IP + ':' + port + command;
 
         final URL url = new URL(urlString);
 
