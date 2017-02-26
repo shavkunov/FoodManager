@@ -3,7 +3,6 @@ package ru.spbau.mit.foodmanager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.StrictMode;
 import android.util.Log;
 
 import com.cloudinary.Cloudinary;
@@ -19,12 +18,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
@@ -34,7 +27,7 @@ import java.util.Map;
  * к другим классам. Будет изменено после рефакторинга.
  */
 public class CookBookStorage {
-    public static final String LOCAL_IP = "192.168.211.199"; // my local IP address
+    public static final String SERVER_IP = "138.68.91.54";
     private static final String getRecipeCommand = "/getRecipe";
     private static final String getRecipeCategoriesCommand = "/getRecipeCategories";
     private static final String getRecipeIngredientsCommand = "/getRecipeIngredients";
@@ -55,6 +48,7 @@ public class CookBookStorage {
     private static final String getRandomDishCommand = "/getRandomDishOfCategory";
     private static final String isUserOwnRecipeCommand = "/ownRecipe";
     private static final String insertRecipeCommand = "/insertRecipe";
+    private static final String deleteRecipeCommand = "/deleteRecipe";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
@@ -92,11 +86,6 @@ public class CookBookStorage {
     private final String password = "Wc22_0f_0TA2";
 
     /**
-     * Коннект к базе данных.
-     */
-    private Connection connection;
-
-    /**
      * ID пользователя.
      */
     private String userID;
@@ -104,10 +93,6 @@ public class CookBookStorage {
     private CookBookStorage(Context context) {
         try {
             userID = Installation.getUserID(context);
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            Class.forName("com.mysql.jdbc.Driver");
-            refreshConnection();
         } catch (Exception e) {
             Log.d(LOG_TAG, "Problems with connection");
         }
@@ -122,13 +107,13 @@ public class CookBookStorage {
      * @throws Exception если есть проблемы с соединением.
      */
     public void changeRecipe(RecipeToChange recipe) throws Exception {
-        refreshConnection();
-        connection.setAutoCommit(false);
+        //refreshConnection();
+        //connection.setAutoCommit(false);
         changeRecipeMainInformation(recipe);
         changeRecipeCategories(recipe);
         changeRecipeIngredients(recipe);
         changeRecipeSteps(recipe);
-        connection.setAutoCommit(true);
+        //connection.setAutoCommit(true);
     }
 
     /**
@@ -136,11 +121,11 @@ public class CookBookStorage {
      * @param recipe шаги этого рецепта станут хранится в БД.
      */
     public void changeRecipeSteps(RecipeToChange recipe) {
-        ArrayList<Integer> recipeIDs = getRecipeStepIDs(recipe);
-        deleteRecipeSteps(recipe);
-        deleteRecipeImageStepRelation(recipeIDs);
-        ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
-        insertRecipeImageStepRelation(stepIDs, recipe);
+        //ArrayList<Integer> recipeIDs = getRecipeStepIDs(recipe);
+        //deleteRecipeSteps(recipe);
+        //deleteRecipeImageStepRelation(recipeIDs);
+        //ArrayList<Integer> stepIDs = insertRecipeSteps(recipe);
+        //insertRecipeImageStepRelation(stepIDs, recipe);
     }
 
     /**
@@ -148,7 +133,7 @@ public class CookBookStorage {
      * @param recipe рецепт должен иметь также иметь валидный ID
      */
     public void changeRecipeIngredients(RecipeToChange recipe) {
-        deleteRecipeIngredients(recipe);
+        //deleteRecipeIngredients(recipe);
         //ArrayList<Integer> newIds = insertRecipeIngredients(recipe);
         //insertRecipeIngredientRelation(recipe, newIds);
     }
@@ -158,9 +143,8 @@ public class CookBookStorage {
      * Рецепту поля необходим валидный ID.
      */
     public void changeRecipeMainInformation(RecipeToChange recipe) {
-        String updateQuery = "UPDATE Recipe SET name = ?, description = ? WHERE ID = ?";
+        /*String updateQuery = "UPDATE Recipe SET name = ?, description = ? WHERE ID = ?";
         try {
-            refreshConnection();
             PreparedStatement stmt = connection.prepareStatement(updateQuery);
             stmt.setString(1, recipe.getName());
             stmt.setString(2, recipe.getDescription());
@@ -169,7 +153,7 @@ public class CookBookStorage {
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     /**
@@ -179,8 +163,8 @@ public class CookBookStorage {
      * @param recipe у этого рецепта изменятся категории в БД.
      */
     public void changeRecipeCategories(RecipeToChange recipe) {
-        deleteRecipeCategories(recipe);
-        insertRecipeCategories(recipe);
+        //deleteRecipeCategories(recipe);
+        //insertRecipeCategories(recipe);
     }
 
     // --------------------------------insert-----------------------------------
@@ -190,30 +174,10 @@ public class CookBookStorage {
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
      */
-    public void insertRecipe(RecipeToChange recipe) throws Exception {
+    public void insertRecipe(RecipeToChange recipe) {
         try {
             for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-                final HttpURLConnection connection =
-                        openHttpURLConnectionForServerCommand(getRecipeCommand);
-
-                ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
-                output.writeObject(recipe.getName());
-                output.writeObject(recipe.getDescription());
-                output.writeObject(recipe.getCategoryIDs());
-                output.writeObject(userID);
-                output.writeObject(recipe.getIngredients());
-
-                ArrayList<String> descriptions = new ArrayList<>();
-                ArrayList<ByteArrayInputStream> transformedImages = new ArrayList<>();
-                for (Step step : recipe.getSteps()) {
-                    descriptions.add(step.getDescription());
-                    transformedImages.add(convertImage(step.getImage()));
-                }
-
-                output.writeObject(descriptions);
-                output.writeObject(transformedImages);
-                output.flush();
-                output.close();
+                HttpURLConnection connection = storeRecipeInformation(recipe, insertRecipeCommand);
 
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     continue;
@@ -227,6 +191,36 @@ public class CookBookStorage {
         }
     }
 
+    private HttpURLConnection storeRecipeInformation(RecipeToChange recipe, String command) throws IOException {
+        final HttpURLConnection connection =
+                openHttpURLConnectionForServerCommand(command);
+
+        ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
+        output.writeObject(recipe.getName());
+        output.writeObject(recipe.getDescription());
+        output.writeObject(recipe.getCategoryIDs());
+        output.writeObject(userID);
+        output.writeObject(recipe.getIngredients());
+
+        ArrayList<String> descriptions = new ArrayList<>();
+        ArrayList<ByteArrayInputStream> transformedImages = new ArrayList<>();
+        for (Step step : recipe.getSteps()) {
+            descriptions.add(step.getDescription());
+            transformedImages.add(convertImage(step.getImage()));
+        }
+
+        output.writeObject(descriptions);
+        output.writeObject(transformedImages);
+
+        if (command.equals(deleteRecipeCommand)) {
+            output.writeInt(recipe.getID());
+        }
+        output.flush();
+        output.close();
+
+        return connection;
+    }
+
     private ByteArrayInputStream convertImage(Bitmap bitmap) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
@@ -234,109 +228,6 @@ public class CookBookStorage {
         ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
 
         return bs;
-    }
-
-    /**
-     * Вставка в таблицу Image изображений из инструкции приготовления блюда.
-     * @param ids идентификаторы шагов загруженные в insertRecipeSteps.
-     */
-    private void insertRecipeImageStepRelation(ArrayList<Integer> ids, RecipeToChange recipe) {
-        try {
-            for (int i = 0; i < ids.size(); i++) {
-                String insertRelation = "INSERT INTO Image(entity_type, entity_ID, link) " +
-                        "VALUES (?, ?, ?)";
-
-                Bitmap bitmap = recipe.getSteps().get(i).getImage();
-
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-                byte[] bitmapData = bos.toByteArray();
-                ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
-
-                String link = uploadImage(bs);
-                refreshConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(insertRelation);
-                preparedStatement.setInt(1, 0);
-                preparedStatement.setInt(2, ids.get(i));
-                preparedStatement.setString(3, link);
-                preparedStatement.execute();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Загрузка описаний шагов в инструкции готовки.
-     * @param recipe рецепт, откуда берутся шагов.
-     * @return Идентификаторы строк, куда были вставлены шаги.
-     */
-    private ArrayList<Integer> insertRecipeSteps(RecipeToChange recipe) {
-        ArrayList<Integer> ids = new ArrayList<>();
-
-        try {
-            for (Step s : recipe.getSteps()) {
-                String insertStep = "INSERT INTO Step(recipe_ID, description) VALUES  (?, ?)";
-                refreshConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(insertStep);
-                preparedStatement.setInt(1, recipe.getID());
-                preparedStatement.setString(2, s.getDescription());
-                ids.add(preparedStatement.executeUpdate());
-                preparedStatement.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return ids;
-    }
-
-    /**
-     * Вставка нужных записей в таблицу связи Ingredient_to_recipe.
-     * @param recipe рецепт, откуда берутся шагов.
-     * @param ingredientIDs идентификаторы строк, где хранятся ингредиенты.
-     */
-    private void insertRecipeIngredientRelation(
-            RecipeToChange recipe, ArrayList<Integer> ingredientIDs) {
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            // ingredients.size() == ingredientIDs.size()
-            for (int i = 0; i < recipe.getIngredients().size(); i++) {
-                double quantity = recipe.getIngredients().get(i).getQuantity();
-                int measureOrdinal = recipe.getIngredients().get(i).getMeasure().ordinal();
-                String insertRelationQuery = "INSERT INTO Ingredient_to_recipe " +
-                        "(Ingredient_ID, recipe_ID, measure, quantity) VALUES " +
-                        "(" + ingredientIDs.get(i) + ", " + recipe.getID() +
-                        ", " + measureOrdinal + ", " + quantity + ")";
-
-                stmt.executeUpdate(insertRelationQuery);
-            }
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Вставка категорий рецепта в БД.
-     * @param recipe рецепт, откуда берутся категории.
-     */
-    private void insertRecipeCategories(RecipeToChange recipe) {
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            for (int categoryID : recipe.getCategoryIDs()) {
-                String insertCategoryQuery = "INSERT INTO Recipe_to_category (recipe_ID, category_ID) "
-                        + "VALUES (" + recipe.getID() + ", " + categoryID + ")";
-
-                stmt.executeUpdate(insertCategoryQuery);
-            }
-
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -368,134 +259,20 @@ public class CookBookStorage {
 
     /**
      * Удаление рецепта из БД.
-     * @throws Exception если есть проблемы с соединением.
      */
-    public void deleteRecipe(RecipeToChange recipe) throws Exception {
-        refreshConnection();
-        connection.setAutoCommit(false);
-        deleteRecipeMainInformation(recipe);
-        deleteUserRecipeRelation(recipe);
-        deleteRecipeCategories(recipe);
-        deleteRecipeIngredients(recipe);
-        deleteIngredientToRecipeRelation(recipe);
-        deleteRecipeSteps(recipe);
-        ArrayList<Integer> stepIDs = getRecipeStepIDs(recipe);
-        deleteRecipeImageStepRelation(stepIDs);
-        setNotLike(recipe.getID());
-        removeFromFavorites(recipe.getID());
-        connection.setAutoCommit(true);
-    }
-
-    /**
-     * Удаление шагов рецепта из таблицы Step.
-     * @param recipe у рецепта должен быть валидный ID.
-     */
-    private void deleteRecipeSteps(RecipeToChange recipe) {
+    public void deleteRecipe(RecipeToChange recipe) {
         try {
-            String deleteStepsQuery = "DELETE FROM Step WHERE recipe_ID = " + recipe.getID();
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(deleteStepsQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                HttpURLConnection connection = storeRecipeInformation(recipe, deleteRecipeCommand);
 
-    /**
-     * Удаление картинок шагов рецепта.
-     * @param ids идентификаторы шагов.
-     */
-    private void deleteRecipeImageStepRelation(ArrayList<Integer> ids) {
-        String deleteImagesQuery = "DELETE FROM Image WHERE entity_type = 0 AND entity_ID IN (";
-        for (int i = 0; i < ids.size() - 1; i++) {
-            deleteImagesQuery += ids.get(i) + ", ";
-        }
-        deleteImagesQuery += ids.get(ids.size() - 1) + ")";
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(deleteImagesQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    continue;
+                }
 
-    /**
-     * Удаление ингредиентов рецепта из таблицы Ingredient_to_recipe
-     * @param recipe рецепт должен иметь валидный ID.
-     */
-    private void deleteIngredientToRecipeRelation(RecipeToChange recipe) {
-        String deleteQuery = "DELETE FROM Ingredient_to_recipe WHERE recipe_ID = " + recipe.getID();
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(deleteQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Удаление ингредиентов из таблицы Ingredient.
-     * @param ids идентификаторы ингредиентов.
-     */
-    private void deleteRecipeIngredientsFromIngredient(ArrayList<Integer> ids) {
-        String deleteQuery = "DELETE FROM Ingredient WHERE ID IN (";
-        for (int i = 0; i < ids.size() - 1; i++) {
-            deleteQuery += ids.get(i) + ", ";
-        }
-        deleteQuery += ids.get(ids.size() - 1) + ")";
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(deleteQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Удаление ингредиентов у рецепта.
-     * @param recipe рецепт должен иметь также иметь валидный ID
-     */
-    private void deleteRecipeIngredients(RecipeToChange recipe) {
-        ArrayList<Integer> ids = getRecipeIngredientIDs(recipe);
-        deleteIngredientToRecipeRelation(recipe);
-        deleteRecipeIngredientsFromIngredient(ids);
-    }
-
-    /**
-     * Удаление рецепта из таблицы Recipe.
-     * @param recipe удаление по его ID.
-     */
-    private void deleteRecipeMainInformation(RecipeToChange recipe) {
-        try {
-            String deleteQuery = "DELETE FROM Recipe WHERE ID = " + recipe.getID();
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(deleteQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Удаление категорий рецепта. Рецепт должен иметь валидный ID.
-     */
-    private void deleteRecipeCategories(RecipeToChange recipe) {
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            String deletePreviousCategoriesQuery = "DELETE FROM Recipe_to_category " +
-                    "WHERE recipe_ID = " + recipe.getID();
-
-            stmt.executeUpdate(deletePreviousCategoriesQuery);
-        } catch (SQLException e) {
+                break;
+            }
+        } catch (Exception e) {
+            Log.d(LOG_TAG, "Unable to delete recipe");
             e.printStackTrace();
         }
     }
@@ -522,22 +299,6 @@ public class CookBookStorage {
                 Log.d(LOG_TAG, "Не удалось убрать рецепт из избранного");
                 e.printStackTrace();
             }
-        }
-    }
-
-    /**
-     * Удаление связи между рецептов и пользователем.
-     */
-    private void deleteUserRecipeRelation(RecipeToChange recipe) {
-        String deleteQuery = "DELETE FROM User_to_recipe WHERE recipe_ID = " + recipe.getID();
-
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(deleteQuery);
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -715,52 +476,6 @@ public class CookBookStorage {
         }
 
         return res;
-    }
-
-    /**
-     * Получение идентификаторов ингредиентов рецепта.
-     * @param recipe рецепт должен иметь валидный ID.
-     * @return id всех ингредиентов, принадлежащих рецепту.
-     */
-    private ArrayList<Integer> getRecipeIngredientIDs(RecipeToChange recipe) {
-        String selectIngredientQuery = "SELECT Ingredient_ID FROM Ingredient_to_recipe " +
-                "WHERE recipe_ID = " + recipe.getID();
-
-        ArrayList<Integer> ids = new ArrayList<>();
-        try {
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(selectIngredientQuery);
-            while (rs.next()) {
-                ids.add(rs.getInt("Ingredient_ID"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return ids;
-    }
-
-    /**
-     * Получение идентификаторов шагов рецепта.
-     * @param recipe у рецепта должен быть валидный ID
-     * @return ID шагов, принадлежащие рецепту.
-     */
-    private ArrayList<Integer> getRecipeStepIDs(RecipeToChange recipe) {
-        ArrayList<Integer> ids = new ArrayList<>();
-        try {
-            String getStepsQuery = "SELECT ID FROM Step WHERE recipe_ID = " + recipe.getID();
-            refreshConnection();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(getStepsQuery);
-            while (rs.next()) {
-                ids.add(rs.getInt("ID"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return ids;
     }
 
     /**
@@ -1074,21 +789,6 @@ public class CookBookStorage {
     }
 
     /**
-     *
-     * Получение соединения с БД, если его нет по какой-то причине.
-     * Я не уверен, что правильно это делаю. !!!!
-     */
-    private void refreshConnection() {
-        try {
-            while (connection == null || connection.isClosed())
-                connection = DriverManager.getConnection(databaseURL, user, password);
-        } catch (SQLException e) {
-            Log.d(LOG_TAG, "Unable to refresh connection");
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Загрузка картинки шага.
      * @param step загрузка прямо в поле объекта.
      */
@@ -1234,7 +934,7 @@ public class CookBookStorage {
     }
 
     private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
-        final String urlString = "http://" + LOCAL_IP + ':' + port + command;
+        final String urlString = "http://" + SERVER_IP + ':' + port + command;
 
         final URL url = new URL(urlString);
 
