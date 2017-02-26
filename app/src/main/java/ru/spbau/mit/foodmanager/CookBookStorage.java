@@ -137,9 +137,11 @@ public class CookBookStorage {
 
         ArrayList<String> descriptions = new ArrayList<>();
         ArrayList<byte []> transformedImages = new ArrayList<>();
-        for (Step step : recipe.getSteps()) {
-            descriptions.add(step.getDescription());
-            transformedImages.add(convertImage(step.getImage()));
+        if (recipe.getSteps() != null) {
+            for (Step step : recipe.getSteps()) {
+                descriptions.add(step.getDescription());
+                transformedImages.add(convertImage(step.getImage()));
+            }
         }
 
         output.writeObject(descriptions);
