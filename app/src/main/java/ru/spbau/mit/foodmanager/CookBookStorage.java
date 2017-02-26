@@ -22,34 +22,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static ru.spbau.mit.foodmanager.Commands.*;
+
 /**
  * Хранилище всех рецептов. Singleton. В этом классе слишком много методов, которые можно отнести
  * к другим классам. Будет изменено после рефакторинга.
  */
 public class CookBookStorage {
     public static final String SERVER_IP = "138.68.91.54";
-    private static final String getRecipeCommand = "/getRecipe";
-    private static final String getRecipeCategoriesCommand = "/getRecipeCategories";
-    private static final String getRecipeIngredientsCommand = "/getRecipeIngredients";
-    private static final String getRecipeStepsCommand = "/getRecipeSteps";
-    private static final String getRecipesByFilterCommand = "/getRecipesByFilter";
-    private static final String getUserSettingsCommand = "/getUserSettings";
-    private static final String getUserLikeCommand = "/getUserLike";
-    private static final String getRecipeLikesCommand = "/getRecipeLikes";
-    private static final String getFavoritesCommand = "/getFavorites";
-    private static final String getRecipesOfCategoryCommand = "/getRecipesOfCategory";
-    private static final String getCategoryByIDCommand = "/getCategoryByID";
-    private static final String getCategoriesListCommand = "/getCategoriesList";
-    private static final String setUserLikeCommand = "/setLike";
-    private static final String setUserNotLikeCommand = "/setNotLike";
-    private static final String addToFavoritesCommand = "/addToFavorites";
-    private static final String removeFromFavoritesCommand = "/removeFromFavorites";
-    private static final String saveUserSettingsCommand = "/saveUserSettings";
-    private static final String getRandomDishCommand = "/getRandomDishOfCategory";
-    private static final String isUserOwnRecipeCommand = "/ownRecipe";
-    private static final String insertRecipeCommand = "/insertRecipe";
-    private static final String deleteRecipeCommand = "/deleteRecipe";
-    private static final String changeRecipeCommand = "/changeRecipe";
     private static final int port = 48800; // free random port;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
     private static final int HTTP_READ_TIMEOUT_MS = 2000;
