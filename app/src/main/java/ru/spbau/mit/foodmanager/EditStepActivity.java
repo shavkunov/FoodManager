@@ -42,7 +42,9 @@ public class EditStepActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                uriSteps.get(stepPosition).setDescription(charSequence.toString());
+                if (uriSteps.size() > stepPosition) {
+                    uriSteps.get(stepPosition).setDescription(charSequence.toString());
+                }
             }
             @Override
             public void afterTextChanged(Editable editable) {}

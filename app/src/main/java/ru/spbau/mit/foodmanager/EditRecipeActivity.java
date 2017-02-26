@@ -89,39 +89,38 @@ public class EditRecipeActivity extends AppCompatActivity {
     public void onSaveClick(View v) {
         EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
         EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
-        RecipeToChange result = new RecipeToChange(recipeID, description.getText().toString(), name.getText().toString());
+        final RecipeToChange result = new RecipeToChange(recipeID,
+                description.getText().toString(), name.getText().toString());
         result.setCategoryIDs(tags);
         result.setIngredients(ingredients);
         //INISteps
-        ArrayList<Step> steps = new ArrayList<>();
-        //TODO Another Thread;
-        for (UriStep uriStep : uriSteps) {
-            try {
-                String descr = uriStep.getDescription();
-                Bitmap image = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
-                        uriStep.getImageUri());
-                steps.add(new Step(descr, image));
-            }
-            catch (IOException e) {
-                //Cant upload image;
-            }
-        }
-        result.setSteps(steps);
-        //TODO Another Thread
-        boolean complete = false;
-        while (!complete) {
-            try {
-                if (recipeID == 0) {
-                    CookBookStorage.getInstance(this).insertRecipe(result);
-                } else {
-                    CookBookStorage.getInstance(this).changeRecipe(result);
+        final ArrayList<Step> steps = new ArrayList<>();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (UriStep uriStep : uriSteps) {
+                    String descr = uriStep.getDescription();
+                    Bitmap image;
+                    try {
+                        image = MediaStore.Images.Media.getBitmap(
+                                EditRecipeActivity.this.getContentResolver(), uriStep.getImageUri());
+                    } catch (IOException e) {
+                        Step s = new Step(
+                                uriStep.getDescription(),
+                                uriStep.getImageUri().toString());
+                        CookBookStorage.getInstance(EditRecipeActivity.this).downloadStepImage(s);
+                        image = s.getImage();
+                    }
+                    steps.add(new Step(descr, image));
                 }
-                complete = true;
+                result.setSteps(steps);
+                if (recipeID == 0) {
+                    CookBookStorage.getInstance(EditRecipeActivity.this).insertRecipe(result);
+                } else {
+                    CookBookStorage.getInstance(EditRecipeActivity.this).changeRecipe(result);
+                }
             }
-            catch (Exception e) {
-                //Repeat
-            }
-        }
+        }).start();
         finish();
     }
 
