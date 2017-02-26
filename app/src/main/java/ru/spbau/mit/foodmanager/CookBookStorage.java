@@ -52,8 +52,8 @@ public class CookBookStorage {
     private static final String CLOUD_SERVER_IP = "138.68.91.54";
     private static final String LOCAL_SERVER_IP = "192.168.211.199";
     private static final int port = 48800; // free random port;
-    private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
-    private static final int HTTP_READ_TIMEOUT_MS = 2000;
+    private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
+    private static final int HTTP_READ_TIMEOUT_MS = 5000;
     private static final int MAX_ATTEMPTS = 3;
 
     /**
