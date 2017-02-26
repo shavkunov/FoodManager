@@ -47,7 +47,6 @@ public class CookBookStorage {
 
     /**
      * Логин для хостинга картинок cloudinary.
-     * Его можно собирать из трех частей, но я не думаю, что это нужно.
      */
     private final String CLOUDINARY_URL = "cloudinary://285162791646134:yGqzM1FdReQ8uPa1taEUZihoNgI@dxc952wrd";
 
@@ -57,11 +56,7 @@ public class CookBookStorage {
     private String userID;
 
     private CookBookStorage(Context context) {
-        try {
-            userID = Installation.getUserID(context);
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Problems with connection");
-        }
+        userID = Installation.getUserID(context);
     }
 
     // --------------------------------change-----------------------------------
@@ -83,7 +78,7 @@ public class CookBookStorage {
                 break;
             }
         } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to insert recipe");
+            Log.d(LOG_TAG, "Unable to change recipe");
             e.printStackTrace();
         }
     }
