@@ -65,16 +65,15 @@ public class MenuViewActivity extends AppCompatActivity {
             switch (requestCode) {
                 case REQUEST_ADD :
                     allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipeIDs().add(result);
-                    //TODO upload recipe
-                    showRecipes();
                     break;
                 case REQUEST_EDIT :
                     Integer position = resultContainer.getIntExtra("Position", -1);
                     allDayMenu.get(day).getMealtimes().get(mealtimePos).getRecipeIDs().set(position, result);
-                    //TODO upload recipe
-                    showRecipes();
                     break;
             }
+            ContentLoader contentLoader = new ContentLoader(false);
+            Thread loader = new Thread(contentLoader);
+            loader.start();
         }
     }
 
@@ -137,7 +136,7 @@ public class MenuViewActivity extends AppCompatActivity {
         final Integer recipeID = mealtime.getRecipeIDs().get(position); //WTF
         ImageButton editDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_edit);
         ImageButton deleteDish = (ImageButton) recipeView.findViewById(R.id.menu_day_mealtime_dish_delete);
-        Log.d("RECIPEVIEW", recipeID.toString());
+        Log.d("LOLOLOLOL", recipeID.toString() + " "  + recipes.containsKey(recipeID));
         recipeName.setText(recipes.get(recipeID).getName());
         recipeName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,7 +192,8 @@ public class MenuViewActivity extends AppCompatActivity {
                 if (dm != null) {
                     for (Mealtime m : dm.getMealtimes()) {
                         for (Integer id : m.getRecipeIDs()) {
-                            if (recipes.get(id) == null) {
+                            Log.d("ADDT", id.toString());
+                            while (recipes.get(id) == null) {
                                 recipes.put(id, cookbook.getRecipe(id));
                             }
                         }

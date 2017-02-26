@@ -86,20 +86,13 @@ public class CookBookStorage {
      * но использование этого метода эффективнее в количестве SQL запросов.
      * @param recipe информация этого рецепта будет помещена в БД.
      */
-    public void changeRecipe(RecipeToChange recipe) {
-        try {
-            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-                HttpURLConnection connection = storeRecipeInformation(recipe, changeRecipeCommand);
-
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    continue;
-                }
-
-                break;
+    public void changeRecipe(RecipeToChange recipe) throws Exception {
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            HttpURLConnection connection = storeRecipeInformation(recipe, changeRecipeCommand);
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                continue;
             }
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to change recipe");
-            e.printStackTrace();
+            break;
         }
     }
 
@@ -108,20 +101,13 @@ public class CookBookStorage {
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
      */
-    public void insertRecipe(RecipeToChange recipe) {
-        try {
-            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-                HttpURLConnection connection = storeRecipeInformation(recipe, insertRecipeCommand);
-
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    continue;
-                }
-
-                break;
+    public void insertRecipe(RecipeToChange recipe) throws Exception {
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            HttpURLConnection connection = storeRecipeInformation(recipe, insertRecipeCommand);
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                continue;
             }
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to insert recipe");
-            e.printStackTrace();
+            break;
         }
     }
 

@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,7 +56,9 @@ public class EditRecipeActivity extends AppCompatActivity {
             for (Step s : cookbook.getRecipeSteps(recipeID)) {
                 uriSteps.add(new UriStep(s));
             }
-            tags = cookbook.getRecipeCategories(recipeID);
+            while (tags == null) {
+                tags = cookbook.getRecipeCategories(recipeID);
+            }
             name.setText(recipe.getName());
             description.setText(recipe.getDescription());
             showRecipeData();
@@ -125,14 +128,31 @@ public class EditRecipeActivity extends AppCompatActivity {
                     steps.add(new Step(descr, image));
                 }
                 result.setSteps(steps);
-                if (recipeID == 0) {
-                    CookBookStorage.getInstance(EditRecipeActivity.this).insertRecipe(result);
-                } else {
-                    CookBookStorage.getInstance(EditRecipeActivity.this).changeRecipe(result);
+                try {
+                    if (recipeID == 0) {
+                        CookBookStorage.getInstance(EditRecipeActivity.this).insertRecipe(result);
+                    } else {
+                        CookBookStorage.getInstance(EditRecipeActivity.this).changeRecipe(result);
+                    }
+
+                    EditRecipeActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(EditRecipeActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (final Exception e) {
+                    EditRecipeActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(EditRecipeActivity.this,
+                                    "Unable to save recipe\n" + "Cause:\n" + e.toString(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
         }).start();
-        finish();
     }
 
     public void onStepsClick(View v) {
