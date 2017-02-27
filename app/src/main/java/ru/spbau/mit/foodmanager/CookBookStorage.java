@@ -100,15 +100,24 @@ public class CookBookStorage {
      * Добавление рецепта в базу данных на сервере. Если одна из операций вставок провалилась,
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
+     * @return ID рецепта.
      */
-    public void insertRecipe(RecipeToChange recipe) throws Exception {
+    public int insertRecipe(RecipeToChange recipe) throws Exception {
+        int recipeID = -1;
         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
             HttpURLConnection connection = storeRecipeInformation(recipe, insertRecipeCommand);
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 continue;
             }
+
+            ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+            recipeID = input.readInt();
+            input.close();
+
             break;
         }
+
+        return recipeID;
     }
 
     private HttpURLConnection storeRecipeInformation(RecipeToChange recipe, String command) throws Exception {
