@@ -35,6 +35,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     private final static int REQUEST_EDIT_STEPS = 1;
     private final static int REQUEST_PICK_CATEGORY = 2;
     private int recipeID;
+    private Object saveSynchronizer = new Object();
     private ArrayList<UriStep> uriSteps;
     private ArrayList<Ingredient> ingredients;
     private ArrayList<Integer> tags;
@@ -103,53 +104,55 @@ public class EditRecipeActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (UriStep uriStep : uriSteps) {
-                    String descr = uriStep.getDescription();
-                    Bitmap image;
+                synchronized (saveSynchronizer) {
+                    for (UriStep uriStep : uriSteps) {
+                        String descr = uriStep.getDescription();
+                        Bitmap image;
+                        try {
+                            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                        MainActivity.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                            }
+                            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED) {
+                                return;
+                            }
+                            image = MediaStore.Images.Media.getBitmap(
+                                    EditRecipeActivity.this.getContentResolver(), uriStep.getImageUri());
+                        } catch (IOException e) {
+                            Step s = new Step(
+                                    uriStep.getDescription(),
+                                    uriStep.getImageUri().toString());
+                            CookBookStorage.getInstance(EditRecipeActivity.this).downloadStepImage(s);
+                            image = s.getImage();
+                        }
+                        steps.add(new Step(descr, image));
+                    }
+                    result.setSteps(steps);
                     try {
-                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                    MainActivity.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        if (recipeID == 0) {
+                            recipeID = CookBookStorage.getInstance(EditRecipeActivity.this).insertRecipe(result);
+                        } else {
+                            CookBookStorage.getInstance(EditRecipeActivity.this).changeRecipe(result);
                         }
-                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            return;
-                        }
-                        image = MediaStore.Images.Media.getBitmap(
-                                EditRecipeActivity.this.getContentResolver(), uriStep.getImageUri());
-                    } catch (IOException e) {
-                        Step s = new Step(
-                                uriStep.getDescription(),
-                                uriStep.getImageUri().toString());
-                        CookBookStorage.getInstance(EditRecipeActivity.this).downloadStepImage(s);
-                        image = s.getImage();
-                    }
-                    steps.add(new Step(descr, image));
-                }
-                result.setSteps(steps);
-                try {
-                    if (recipeID == 0) {
-                        CookBookStorage.getInstance(EditRecipeActivity.this).insertRecipe(result);
-                    } else {
-                        CookBookStorage.getInstance(EditRecipeActivity.this).changeRecipe(result);
-                    }
 
-                    EditRecipeActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(EditRecipeActivity.this, "Saved", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } catch (final Exception e) {
-                    EditRecipeActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(EditRecipeActivity.this,
-                                    "Unable to save recipe\n" + "Cause:\n" + e.toString(),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
+                        EditRecipeActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(EditRecipeActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (final Exception e) {
+                        EditRecipeActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(EditRecipeActivity.this,
+                                        "Unable to save recipe\n" + "Cause:\n" + e.toString(),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
             }
         }).start();
