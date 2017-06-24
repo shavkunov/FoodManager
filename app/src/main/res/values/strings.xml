@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">FoodManager</string>
+    <string name="cookbook">Книга Рецептов</string>
+    <string name="menu">Меню на неделю</string>
+    <string name="shoppinglist">Список покупок</string>
+    <string name="settings">Настройки</string>
+    <string name="recipe_body_description_str">Описание:</string>
+    <string name="recipe_body_ingredients_str">Вам нужны следующие продукты:</string>
+    <string name="recipe_body_instruments_str">А также:</string>
+    <string name="recipe_body_steps_shortcut_str">Краткое описание шагов:</string>
+    <string name="recipe_goto_stepbystep_str">Приготовить</string>
+    <string name="recipe_like_str">Like</string>
+    <string name="recipe_add_to_favorites_str">В избранное</string>
+    <string name="shopping_list_element_border">:</string>
+    <string name="shopping_list_add_str">Добавить</string>
+    <string name="menu_view_generate_str">Сгенерировать</string>
+    <string name="step_view_previous_str">Назад</string>
+    <string name="step_view_recipe_str">Описание рецепта</string>
+    <string name="step_view_next_str">Вперед</string>
+    <string name="step_view_count1_str">Шаг\ </string>
+    <string name="step_view_count2_str">\ из\ </string>
+    <string name="cook_book_group_by_text">Сгруппировать по:</string>
+    <string name="settings_menu_settings_btn">Настройки генератора меню</string>
+    <string name="settings_notification_settings_btn">Настройки оповещений</string>
+    <string name="menu_settings_day_is_cookingday">День готовки</string>
+    <string name="mealtime_settings_name_txt">Название:</string>
+    <string name="mealtime_settings_header_txt">Настройки шаблона приема пищи</string>
+</resources>

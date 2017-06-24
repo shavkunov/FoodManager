@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.spbau.mit.foodmanager">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+        <receiver android:name=".BootCompleteReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".MainActivity" android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CookBookActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".CookBookCategoryActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".RecipeViewActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".ShoppingListActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".MenuViewActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".StepViewActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".SettingsActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".MenuSettingsActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".ChooseMealtimePresetActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".MealtimeSettingsActivity" android:theme="@style/AppTheme" />
+
+        <service
+            android:name=".NotificationService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":FoodManagerNotificationService" />
+
+        <activity android:name=".NotificationSettingsActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".EditRecipeActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".EditStepActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".SearchRecipeActivity" android:theme="@style/TransparentTheme"/>
+    </application>
+
+</manifest>

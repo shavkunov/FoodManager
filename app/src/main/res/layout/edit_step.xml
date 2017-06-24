@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edit_step"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="ru.spbau.mit.foodmanager.EditStepActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <!-- StepByStep Control -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!-- Control buttons -->
+            <LinearLayout
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/step_view_previous"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/previous"
+                    android:background="@color/colorTransparent"
+                    android:onClick="onPrevBtnClick"/>
+                <!--<Button
+                    android:id="@+id/step_view_recipe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step_view_recipe_str"/>-->
+                <ImageButton
+                    android:id="@+id/edit_step_add"
+                    android:src="@drawable/add"
+                    android:background="@color/colorTransparent"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:onClick="onAddClick"/>
+                <Button
+                    android:id="@+id/edit_step_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сохранить"
+                    android:onClick="onSaveClick"/>
+                <ImageButton
+                    android:id="@+id/edit_recipe_delete"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:src="@drawable/delete"
+                    android:background="@color/colorTransparent"
+                    android:scaleType="centerInside"
+                    android:onClick="onDeleteClick"/>
+                <ImageButton
+                    android:id="@+id/step_view_next"
+                    android:layout_width="@dimen/imbtn_size"
+                    android:layout_height="@dimen/imbtn_size"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/next"
+                    android:background="@color/colorTransparent"
+                    android:onClick="onNextBtnClick"/>
+            </LinearLayout>
+            <!-- Step counter -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingLeft="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step_view_count1_str"/>
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/edit_step_position"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step_view_count2_str"/>
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/edit_step_step_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <!-- Step description -->
+        <ScrollView
+            android:id="@+id/edit_step_step_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Описание шага"
+                    android:textSize="17sp"
+                    android:textStyle="bold"/>
+                <EditText
+                    android:id="@+id/edit_step_step_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/edit_step_step_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:onClick="onImageClick"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</RelativeLayout>
