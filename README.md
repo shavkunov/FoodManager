@@ -1,4 +1,8 @@
 # FoodManager
 Android project
 
-Ссылка на сервер: https://github.com/shavkunov/FoodManagerServer
+[Link](https://github.com/shavkunov/FoodManagerServer) to server repo. 
+
+# Video
+
+[Check out](https://youtu.be/psKi9oPk7QA) weird video demo.
