@@ -264,8 +264,10 @@ public class RecipeViewActivity extends AppCompatActivity {
                     new Runnable() {
                         @Override
                         public void run() {
-                            ImageView photoView = (ImageView)findViewById(R.id.recipe_header_photo);
-                            photoView.setImageBitmap(steps.get(steps.size()-1).getImage());
+                            if (steps.size() > 0) {
+                                ImageView photoView = (ImageView) findViewById(R.id.recipe_header_photo);
+                                photoView.setImageBitmap(steps.get(steps.size() - 1).getImage());
+                            }
                         }
                     }
             );

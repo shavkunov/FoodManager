@@ -95,6 +95,5 @@ public class MenuSettings implements Serializable {
 
     public void setCookingDay(Day day, Boolean isCookingDay, Context c) {
         this.isCookingDay.put(day, isCookingDay);
-        saveMenuSettings(c);
     }
 }

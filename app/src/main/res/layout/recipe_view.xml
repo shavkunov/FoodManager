@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_horizontal">
+            android:gravity="center">
             <ImageButton
                 android:id="@+id/recipe_add_to_favorites"
                 android:layout_width="@dimen/imbtn_size"
@@ -68,7 +68,7 @@
                 android:src="@drawable/favourite_off"
                 android:onClick="onFavoriteClick"/>
             <Space
-                android:layout_width="12dp"
+                android:layout_width="4dp"
                 android:layout_height="match_parent" />
             <ImageButton
                 android:id="@+id/recipe_like"
@@ -83,16 +83,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <Space
-                android:layout_width="12dp"
+                android:layout_width="4dp"
                 android:layout_height="match_parent"/>
             <Button
                 android:id="@+id/recipe_goto_stepbystep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="12sp"
                 android:text="@string/recipe_goto_stepbystep_str"
                 android:onClick="onCookClick"/>
             <Space
-                android:layout_width="12dp"
+                android:layout_width="4dp"
                 android:layout_height="match_parent" />
             <ImageButton
                 android:id="@+id/recipe_edit"
@@ -103,7 +104,7 @@
                 android:src="@drawable/edit"
                 android:onClick="onEditClick"/>
             <Space
-                android:layout_width="12dp"
+                android:layout_width="4dp"
                 android:layout_height="match_parent" />
             <ImageButton
                 android:id="@+id/recipe_delete"

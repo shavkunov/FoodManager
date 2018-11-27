@@ -1,7 +1,9 @@
 package ru.spbau.mit.foodmanager;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -19,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +35,7 @@ public class EditRecipeActivity extends AppCompatActivity {
     private final static int REQUEST_EDIT_STEPS = 1;
     private final static int REQUEST_PICK_CATEGORY = 2;
     private int recipeID;
+    private Object saveSynchronizer = new Object();
     private ArrayList<UriStep> uriSteps;
     private ArrayList<Ingredient> ingredients;
     private ArrayList<Integer> tags;
@@ -53,7 +57,9 @@ public class EditRecipeActivity extends AppCompatActivity {
             for (Step s : cookbook.getRecipeSteps(recipeID)) {
                 uriSteps.add(new UriStep(s));
             }
-            tags = cookbook.getRecipeCategories(recipeID);
+            while (tags == null) {
+                tags = cookbook.getRecipeCategories(recipeID);
+            }
             name.setText(recipe.getName());
             description.setText(recipe.getDescription());
             showRecipeData();
@@ -89,40 +95,67 @@ public class EditRecipeActivity extends AppCompatActivity {
     public void onSaveClick(View v) {
         EditText name = (EditText) findViewById(R.id.edit_recipe_header_name);
         EditText description = (EditText) findViewById(R.id.edit_recipe_body_description);
-        RecipeToChange result = new RecipeToChange(recipeID, description.getText().toString(), name.getText().toString());
+        final RecipeToChange result = new RecipeToChange(recipeID,
+                description.getText().toString(), name.getText().toString());
         result.setCategoryIDs(tags);
         result.setIngredients(ingredients);
         //INISteps
-        ArrayList<Step> steps = new ArrayList<>();
-        //TODO Another Thread;
-        for (UriStep uriStep : uriSteps) {
-            try {
-                String descr = uriStep.getDescription();
-                Bitmap image = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
-                        uriStep.getImageUri());
-                steps.add(new Step(descr, image));
-            }
-            catch (IOException e) {
-                //Cant upload image;
-            }
-        }
-        result.setSteps(steps);
-        //TODO Another Thread
-        boolean complete = false;
-        while (!complete) {
-            try {
-                if (recipeID == 0) {
-                    CookBookStorage.getInstance(this).insertRecipe(result);
-                } else {
-                    CookBookStorage.getInstance(this).changeRecipe(result);
+        final ArrayList<Step> steps = new ArrayList<>();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (saveSynchronizer) {
+                    for (UriStep uriStep : uriSteps) {
+                        String descr = uriStep.getDescription();
+                        Bitmap image;
+                        try {
+                            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED) {
+                                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                        MainActivity.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                            }
+                            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    != PackageManager.PERMISSION_GRANTED) {
+                                return;
+                            }
+                            image = MediaStore.Images.Media.getBitmap(
+                                    EditRecipeActivity.this.getContentResolver(), uriStep.getImageUri());
+                        } catch (IOException e) {
+                            Step s = new Step(
+                                    uriStep.getDescription(),
+                                    uriStep.getImageUri().toString());
+                            CookBookStorage.getInstance(EditRecipeActivity.this).downloadStepImage(s);
+                            image = s.getImage();
+                        }
+                        steps.add(new Step(descr, image));
+                    }
+                    result.setSteps(steps);
+                    try {
+                        if (recipeID == 0) {
+                            recipeID = CookBookStorage.getInstance(EditRecipeActivity.this).insertRecipe(result);
+                        } else {
+                            CookBookStorage.getInstance(EditRecipeActivity.this).changeRecipe(result);
+                        }
+
+                        EditRecipeActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(EditRecipeActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (final Exception e) {
+                        EditRecipeActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(EditRecipeActivity.this,
+                                        "Unable to save recipe\n" + "Cause:\n" + e.toString(),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
-                complete = true;
             }
-            catch (Exception e) {
-                //Repeat
-            }
-        }
-        finish();
+        }).start();
     }
 
     public void onStepsClick(View v) {

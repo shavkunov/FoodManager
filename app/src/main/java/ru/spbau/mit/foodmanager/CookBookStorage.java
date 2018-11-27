@@ -22,17 +22,39 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static ru.spbau.mit.foodmanager.Commands.*;
+import static ru.spbau.mit.foodmanager.Commands.addToFavoritesCommand;
+import static ru.spbau.mit.foodmanager.Commands.changeRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.deleteRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.getCategoriesListCommand;
+import static ru.spbau.mit.foodmanager.Commands.getCategoryByIDCommand;
+import static ru.spbau.mit.foodmanager.Commands.getFavoritesCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRandomDishCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeCategoriesCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeIngredientsCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeLikesCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipeStepsCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipesByFilterCommand;
+import static ru.spbau.mit.foodmanager.Commands.getRecipesOfCategoryCommand;
+import static ru.spbau.mit.foodmanager.Commands.getUserLikeCommand;
+import static ru.spbau.mit.foodmanager.Commands.getUserSettingsCommand;
+import static ru.spbau.mit.foodmanager.Commands.insertRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.isUserOwnRecipeCommand;
+import static ru.spbau.mit.foodmanager.Commands.removeFromFavoritesCommand;
+import static ru.spbau.mit.foodmanager.Commands.saveUserSettingsCommand;
+import static ru.spbau.mit.foodmanager.Commands.setUserLikeCommand;
+import static ru.spbau.mit.foodmanager.Commands.setUserNotLikeCommand;
 
 /**
  * Хранилище всех рецептов. Singleton. В этом классе слишком много методов, которые можно отнести
  * к другим классам. Будет изменено после рефакторинга.
  */
 public class CookBookStorage {
-    public static final String SERVER_IP = "138.68.91.54";
+    private static final String CLOUD_SERVER_IP = "138.68.91.54";
+    private static final String LOCAL_SERVER_IP = "192.168.211.199";
     private static final int port = 48800; // free random port;
-    private static final int HTTP_CONNECT_TIMEOUT_MS = 2000;
-    private static final int HTTP_READ_TIMEOUT_MS = 2000;
+    private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
+    private static final int HTTP_READ_TIMEOUT_MS = 5000;
     private static final int MAX_ATTEMPTS = 3;
 
     /**
@@ -64,20 +86,13 @@ public class CookBookStorage {
      * но использование этого метода эффективнее в количестве SQL запросов.
      * @param recipe информация этого рецепта будет помещена в БД.
      */
-    public void changeRecipe(RecipeToChange recipe) {
-        try {
-            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-                HttpURLConnection connection = storeRecipeInformation(recipe, changeRecipeCommand);
-
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    continue;
-                }
-
-                break;
+    public void changeRecipe(RecipeToChange recipe) throws Exception {
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            HttpURLConnection connection = storeRecipeInformation(recipe, changeRecipeCommand);
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                continue;
             }
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to change recipe");
-            e.printStackTrace();
+            break;
         }
     }
 
@@ -85,25 +100,27 @@ public class CookBookStorage {
      * Добавление рецепта в базу данных на сервере. Если одна из операций вставок провалилась,
      * то рецепт не будет встален полностью.
      * @param recipe добавление рецепта в базу данных на сервере.
+     * @return ID рецепта.
      */
-    public void insertRecipe(RecipeToChange recipe) {
-        try {
-            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-                HttpURLConnection connection = storeRecipeInformation(recipe, insertRecipeCommand);
-
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    continue;
-                }
-
-                break;
+    public int insertRecipe(RecipeToChange recipe) throws Exception {
+        int recipeID = -1;
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            HttpURLConnection connection = storeRecipeInformation(recipe, insertRecipeCommand);
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                continue;
             }
-        } catch (Exception e) {
-            Log.d(LOG_TAG, "Unable to insert recipe");
-            e.printStackTrace();
+
+            ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+            recipeID = input.readInt();
+            input.close();
+
+            break;
         }
+
+        return recipeID;
     }
 
-    private HttpURLConnection storeRecipeInformation(RecipeToChange recipe, String command) throws IOException {
+    private HttpURLConnection storeRecipeInformation(RecipeToChange recipe, String command) throws Exception {
         final HttpURLConnection connection =
                 openHttpURLConnectionForServerCommand(command);
 
@@ -115,14 +132,16 @@ public class CookBookStorage {
         output.writeObject(recipe.getIngredients());
 
         ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<ByteArrayInputStream> transformedImages = new ArrayList<>();
-        for (Step step : recipe.getSteps()) {
-            descriptions.add(step.getDescription());
-            transformedImages.add(convertImage(step.getImage()));
+        ArrayList<String> links = new ArrayList<>();
+        if (recipe.getSteps() != null) {
+            for (Step step : recipe.getSteps()) {
+                descriptions.add(step.getDescription());
+                links.add(uploadImage(step.getImage()));
+            }
         }
 
         output.writeObject(descriptions);
-        output.writeObject(transformedImages);
+        output.writeObject(links);
 
         if (command.equals(deleteRecipeCommand) || command.equals(changeRecipeCommand)) {
             output.writeInt(recipe.getID());
@@ -133,13 +152,25 @@ public class CookBookStorage {
         return connection;
     }
 
+    /**
+     * Загрузка изображения.
+     * @param bitmap изображение.
+     * @return онлайн ссылка на изображение в сервисе cloudinary
+     */
+    private String uploadImage(Bitmap bitmap) throws Exception {
+        InputStream imageIn = convertImage(bitmap);
+        Cloudinary cloudinary = new Cloudinary(CLOUDINARY_URL);
+        Map result = cloudinary.uploader().upload(imageIn, ObjectUtils.emptyMap());
+        JSONObject jsonObject = new JSONObject(result);
+
+        return jsonObject.getString("url");
+    }
+
     private ByteArrayInputStream convertImage(Bitmap bitmap) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
         byte[] bitmapData = bos.toByteArray();
-        ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
-
-        return bs;
+        return new ByteArrayInputStream(bitmapData);
     }
 
     /**
@@ -211,7 +242,7 @@ public class CookBookStorage {
             }
         }
     }
-    
+
     /**
      * Получение рецепта по его уникальному идентификатору.
      */
@@ -684,19 +715,6 @@ public class CookBookStorage {
     }
 
     /**
-     * Загрузка изображения.
-     * @param imageIn изображение.
-     * @return онлайн ссылка на изображение в сервисе cloudinary
-     */
-    private String uploadImage(InputStream imageIn) throws Exception {
-        Cloudinary cloudinary = new Cloudinary(CLOUDINARY_URL);
-        Map result = cloudinary.uploader().upload(imageIn, ObjectUtils.emptyMap());
-        JSONObject jsonObject = new JSONObject(result);
-
-        return jsonObject.getString("url");
-    }
-
-    /**
      * Загрузка картинки шага.
      * @param step загрузка прямо в поле объекта.
      */
@@ -842,7 +860,7 @@ public class CookBookStorage {
     }
 
     private static HttpURLConnection openHttpURLConnectionForServerCommand(String command) throws IOException {
-        final String urlString = "http://" + SERVER_IP + ':' + port + command;
+        final String urlString = "http://" + CLOUD_SERVER_IP + ':' + port + command;
 
         final URL url = new URL(urlString);
 
